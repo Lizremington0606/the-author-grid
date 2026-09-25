@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>The Author Grid</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      color: #272727;
+
+      /* Graph-paper background */
+      background-color: #f8f6f0;
+      background-image:
+        linear-gradient(#c9dce8 1px, transparent 1px),
+        linear-gradient(90deg, #c9dce8 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+
+    /* HEADER */
+
+    header {
+      background: #285f83;
+      color: #fffdf7;
+      padding: 22px 7%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 30px;
+      border-bottom: 5px solid #1e2a30;
+    }
+
+    .logo {
+      font-family: "Arial Rounded MT Bold", "Trebuchet MS", sans-serif;
+      font-size: 31px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      color: #fffdf7;
+    }
+
+    nav {
+      display: flex;
+      gap: 28px;
+      align-items: center;
+    }
+
+    nav a {
+      color: #fffdf7;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    nav a:hover {
+      text-decoration: underline;
+    }
+
+    /* HERO */
+
+    .hero {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 95px 30px 70px;
+      text-align: center;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      background: #272727;
+      color: #fffdf7;
+      padding: 8px 15px;
+      margin-bottom: 25px;
+      font-size: 12px;
+      font-weight: bold;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    .hero h1 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(42px, 7vw, 76px);
+      line-height: 1.03;
+      color: #252525;
+      max-width: 900px;
+      margin: 0 auto 25px;
+    }
+
+    .hero p {
+      max-width: 700px;
+      margin: 0 auto;
+      font-size: 18px;
+      line-height: 1.7;
+      color: #4b4b4b;
+    }
+
+    /* HELP SECTION */
+
+    .help-section {
+      max-width: 1150px;
+      margin: 0 auto;
+      padding: 25px 30px 100px;
+    }
+
+    .section-heading {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .section-heading h2 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 38px;
+      margin-bottom: 10px;
+    }
+
+    .section-heading p {
+      color: #5b5b5b;
+      font-size: 16px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .card {
+      min-height: 190px;
+      padding: 28px;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      transition: transform 0.2s ease;
+      border: 1px solid #272727;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+    }
+
+    .card h3 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .card p {
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .dark {
+      background: #272727;
+      color: #fffdf7;
+    }
+
+    .brown {
+      background: #594a40;
+      color: #fffdf7;
+    }
+
+    .cream {
+      background: #eee7da;
+      color: #272727;
+    }
+
+    .slate {
+      background: #39464c;
+      color: #fffdf7;
+    }
+
+    .blue {
+      background: #285f83;
+      color: #fffdf7;
+    }
+
+    .taupe {
+      background: #c8b9a7;
+      color: #272727;
+    }
+
+    /* MISSION */
+
+    .mission {
+      background: #272727;
+      color: #fffdf7;
+      padding: 75px 30px;
+      text-align: center;
+    }
+
+    .mission p {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(27px, 4vw, 42px);
+      line-height: 1.3;
+      max-width: 900px;
+      margin: auto;
+    }
+
+    /* FOOTER */
+
+    footer {
+      background: #1e2a30;
+      color: #ddd8ce;
+      text-align: center;
+      padding: 28px;
+      font-size: 13px;
+    }
+
+    /* PHONE / SMALL SCREEN */
+
+    @media (max-width: 800px) {
+      header {
+        flex-direction: column;
+      }
+
+      nav {
+        gap: 14px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding-top: 65px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="logo">THE AUTHOR GRID</div>
+
+    <nav>
+      <a href="#">Promote</a>
+      <a href="#">Resources</a>
+      <a href="#">Community</a>
+      <a href="#">Books</a>
+    </nav>
+  </header>
+
+
+  <main>
+
+    <section class="hero">
+
+      <div class="eyebrow">
+        Built by an author, for authors.
+      </div>
+
+      <h1>
+        You wrote the book.<br>
+        Let's figure out what comes next.
+      </h1>
+
+      <p>
+        The Author Grid brings author resources, promotion,
+        community, opportunities and guidance into one place —
+        without making you become an influencer just to be an author.
+      </p>
+
+    </section>
+
+
+    <section class="help-section">
+
+      <div class="section-heading">
+        <h2>What do you need help with?</h2>
+        <p>Start with what you're trying to accomplish.</p>
+      </div>
+
+
+      <div class="grid">
+
+        <a href="#" class="card dark">
+          <h3>Promote My Book</h3>
+          <p>
+            Find ways to get your book in front of readers
+            based on your budget, location and comfort level.
+          </p>
+        </a>
+
+
+        <a href="#" class="card cream">
+          <h3>Find Author Resources</h3>
+          <p>
+            Publishing, marketing, events, local resources
+            and practical help without the information overload.
+          </p>
+        </a>
+
+
+        <a href="#" class="card brown">
+          <h3>Connect With Authors</h3>
+          <p>
+            Find community, collaborations, swaps and other
+            authors who actually understand this.
+          </p>
+        </a>
+
+
+        <a href="#" class="card slate">
+          <h3>Protect My Book</h3>
+          <p>
+            Find reporting resources, piracy guidance,
+            scam warnings and places to start when something feels wrong.
+          </p>
+        </a>
+
+
+        <a href="#" class="card taupe">
+          <h3>Find Professional Help</h3>
+          <p>
+            Explore editors, designers, formatters,
+            promotion services and other author professionals.
+          </p>
+        </a>
+
+
+        <a href="#" class="card blue">
+          <h3>Explore Books</h3>
+          <p>
+            Discover books by genre, trope and what
+            you're actually in the mood to read.
+          </p>
+        </a>
+
+      </div>
+
+    </section>
+
+
+    <section class="mission">
+      <p>
+        Authors are the community.<br>
+        They are not the product.
+      </p>
+    </section>
+
+  </main>
+
+
+  <footer>
+    The Author Grid · A free resource and community platform built by an author, for authors.
+  </footer>
+
+</body>
+</html>
