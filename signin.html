@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Sign In | The Written Bond</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: 'Libre Baskerville', serif;
+      color: #24211f;
+      background:
+        linear-gradient(rgba(247, 242, 232, 0.92), rgba(247, 242, 232, 0.92)),
+        repeating-linear-gradient(
+          0deg,
+          rgba(70, 60, 50, 0.025) 0px,
+          rgba(70, 60, 50, 0.025) 1px,
+          transparent 1px,
+          transparent 4px
+        );
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      overflow-x: hidden;
+    }
+
+    .welcome {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 30px;
+      text-align: center;
+      font-family: 'Special Elite', monospace;
+      font-size: clamp(28px, 5vw, 48px);
+      opacity: 1;
+      transition: opacity 0.7s ease;
+      z-index: 5;
+    }
+
+    .welcome.hide {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .signin-card {
+      width: 100%;
+      max-width: 430px;
+      background: rgba(255, 252, 245, 0.88);
+      border: 1px solid rgba(45, 40, 35, 0.18);
+      padding: 42px 36px;
+      opacity: 0;
+      transform: translateY(80px);
+      transition:
+        opacity 0.8s ease,
+        transform 0.8s ease;
+    }
+
+    .signin-card.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .brand {
+      font-family: 'Special Elite', monospace;
+      font-size: 18px;
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    h1 {
+      font-family: 'Special Elite', monospace;
+      font-size: 30px;
+      font-weight: 400;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 13px;
+      line-height: 1.6;
+      margin-bottom: 32px;
+      color: #68615b;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #aaa29a;
+      background: rgba(255, 255, 255, 0.55);
+      font: inherit;
+      font-size: 15px;
+      margin-bottom: 20px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #6f6660;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      background: #252321;
+      color: #fffaf1;
+      font-family: 'Libre Baskerville', serif;
+      font-size: 14px;
+      cursor: pointer;
+      margin-top: 4px;
+    }
+
+    button:hover {
+      background: #373330;
+    }
+
+    .signup {
+      text-align: center;
+      margin-top: 24px;
+      font-size: 13px;
+    }
+
+    .signup a {
+      color: #534a45;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .signup a:hover {
+      text-decoration: underline;
+    }
+
+    .back-home {
+      display: block;
+      text-align: center;
+      margin-top: 28px;
+      font-size: 12px;
+      color: #746c66;
+      text-decoration: none;
+    }
+
+    @media (max-width: 520px) {
+      .signin-card {
+        padding: 34px 24px;
+      }
+
+      h1 {
+        font-size: 26px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .welcome {
+        display: none;
+      }
+
+      .signin-card {
+        opacity: 1;
+        transform: none;
+        transition: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="welcome" id="welcome">
+    Welcome, future bestseller.
+  </div>
+
+  <main class="signin-card" id="signinCard">
+    <div class="brand">The Written Bond</div>
+
+    <h1>Sign in</h1>
+
+    <p class="subtitle">
+      Welcome back to your author space.
+    </p>
+
+    <form>
+      <label for="email">Email</label>
+      <input
+        type="email"
+        id="email"
+        autocomplete="email"
+        required
+      >
+
+      <label for="password">Password</label>
+      <input
+        type="password"
+        id="password"
+        autocomplete="current-password"
+        required
+      >
+
+      <button type="submit">Sign In</button>
+    </form>
+
+    <p class="signup">
+      New here? <a href="#">Create an account</a>
+    </p>
+
+    <a class="back-home" href="index.html">
+      ← Back to The Written Bond
+    </a>
+  </main>
+
+  <script>
+    const welcome = document.getElementById("welcome");
+    const signinCard = document.getElementById("signinCard");
+
+    setTimeout(() => {
+      welcome.classList.add("hide");
+
+      setTimeout(() => {
+        signinCard.classList.add("show");
+      }, 500);
+    }, 1800);
+  </script>
+
+</body>
+</html>
