@@ -248,6 +248,9 @@
     <p class="signup">
   <span id="accountPrompt">New here?</span> <a href="#" id="createAccountLink">Create an account</a>
     </p>
+    <p class="signup">
+  <a href="#" id="resendConfirmationLink">Resend confirmation email</a>
+</p>
 
     <a class="back-home" href="index.html">
       ← Back to The Written Bond
@@ -272,6 +275,7 @@ const passwordInput = document.getElementById("password");
 const formSubtitle = document.getElementById("formSubtitle");
 const submitButton = document.getElementById("submitButton");
 const createAccountLink = document.getElementById("createAccountLink");
+    const resendConfirmationLink = document.getElementById("resendConfirmationLink");
     const accountPrompt = document.getElementById("accountPrompt");
     let isCreatingAccount = false;
     togglePassword.addEventListener("click", () => {
@@ -307,6 +311,31 @@ const createAccountLink = document.getElementById("createAccountLink");
         signinCard.classList.add("show");
       }, 500);
     }, 1800);
+    resendConfirmationLink.addEventListener("click", async (event) => {
+  event.preventDefault();
+
+  const email = emailInput.value.trim();
+
+  if (!email) {
+    alert("Enter your email address first.");
+    return;
+  }
+
+  const { error } = await supabaseClient.auth.resend({
+    type: "signup",
+    email: email,
+    options: {
+      emailRedirectTo: "https://lizremington0606.github.io/the-author-grid/"
+    }
+  });
+
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  alert("A new confirmation email has been sent!");
+});
   signinForm.addEventListener("submit", async (event) => {
   event.preventDefault();
 
