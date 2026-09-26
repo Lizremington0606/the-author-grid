@@ -325,7 +325,7 @@ const createAccountLink = document.getElementById("createAccountLink");
     type: "signup",
     email: email,
     options: {
-      emailRedirectTo: "https://lizremington0606.github.io/the-author-grid/"
+      emailRedirectTo: "https://lizremington0606.github.io/the-author-grid/signin.html"
     }
   });
 
@@ -344,10 +344,12 @@ const createAccountLink = document.getElementById("createAccountLink");
 
   if (isCreatingAccount) {
     const { data, error } = await supabaseClient.auth.signUp({
-      email: email,
-      password: password
-    });
-
+  email: email,
+  password: password,
+  options: {
+    emailRedirectTo: "https://lizremington0606.github.io/the-author-grid/signin.html"
+  }
+});
     if (error) {
       alert(error.message);
       return;
