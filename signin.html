@@ -266,6 +266,11 @@ const supabaseClient = window.supabase.createClient(
   SUPABASE_KEY
 );
     const welcome = document.getElementById("welcome");
+    const confirmationParams = new URLSearchParams(window.location.hash.substring(1));
+
+if (confirmationParams.get("type") === "signup") {
+  welcome.textContent = "Email confirmed.";
+}
     const signinCard = document.getElementById("signinCard");
     const signinForm = document.getElementById("signinForm");
 const emailInput = document.getElementById("email");
