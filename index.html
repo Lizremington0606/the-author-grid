@@ -38,14 +38,26 @@
       border-bottom: 5px solid #1e2a30;
     }
 
-    .logo {
+ .logo {
   font-family: 'Special Elite', monospace;
   font-size: 32px;
   font-weight: 400;
   letter-spacing: 1.5px;
   color: #fffdf7;
-      position: relative; 
-      left: -75px;
+  position: relative;
+  left: -75px;
+}
+
+.logo-cursor {
+  display: inline-block;
+  margin-left: 3px;
+  animation: blink 0.7s steps(1) infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
 }
     
 
@@ -270,7 +282,9 @@
 <body>
 
   <header>
-    <div class="logo">THE Written Bond</div>
+   <div class="logo" aria-label="The Written Bond">
+  <span id="typed-logo" aria-hidden="true"></span><span class="logo-cursor" aria-hidden="true">|</span>
+</div>
 
     <nav>
       <a href="#">Promote</a>
@@ -389,6 +403,26 @@
   <footer>
     The Written Bond · A free resource and community platform built by an author, for authors.
   </footer>
+<script>
+const logoText = "THE WRITTEN BOND";
+  const typedLogo = document.getElementById("typed-logo");
+  const logoCursor = document.querySelector(".logo-cursor");
 
+  let i = 0;
+
+  function typeLogo() {
+    if (i < logoText.length) {
+      typedLogo.textContent += logoText.charAt(i);
+      i++;
+      setTimeout(typeLogo, 110);
+    } else {
+      setTimeout(() => {
+        logoCursor.style.display = "none";
+      }, 1200);
+    }
+  }
+
+  typeLogo();
+</script>
 </body>
 </html>
