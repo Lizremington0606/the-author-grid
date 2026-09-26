@@ -199,7 +199,7 @@
       Welcome back to your author space.
     </p>
 
-    <form>
+    <form id="signinForm">
       <label for="email">Email</label>
       <input
         type="email"
@@ -227,10 +227,20 @@
       ← Back to The Written Bond
     </a>
   </main>
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
+    const SUPABASE_URL = "https://nyxsibwytoabqiwvgxoxx.supabase.co";
+const SUPABASE_KEY = "sb_publishable_AI_R3YGatySsJz0hkeg6MQ_CtqY5CYZ";
+
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
     const welcome = document.getElementById("welcome");
     const signinCard = document.getElementById("signinCard");
+    const signinForm = document.getElementById("signinForm");
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
 
     setTimeout(() => {
       welcome.classList.add("hide");
@@ -239,6 +249,24 @@
         signinCard.classList.add("show");
       }, 500);
     }, 1800);
+    signinForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
+
+  const { data, error } = await supabaseClient.auth.signInWithPassword({
+    email: email,
+    password: password
+  });
+
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  window.location.href = "index.html";
+});
   </script>
 
 </body>
