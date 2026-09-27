@@ -372,6 +372,10 @@ if (confirmationParams.get("type") === "signup") {
     }, 700);
   }, 1800);
 }
+const urlParams = new URLSearchParams(window.location.search);
+const isEditMode = urlParams.get("mode") === "edit";
+let existingProfile = null;
+
 async function checkUser() {
   const { data: { session } } = await supabaseClient.auth.getSession();
 
@@ -383,10 +387,52 @@ async function checkUser() {
   currentUser = session.user;
 
   if (window.location.hash) {
-    history.replaceState(null, "", window.location.pathname);
+    history.replaceState(null, "", window.location.pathname + window.location.search);
+  }
+
+  if (isEditMode) {
+    const { data: profile, error } = await supabaseClient
+      .from("profiles")
+      .select("*")
+      .eq("id", currentUser.id)
+      .single();
+
+    if (error && error.code !== "PGRST116") {
+      alert(error.message);
+      return;
+    }
+
+    if (profile) {
+      existingProfile = profile;
+
+      document.getElementById("displayName").value = profile.display_name || "";
+      document.getElementById("username").value = profile.username || "";
+      document.getElementById("bio").value = profile.bio || "";
+      document.getElementById("website").value = profile.website_url || "";
+
+      const socials = profile.social_links || {};
+      document.getElementById("instagram").value = socials.instagram || "";
+      document.getElementById("tiktok").value = socials.tiktok || "";
+      document.getElementById("goodreads").value = socials.goodreads || "";
+      document.getElementById("facebook").value = socials.facebook || "";
+
+      if (profile.profile_image_url) {
+        profilePreviewImage.src = profile.profile_image_url;
+        profilePreviewImage.style.display = "block";
+        profilePlaceholder.style.display = "none";
+      }
+
+      if (profile.background_image_url) {
+        coverPreviewImage.src = profile.background_image_url;
+        coverPreviewImage.style.display = "block";
+        coverPlaceholder.style.display = "none";
+      }
+
+      document.querySelector(".intro h1").textContent = "Edit your profile.";
+      profileForm.querySelector('button[type="submit"]').textContent = "Save Changes";
+    }
   }
 }
-
 checkUser();
 profileImageInput.addEventListener("change", () => {
   const file = profileImageInput.files[0];
@@ -439,6 +485,7 @@ backgroundImageInput.addEventListener("change", () => {
   }
 
   const displayName = document.getElementById("displayName").value.trim();
+
   const username = document.getElementById("username").value
     .trim()
     .toLowerCase();
@@ -453,59 +500,82 @@ backgroundImageInput.addEventListener("change", () => {
   const button = profileForm.querySelector('button[type="submit"]');
 
   button.disabled = true;
-  button.textContent = "Creating your profile...";
+  button.textContent = isEditMode
+    ? "Saving changes..."
+    : "Creating your profile...";
+
   statusMessage.textContent = "";
-      try {
-  const profileImageUrl = await uploadImage(
-    profileImageInput.files[0],
-    "profile-picture"
-  );
 
-const backgroundImageUrl = await uploadImage(
-  backgroundImageInput.files[0],
-  "background-picture"
-);
-const profile = {
-  id: currentUser.id,
-  display_name: displayName,
-  username: username,
-  bio: document.getElementById("bio").value.trim(),
-  profile_image_url: profileImageUrl,
-  background_image_url: backgroundImageUrl,
-  website_url: document.getElementById("website").value.trim(),
+  try {
+    let profileImageUrl =
+      existingProfile?.profile_image_url || null;
 
-  social_links: {
-    instagram: document.getElementById("instagram").value.trim(),
-    tiktok: document.getElementById("tiktok").value.trim(),
-    goodreads: document.getElementById("goodreads").value.trim(),
-    facebook: document.getElementById("facebook").value.trim()
-  },
+    let backgroundImageUrl =
+      existingProfile?.background_image_url || null;
 
-  profile_completed: true,
-  updated_at: new Date().toISOString()
-};
+    if (profileImageInput.files[0]) {
+      profileImageUrl = await uploadImage(
+        profileImageInput.files[0],
+        "profile-picture"
+      );
+    }
+
+    if (backgroundImageInput.files[0]) {
+      backgroundImageUrl = await uploadImage(
+        backgroundImageInput.files[0],
+        "background-picture"
+      );
+    }
+
+    const profile = {
+      id: currentUser.id,
+      display_name: displayName,
+      username: username,
+      bio: document.getElementById("bio").value.trim(),
+      profile_image_url: profileImageUrl,
+      background_image_url: backgroundImageUrl,
+      website_url: document.getElementById("website").value.trim(),
+
+      social_links: {
+        instagram: document.getElementById("instagram").value.trim(),
+        tiktok: document.getElementById("tiktok").value.trim(),
+        goodreads: document.getElementById("goodreads").value.trim(),
+        facebook: document.getElementById("facebook").value.trim()
+      },
+
+      profile_completed: true,
+      updated_at: new Date().toISOString()
+    };
+
     const { error } = await supabaseClient
-  .from("profiles")
-  .upsert(profile, {
-    onConflict: "id"
-  });
+      .from("profiles")
+      .upsert(profile, {
+        onConflict: "id"
+      });
 
-if (error) {
-  throw error;
-}
+    if (error) {
+      throw error;
+    }
 
-statusMessage.textContent = "Profile created!";
-window.location.href = "profile.html";
-        } catch (error) {
-  if (error.code === "23505") {
-    alert("That username is already taken. Try another one.");
-  } else {
-    alert(error.message);
+    statusMessage.textContent = isEditMode
+      ? "Changes saved!"
+      : "Profile created!";
+
+    window.location.href = "profile.html";
+
+  } catch (error) {
+    if (error.code === "23505") {
+      alert("That username is already taken. Try another one.");
+    } else {
+      alert(error.message);
+    }
+
+    button.disabled = false;
+
+    button.textContent = isEditMode
+      ? "Save Changes"
+      : "Create My Profile";
   }
-
-  button.disabled = false;
-  button.textContent = "Create My Profile";
-}
 });
     </script>
 </body>
