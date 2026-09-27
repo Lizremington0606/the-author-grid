@@ -422,6 +422,111 @@
   </section>
 
 </main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = "https://mwwzlbhttgatylmpwzli.supabase.co";
+const SUPABASE_KEY = "sb_publishable_UFkxAcITFXu6OtYRTcUKKg_Fw9UcTqR";
 
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+const displayName = document.getElementById("displayName");
+const username = document.getElementById("username");
+const bio = document.getElementById("bio");
+const profilePicture = document.getElementById("profilePicture");
+const headerAvatar = document.getElementById("headerAvatar");
+const profileBackground = document.getElementById("profileBackground");
+const socialLinks = document.getElementById("socialLinks");
+const signOutButton = document.getElementById("signOutButton");
+
+function setSocialLink(id, url) {
+  const link = document.getElementById(id);
+
+  if (url) {
+    link.href = url;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.style.display = "inline";
+  } else {
+    link.style.display = "none";
+  }
+}
+
+async function loadProfile() {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+
+  if (!session) {
+    window.location.href = "signin.html";
+    return;
+  }
+
+  const { data: profile, error } = await supabaseClient
+    .from("profiles")
+    .select("*")
+    .eq("id", session.user.id)
+    .single();
+
+  if (error) {
+    if (error.code === "PGRST116") {
+      window.location.href = "profile-setup.html";
+      return;
+    }
+
+    alert(error.message);
+    return;
+  }
+
+  displayName.textContent = profile.display_name || "Your Name";
+  username.textContent = profile.username
+    ? `@${profile.username}`
+    : "@username";
+
+  bio.textContent = profile.bio || "";
+
+  if (profile.profile_image_url) {
+    profilePicture.src = profile.profile_image_url;
+    headerAvatar.src = profile.profile_image_url;
+  }
+
+  if (profile.background_image_url) {
+    profileBackground.style.backgroundImage =
+      `linear-gradient(rgba(10, 10, 10, 0.15), rgba(10, 10, 10, 0.35)), url("${profile.background_image_url}")`;
+  }
+
+  const socials = profile.social_links || {};
+
+  setSocialLink("websiteLink", profile.website_url);
+  setSocialLink("instagramLink", socials.instagram);
+  setSocialLink("tiktokLink", socials.tiktok);
+  setSocialLink("goodreadsLink", socials.goodreads);
+  setSocialLink("facebookLink", socials.facebook);
+
+  const hasAnySocial =
+    profile.website_url ||
+    socials.instagram ||
+    socials.tiktok ||
+    socials.goodreads ||
+    socials.facebook;
+
+  if (!hasAnySocial) {
+    socialLinks.style.display = "none";
+  }
+}
+
+signOutButton.addEventListener("click", async () => {
+  const { error } = await supabaseClient.auth.signOut();
+
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  window.location.href = "index.html";
+});
+
+loadProfile();
+</script>
 </body>
 </html>
