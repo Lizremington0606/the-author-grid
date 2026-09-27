@@ -181,6 +181,27 @@
         font-size: 31px;
       }
     }
+    .confirmation-welcome {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f7f2e8;
+  color: #24211f;
+  font-family: 'Special Elite', monospace;
+  font-size: clamp(30px, 5vw, 48px);
+  text-align: center;
+  padding: 30px;
+  opacity: 1;
+  transition: opacity 0.7s ease;
+}
+
+.confirmation-welcome.hide {
+  opacity: 0;
+  pointer-events: none;
+}
   </style>
 </head>
 
@@ -189,7 +210,9 @@
 <header>
   <div class="logo">The Written Bond</div>
 </header>
-
+<div class="confirmation-welcome" id="confirmationWelcome" hidden>
+  Email confirmed.
+</div>
 <main>
 
   <div class="intro">
@@ -309,36 +332,173 @@
 
 </main>
 
-<script>
-  const profileImageInput = document.getElementById("profileImage");
-  const backgroundImageInput = document.getElementById("backgroundImage");
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+  const SUPABASE_URL = "https://mwwzlbhttgatylmpwzli.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_UFkxAcITFXu6OtYRTcUKKg_Fw9UcTqR";
 
-  const profilePreviewImage = document.getElementById("profilePreviewImage");
-  const coverPreviewImage = document.getElementById("coverPreviewImage");
+  const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
 
-  const profilePlaceholder = document.getElementById("profilePlaceholder");
-  const coverPlaceholder = document.getElementById("coverPlaceholder");
+  const profileForm = document.getElementById("profileForm");
 
-  profileImageInput.addEventListener("change", () => {
-    const file = profileImageInput.files[0];
+    let currentUser = null;
+    const profileImageInput = document.getElementById("profileImage");
+const backgroundImageInput = document.getElementById("backgroundImage");
 
-    if (file) {
-      profilePreviewImage.src = URL.createObjectURL(file);
-      profilePreviewImage.style.display = "block";
-      profilePlaceholder.style.display = "none";
-    }
+const profilePreviewImage = document.getElementById("profilePreviewImage");
+const coverPreviewImage = document.getElementById("coverPreviewImage");
+
+const profilePlaceholder = document.getElementById("profilePlaceholder");
+const coverPlaceholder = document.getElementById("coverPlaceholder");
+
+const statusMessage = document.getElementById("statusMessage");
+const confirmationWelcome = document.getElementById("confirmationWelcome");
+    const confirmationParams = new URLSearchParams(window.location.hash.substring(1));
+
+if (confirmationParams.get("type") === "signup") {
+  confirmationWelcome.hidden = false;
+
+  setTimeout(() => {
+    confirmationWelcome.classList.add("hide");
+
+    setTimeout(() => {
+      confirmationWelcome.hidden = true;
+    }, 700);
+  }, 1800);
+}
+async function checkUser() {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+
+  if (!session) {
+    window.location.href = "signin.html";
+    return;
+  }
+
+  currentUser = session.user;
+
+  if (window.location.hash) {
+    history.replaceState(null, "", window.location.pathname);
+  }
+}
+
+checkUser();
+profileImageInput.addEventListener("change", () => {
+  const file = profileImageInput.files[0];
+
+  if (file) {
+    profilePreviewImage.src = URL.createObjectURL(file);
+    profilePreviewImage.style.display = "block";
+    profilePlaceholder.style.display = "none";
+  }
+});
+
+backgroundImageInput.addEventListener("change", () => {
+  const file = backgroundImageInput.files[0];
+
+  if (file) {
+    coverPreviewImage.src = URL.createObjectURL(file);
+    coverPreviewImage.style.display = "block";
+    coverPlaceholder.style.display = "none";
+  }
+});
+    async function uploadImage(file, type) {
+  if (!file) return null;
+
+  const extension = file.name.split(".").pop().toLowerCase();
+  const filePath = `${currentUser.id}/${type}.${extension}`;
+
+  const { error } = await supabaseClient.storage
+    .from("profile-media")
+    .upload(filePath, file, {
+      upsert: true,
+      contentType: file.type
+    });
+
+  if (error) {
+    throw error;
+  }
+
+  const { data } = supabaseClient.storage
+    .from("profile-media")
+    .getPublicUrl(filePath);
+
+  return data.publicUrl;
+}
+    profileForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  if (!currentUser) {
+    alert("Your session could not be found. Please sign in again.");
+    return;
+  }
+
+  const displayName = document.getElementById("displayName").value.trim();
+  const username = document.getElementById("username").value
+    .trim()
+    .toLowerCase();
+
+  if (!/^[a-z0-9._-]{3,30}$/.test(username)) {
+    alert(
+      "Your username must be 3–30 characters and can use letters, numbers, periods, underscores and hyphens."
+    );
+    return;
+  }
+
+  const button = profileForm.querySelector('button[type="submit"]');
+
+  button.disabled = true;
+  button.textContent = "Creating your profile...";
+  statusMessage.textContent = "";
+      try {
+  const profileImageUrl = await uploadImage(
+    profileImageInput.files[0],
+    "profile-picture"
+  );
+
+  const backgroundImageUrl = await uploadImage(
+    const profile = {
+    const { error } = await supabaseClient
+  .from("profiles")
+  .upsert(profile, {
+    onConflict: "id"
   });
 
-  backgroundImageInput.addEventListener("change", () => {
-    const file = backgroundImageInput.files[0];
+if (error) {
+  throw error;
+}
 
-    if (file) {
-      coverPreviewImage.src = URL.createObjectURL(file);
-      coverPreviewImage.style.display = "block";
-      coverPlaceholder.style.display = "none";
-    }
-  });
-</script>
+statusMessage.textContent = "Profile created!";
 
+window.location.href = "profile.html";
+        } catch (error) {
+  if (error.code === "23505") {
+    alert("That username is already taken. Try another one.");
+  } else {
+    alert(error.message);
+  }
+const profile = {
+  id: currentUser.id,
+  display_name: displayName,
+  username: username,
+  bio: document.getElementById("bio").value.trim(),
+  profile_image_url: profileImageUrl,
+  background_image_url: backgroundImageUrl,
+  website_url: document.getElementById("website").value.trim(),
+
+  social_links: {
+    instagram: document.getElementById("instagram").value.trim(),
+    tiktok: document.getElementById("tiktok").value.trim(),
+    goodreads: document.getElementById("goodreads").value.trim(),
+    facebook: document.getElementById("facebook").value.trim()
+  },
+
+  profile_completed: true,
+  updated_at: new Date().toISOString()
+};
+    
+    </script>
 </body>
 </html>
