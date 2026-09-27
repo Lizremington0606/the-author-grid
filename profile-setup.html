@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Your Profile | The Written Bond</title>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Special+Elite&display=swap');
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #ffffff;
+      color: #252321;
+      font-family: 'Libre Baskerville', serif;
+    }
+
+    header {
+      background: #2e6b99;
+      color: #fffdf7;
+      padding: 22px 7%;
+      border-bottom: 5px solid #1e2a30;
+    }
+
+    .logo {
+      font-family: 'Special Elite', monospace;
+      font-size: 30px;
+      letter-spacing: 1px;
+    }
+
+    main {
+      width: min(760px, 92%);
+      margin: 50px auto 80px;
+    }
+
+    .intro {
+      text-align: center;
+      margin-bottom: 38px;
+    }
+
+    .intro h1 {
+      font-family: 'Special Elite', monospace;
+      font-size: 38px;
+      margin-bottom: 10px;
+    }
+
+    .intro p {
+      color: #6b625c;
+      line-height: 1.7;
+    }
+
+    .setup-card {
+      border: 1px solid #d7d1ca;
+      padding: 34px;
+      background: #ffffff;
+    }
+
+    .cover-preview {
+      width: 100%;
+      height: 220px;
+      background: #e9eef2;
+      border: 1px solid #c8c8c8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #6b625c;
+      overflow: hidden;
+      margin-bottom: -55px;
+    }
+
+    .cover-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+
+    .profile-preview {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 5px solid white;
+      background: #252321;
+      margin: 0 auto 25px;
+      overflow: hidden;
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-family: 'Special Elite', monospace;
+      text-align: center;
+    }
+
+    .profile-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+
+    .image-fields {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-bottom: 28px;
+    }
+
+    label {
+      display: block;
+      margin: 18px 0 7px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #aaa29b;
+      background: white;
+      font: inherit;
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .hint {
+      font-size: 12px;
+      color: #77706b;
+      margin-top: 6px;
+      line-height: 1.5;
+    }
+
+    .section-title {
+      font-family: 'Special Elite', monospace;
+      font-size: 22px;
+      margin-top: 36px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #ddd7d1;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 34px;
+      padding: 15px;
+      border: none;
+      background: #252321;
+      color: white;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #373330;
+    }
+
+    #statusMessage {
+      text-align: center;
+      margin-top: 18px;
+      font-size: 13px;
+    }
+
+    @media (max-width: 650px) {
+      .image-fields {
+        grid-template-columns: 1fr;
+      }
+
+      .setup-card {
+        padding: 24px 18px;
+      }
+
+      .intro h1 {
+        font-size: 31px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">The Written Bond</div>
+</header>
+
+<main>
+
+  <div class="intro">
+    <h1>Make it yours.</h1>
+    <p>
+      Set up the profile readers and other authors will see across The Written Bond.
+      You can change any of this later.
+    </p>
+  </div>
+
+  <div class="setup-card">
+
+    <div class="cover-preview" id="coverPreview">
+      <span id="coverPlaceholder">Your background image</span>
+      <img id="coverPreviewImage" alt="Background preview">
+    </div>
+
+    <div class="profile-preview">
+      <span id="profilePlaceholder">Your photo</span>
+      <img id="profilePreviewImage" alt="Profile preview">
+    </div>
+
+    <div class="image-fields">
+
+      <div>
+        <label for="profileImage">Profile picture</label>
+        <input
+          type="file"
+          id="profileImage"
+          accept="image/jpeg,image/png,image/webp"
+        >
+      </div>
+
+      <div>
+        <label for="backgroundImage">Background picture</label>
+        <input
+          type="file"
+          id="backgroundImage"
+          accept="image/jpeg,image/png,image/webp"
+        >
+      </div>
+
+    </div>
+
+    <form id="profileForm">
+
+      <label for="displayName">Name or pen name *</label>
+      <input
+        type="text"
+        id="displayName"
+        maxlength="60"
+        required
+      >
+
+      <label for="username">Username *</label>
+      <input
+        type="text"
+        id="username"
+        maxlength="30"
+        required
+      >
+      <div class="hint">
+        This will be your unique name on The Written Bond.
+      </div>
+
+      <label for="bio">Bio</label>
+      <textarea
+        id="bio"
+        maxlength="500"
+        placeholder="Tell readers and authors a little about you..."
+      ></textarea>
+
+      <label for="website">Website</label>
+      <input
+        type="url"
+        id="website"
+        placeholder="https://..."
+      >
+
+      <div class="section-title">Social links</div>
+
+      <label for="instagram">Instagram</label>
+      <input
+        type="url"
+        id="instagram"
+        placeholder="https://instagram.com/..."
+      >
+
+      <label for="tiktok">TikTok</label>
+      <input
+        type="url"
+        id="tiktok"
+        placeholder="https://tiktok.com/@..."
+      >
+
+      <label for="goodreads">Goodreads</label>
+      <input
+        type="url"
+        id="goodreads"
+        placeholder="https://goodreads.com/..."
+      >
+
+      <label for="facebook">Facebook</label>
+      <input
+        type="url"
+        id="facebook"
+        placeholder="https://facebook.com/..."
+      >
+
+      <button type="submit">Create My Profile</button>
+
+      <p id="statusMessage"></p>
+
+    </form>
+
+  </div>
+
+</main>
+
+<script>
+  const profileImageInput = document.getElementById("profileImage");
+  const backgroundImageInput = document.getElementById("backgroundImage");
+
+  const profilePreviewImage = document.getElementById("profilePreviewImage");
+  const coverPreviewImage = document.getElementById("coverPreviewImage");
+
+  const profilePlaceholder = document.getElementById("profilePlaceholder");
+  const coverPlaceholder = document.getElementById("coverPlaceholder");
+
+  profileImageInput.addEventListener("change", () => {
+    const file = profileImageInput.files[0];
+
+    if (file) {
+      profilePreviewImage.src = URL.createObjectURL(file);
+      profilePreviewImage.style.display = "block";
+      profilePlaceholder.style.display = "none";
+    }
+  });
+
+  backgroundImageInput.addEventListener("change", () => {
+    const file = backgroundImageInput.files[0];
+
+    if (file) {
+      coverPreviewImage.src = URL.createObjectURL(file);
+      coverPreviewImage.style.display = "block";
+      coverPlaceholder.style.display = "none";
+    }
+  });
+</script>
+
+</body>
+</html>
