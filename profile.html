@@ -286,7 +286,248 @@
     .feed {
       padding-top: 26px;
     }
+.bookshelf-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 22px;
+  padding: 28px 0;
+}
 
+.add-book-tile {
+  min-height: 230px;
+  border: 1px dashed rgba(255, 255, 255, 0.45);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  color: #f4f1eb;
+  font-family: inherit;
+  font-size: 15px;
+  cursor: pointer;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.add-book-tile:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.8);
+}
+
+.add-book-plus {
+  font-size: 34px;
+  line-height: 1;
+}
+    #bookshelfPanel {
+  position: relative;
+  min-height: 500px;
+}
+
+.add-book-modal[hidden] {
+  display: none;
+}
+
+.add-book-modal {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  background: #171719;
+  padding: 28px;
+}
+
+.add-book-modal-content {
+  width: 100%;
+  max-width: 620px;
+  margin: 0 auto;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.add-book-modal-content h3 {
+  margin: 4px 0 20px;
+  text-align: center;
+  font-family: 'Special Elite', monospace;
+  font-size: 25px;
+  font-weight: 400;
+  color: #f4f1eb;
+}
+
+.add-book-modal-content label {
+  color: #f4f1eb;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+.add-book-modal-content input[type="text"],
+.add-book-modal-content input[type="url"] {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 13px;
+  border: 1px solid #55555a;
+  border-radius: 5px;
+  background: #202023;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.add-book-modal-content input::placeholder {
+  color: #88888d;
+}
+
+.book-cover-input {
+  display: none;
+}
+
+.book-cover-upload {
+  width: 150px;
+  height: 210px;
+  margin: 4px auto 12px;
+  border: 1px dashed #68686d;
+  border-radius: 7px;
+  background: #202023;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.book-cover-preview {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  text-align: center;
+  color: #f4f1eb;
+}
+
+.book-cover-icon {
+  font-size: 34px;
+  line-height: 1;
+}
+
+.book-cover-preview strong {
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.book-cover-preview small {
+  color: #99999e;
+  font-size: 11px;
+}
+
+.book-cover-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+#saveBookButton {
+  margin-top: 14px;
+  padding: 12px 18px;
+  border: 1px solid #ffffff;
+  border-radius: 5px;
+  background: #ffffff;
+  color: #171719;
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+#saveBookButton:hover {
+  background: #e7e7e7;
+}
+
+.add-book-close {
+  position: absolute;
+  top: -4px;
+  right: 0;
+  border: none;
+  background: transparent;
+  color: #ffffff;
+  font-size: 30px;
+  cursor: pointer;
+}
+    .trope-picker {
+  position: relative;
+}
+
+.selected-tropes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.trope-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 9px;
+  border: 1px solid #5f5f64;
+  border-radius: 999px;
+  background: #202023;
+  color: #f4f1eb;
+  font-size: 12px;
+}
+
+.trope-tag button {
+  border: none;
+  background: transparent;
+  color: #bcbcc1;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0;
+  line-height: 1;
+}
+
+.trope-suggestions[hidden] {
+  display: none;
+}
+
+.trope-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  max-height: 190px;
+  overflow-y: auto;
+  margin-top: 4px;
+  border: 1px solid #4f4f54;
+  border-radius: 5px;
+  background: #202023;
+}
+
+.trope-suggestion {
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  border-bottom: 1px solid #343438;
+  background: transparent;
+  color: #f4f1eb;
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.trope-suggestion:last-child {
+  border-bottom: none;
+}
+
+.trope-suggestion:hover {
+  background: #2b2b2f;
+}
+
+.trope-custom-option {
+  color: #cfcfd4;
+  font-style: italic;
+}
     .empty-state {
       text-align: center;
       padding: 62px 24px 72px;
@@ -476,32 +717,78 @@
     </div>
   </div>
 
-  <div class="tab-panel" id="bookshelfPanel" hidden>
-    <div class="empty-state">
-      <h2>No books added yet.</h2>
-      <p>Add your books to build your author bookshelf.</p>
-      <button id="addBookButton" type="button">Add Book</button>
-      <div id="addBookForm" hidden>
-  <h3>Add a Book</h3>
+<div class="tab-panel" id="bookshelfPanel" hidden>
 
-  <label for="bookTitle">Book title</label>
-  <input id="bookTitle" type="text">
+  <div class="bookshelf-grid" id="bookshelfGrid">
 
-  <label for="bookSeries">Series</label>
-  <input id="bookSeries" type="text">
+    <button id="addBookButton" class="add-book-tile" type="button">
+      <span class="add-book-plus">+</span>
+      <span>Add a Book</span>
+    </button>
 
-  <label for="bookGenre">Genre</label>
-  <input id="bookGenre" type="text">
-
-  <label for="bookLink">Book link</label>
-  <input id="bookLink" type="url">
-
-  <button id="saveBookButton" type="button">Save Book</button>
-  <button id="cancelBookButton" type="button">Cancel</button>
-</div>
-    </div>
   </div>
 
+  <div id="addBookForm" class="add-book-modal" hidden>
+
+    <div class="add-book-modal-content">
+
+      <button id="cancelBookButton" class="add-book-close" type="button" aria-label="Close">×</button>
+
+      <h3>Add a Book</h3>
+
+<label class="book-cover-upload" for="bookCover">
+  <div class="book-cover-preview" id="bookCoverPreview">
+    <span class="book-cover-icon">＋</span>
+    <strong>Add book cover</strong>
+    <small>JPG, PNG or WEBP</small>
+  </div>
+</label>
+
+<input
+  id="bookCover"
+  class="book-cover-input"
+  type="file"
+  accept="image/png, image/jpeg, image/webp"
+>
+
+      <label for="bookTitle">Book title</label>
+      <input id="bookTitle" type="text">
+
+      <label for="bookSeries">Series</label>
+      <input id="bookSeries" type="text">
+
+      <label for="bookGenre">Genre</label>
+      <input id="bookGenre" type="text">
+
+   <label for="bookTropesSearch">Tropes</label>
+
+<div class="trope-picker">
+
+  <div id="selectedTropes" class="selected-tropes"></div>
+
+  <input
+    id="bookTropesSearch"
+    type="text"
+    placeholder="Search tropes or type your own"
+    autocomplete="off"
+  >
+
+  <div id="tropeSuggestions" class="trope-suggestions" hidden></div>
+
+</div>
+
+<input id="bookTropes" type="hidden">
+
+      <label for="bookLink">Book link</label>
+      <input id="bookLink" type="url" placeholder="https://">
+
+      <button id="saveBookButton" type="button">Save Book</button>
+
+    </div>
+
+  </div>
+
+</div>
   <div class="tab-panel" id="savedPanel" hidden>
     <div class="empty-state">
       <h2>No saved posts yet.</h2>
@@ -571,6 +858,12 @@ const bookTitle = document.getElementById("bookTitle");
 const bookSeries = document.getElementById("bookSeries");
 const bookGenre = document.getElementById("bookGenre");
 const bookLink = document.getElementById("bookLink");
+  const bookCover = document.getElementById("bookCover");
+const bookCoverPreview = document.getElementById("bookCoverPreview");
+  const bookTropesSearch = document.getElementById("bookTropesSearch");
+const selectedTropes = document.getElementById("selectedTropes");
+const tropeSuggestions = document.getElementById("tropeSuggestions");
+const bookTropes = document.getElementById("bookTropes");
   function switchProfileTab(tabName) {
   tabButtons.forEach((button) => {
     button.classList.toggle("active", button.dataset.tab === tabName);
@@ -594,6 +887,19 @@ tabButtons.forEach((button) => {
 cancelBookButton.addEventListener("click", () => {
   addBookForm.hidden = true;
   addBookButton.hidden = false;
+});
+  bookCover.addEventListener("change", () => {
+  const file = bookCover.files[0];
+
+  if (!file) {
+    return;
+  }
+
+  const previewUrl = URL.createObjectURL(file);
+
+  bookCoverPreview.innerHTML = `
+    <img src="${previewUrl}" alt="Book cover preview">
+  `;
 });
 async function copyUsername() {
   const usernameText = username.textContent.trim();
