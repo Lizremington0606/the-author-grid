@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Profile | The Written Bond</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Special+Elite&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background:
+        linear-gradient(rgba(10, 10, 11, 0.94), rgba(10, 10, 11, 0.97)),
+        radial-gradient(circle at 20% 20%, #353538 0%, transparent 35%),
+        radial-gradient(circle at 80% 50%, #1d1d20 0%, transparent 40%),
+        #0c0c0d;
+      color: #f4f1eb;
+      font-family: 'Libre Baskerville', serif;
+    }
+
+    header {
+      min-height: 76px;
+      padding: 18px 6%;
+      background: rgba(14, 14, 15, 0.96);
+      border-bottom: 1px solid #343438;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .logo {
+      font-family: 'Special Elite', monospace;
+      font-size: 27px;
+      white-space: nowrap;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    nav a {
+      color: #e8e4dd;
+      text-decoration: none;
+      font-size: 13px;
+    }
+
+    nav a:hover {
+      color: #ffffff;
+    }
+
+    .account-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid #777279;
+      background: #242426;
+    }
+
+    .signout-button {
+      border: 1px solid #aaa4ac;
+      background: transparent;
+      color: #f4f1eb;
+      padding: 9px 14px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 12px;
+    }
+
+    .profile-page {
+      width: min(760px, 94%);
+      margin: 38px auto 80px;
+    }
+
+    .profile-shell {
+      background: rgba(16, 16, 18, 0.9);
+      border: 1px solid #353539;
+    }
+
+    .profile-background {
+      width: 100%;
+      height: 260px;
+      background:
+        linear-gradient(rgba(10, 10, 10, 0.2), rgba(10, 10, 10, 0.48)),
+        radial-gradient(circle at 30% 35%, #3a3a3c 0%, transparent 30%),
+        linear-gradient(135deg, #111113, #29292c 45%, #121214);
+      background-size: cover;
+      background-position: center;
+      position: relative;
+    }
+
+    .profile-content {
+      padding: 0 32px 34px;
+    }
+
+    .profile-picture {
+      width: 132px;
+      height: 132px;
+      border-radius: 50%;
+      border: 5px solid #101012;
+      background: #29292c;
+      object-fit: cover;
+      margin-top: -66px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .profile-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      align-items: flex-start;
+    }
+
+    .profile-name-area {
+      padding-top: 18px;
+      min-width: 0;
+    }
+
+    .profile-name {
+      font-family: 'Special Elite', monospace;
+      font-size: 30px;
+      font-weight: 400;
+      margin-bottom: 4px;
+    }
+
+    .username {
+      color: #aaa5ad;
+      font-size: 13px;
+    }
+
+    .profile-actions {
+      display: flex;
+      gap: 10px;
+      padding-top: 20px;
+    }
+
+    .profile-actions button {
+      background: #e3dee5;
+      color: #171719;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 12px;
+    }
+
+    .profile-actions .secondary {
+      background: transparent;
+      color: #e3dee5;
+      border: 1px solid #77727a;
+    }
+
+    .stats {
+      display: flex;
+      gap: 30px;
+      margin: 26px 0 22px;
+      flex-wrap: wrap;
+    }
+
+    .stat {
+      font-size: 13px;
+      color: #bcb7bf;
+    }
+
+    .stat strong {
+      color: #ffffff;
+      font-size: 17px;
+      margin-right: 5px;
+    }
+
+    .bio {
+      max-width: 620px;
+      font-size: 14px;
+      line-height: 1.75;
+      color: #e0dce2;
+      margin-bottom: 18px;
+    }
+
+    .social-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 18px;
+      margin-bottom: 28px;
+    }
+
+    .social-links a {
+      color: #d6d0d8;
+      text-decoration: none;
+      font-size: 12px;
+    }
+
+    .social-links a:hover {
+      text-decoration: underline;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-top: 1px solid #36363a;
+      border-bottom: 1px solid #36363a;
+    }
+
+    .tab-button {
+      border: none;
+      background: transparent;
+      color: #97929b;
+      padding: 17px 8px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 12px;
+      border-bottom: 2px solid transparent;
+    }
+
+    .tab-button.active {
+      color: #ffffff;
+      border-bottom-color: #d8d2db;
+    }
+
+    .feed {
+      padding-top: 26px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 62px 24px 72px;
+      color: #aaa5ad;
+    }
+
+    .empty-state h2 {
+      font-family: 'Special Elite', monospace;
+      color: #f2eee8;
+      font-weight: 400;
+      font-size: 23px;
+      margin-bottom: 10px;
+    }
+
+    .empty-state p {
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    @media (max-width: 760px) {
+      header {
+        padding: 16px 4%;
+        flex-wrap: wrap;
+      }
+
+      nav {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+
+      .profile-page {
+        width: 100%;
+        margin-top: 0;
+      }
+
+      .profile-shell {
+        border-left: none;
+        border-right: none;
+      }
+
+      .profile-background {
+        height: 210px;
+      }
+
+      .profile-content {
+        padding: 0 20px 28px;
+      }
+
+      .profile-picture {
+        width: 108px;
+        height: 108px;
+        margin-top: -54px;
+      }
+
+      .profile-top {
+        display: block;
+      }
+
+      .profile-actions {
+        padding-top: 16px;
+      }
+
+      .stats {
+        gap: 18px;
+      }
+    }
+
+    @media (max-width: 430px) {
+      .logo {
+        font-size: 21px;
+      }
+
+      .account-area {
+        gap: 7px;
+      }
+
+      .header-avatar {
+        width: 34px;
+        height: 34px;
+      }
+
+      .signout-button {
+        padding: 8px 10px;
+      }
+
+      .profile-name {
+        font-size: 26px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">The Written Bond</div>
+
+  <nav>
+    <a href="#">Promote</a>
+    <a href="#">Books</a>
+    <a href="#">Community</a>
+    <a href="#">Resources</a>
+  </nav>
+
+  <div class="account-area">
+    <img class="header-avatar" id="headerAvatar" alt="Your profile picture">
+    <button class="signout-button" id="signOutButton">Sign Out</button>
+  </div>
+</header>
+
+<main class="profile-page">
+
+  <section class="profile-shell">
+
+    <div class="profile-background" id="profileBackground"></div>
+
+    <div class="profile-content">
+
+      <img
+        class="profile-picture"
+        id="profilePicture"
+        alt="Profile picture"
+      >
+
+      <div class="profile-top">
+
+        <div class="profile-name-area">
+          <h1 class="profile-name" id="displayName">Your Name</h1>
+          <p class="username" id="username">@username</p>
+        </div>
+
+        <div class="profile-actions">
+          <button id="editProfileButton">Edit Profile</button>
+          <button class="secondary" id="messagesButton">Messages</button>
+        </div>
+
+      </div>
+
+      <div class="stats">
+        <div class="stat"><strong id="followersCount">0</strong> Followers</div>
+        <div class="stat"><strong id="followingCount">0</strong> Following</div>
+        <div class="stat"><strong id="likesCount">0</strong> Likes</div>
+      </div>
+
+      <p class="bio" id="bio">
+        Your bio will appear here.
+      </p>
+
+      <div class="social-links" id="socialLinks">
+        <a href="#" id="websiteLink">Website</a>
+        <a href="#" id="instagramLink">Instagram</a>
+        <a href="#" id="tiktokLink">TikTok</a>
+        <a href="#" id="goodreadsLink">Goodreads</a>
+        <a href="#" id="facebookLink">Facebook</a>
+      </div>
+
+      <div class="tabs">
+        <button class="tab-button active" data-tab="posts">Posts</button>
+        <button class="tab-button" data-tab="bookshelf">Bookshelf</button>
+        <button class="tab-button" data-tab="saved">Saved</button>
+      </div>
+
+      <div class="feed" id="feed">
+
+        <div class="empty-state" id="emptyState">
+          <h2>Your profile is ready.</h2>
+          <p>
+            Your posts, books and saved content will live here.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+</main>
+
+</body>
+</html>
