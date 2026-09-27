@@ -91,6 +91,46 @@
   background: #fffdf7;
   color: #2e2b29;
 }
+    .account-area {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#loggedInAccount {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#loggedInAccount[hidden] {
+  display: none;
+}
+
+.header-profile-picture {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 253, 247, 0.8);
+  background: #2e2b29;
+}
+
+.signout-button {
+  color: #fffdf7;
+  background: transparent;
+  font: inherit;
+  font-size: 14px;
+  padding: 9px 16px;
+  border: 1px solid rgba(255, 253, 247, 0.7);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.signout-button:hover {
+  background: #fffdf7;
+  color: #2e2b29;
+}
     /* HERO */
 
     .hero {
@@ -308,7 +348,16 @@
       <a href="#">Community</a>
       <a href="#">Books</a>
     </nav>
-    <a class="signin-link" href="signin.html">Sign In</a>
+    <div class="account-area">
+  <a class="signin-link" id="signInLink" href="signin.html">Sign In</a>
+
+  <div id="loggedInAccount" hidden>
+    <a href="profile.html" aria-label="My profile">
+      <img id="headerProfilePicture" class="header-profile-picture" alt="My profile">
+    </a>
+    <button id="signOutButton" class="signout-button">Sign Out</button>
+  </div>
+</div>
   </header>
 
 
@@ -420,7 +469,41 @@
   <footer>
     The Written Bond · A free resource and community platform built by an author, for authors.
   </footer>
-<script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+const SUPABASE_URL = "https://mwwzlbhttgatylmpwzli.supabase.co";
+const SUPABASE_KEY = "sb_publishable_UFkxAcITFXu6OtYRTcUKKg_Fw9UcTqR";
+
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+    const signInLink = document.getElementById("signInLink");
+const loggedInAccount = document.getElementById("loggedInAccount");
+const headerProfilePicture = document.getElementById("headerProfilePicture");
+const signOutButton = document.getElementById("signOutButton");
+    async function updateAccountArea() {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+
+  if (!session) {
+    signInLink.hidden = false;
+    loggedInAccount.hidden = true;
+    return;
+  }
+      signInLink.hidden = true;
+loggedInAccount.hidden = false;
+const { data: profile } = await supabaseClient
+  .from("profiles")
+  .select("profile_image_url")
+  .eq("id", session.user.id)
+  .single();
+
+if (profile && profile.profile_image_url) {
+  headerProfilePicture.src = profile.profile_image_url;
+}
+
+}
 const logoText = "THE WRITTEN BOND";
   const typedLogo = document.getElementById("typed-logo");
   const logoCursor = document.querySelector(".logo-cursor");
@@ -440,6 +523,17 @@ const logoText = "THE WRITTEN BOND";
   }
 
   typeLogo();
+    updateAccountArea();
+    signOutButton.addEventListener("click", async () => {
+  const { error } = await supabaseClient.auth.signOut();
+
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  window.location.href = "index.html";
+});
 </script>
 </body>
 </html>
