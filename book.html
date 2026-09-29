@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book | The Written Bond</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #e8e6e3;
+      color: #f4f1eb;
+      font-family: Georgia, "Times New Roman", serif;
+      padding: 40px 20px;
+    }
+
+    .book-page {
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 34px;
+      background: #171719;
+      border: 1px solid #3b3b3f;
+      border-radius: 12px;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 28px;
+      color: #f4f1eb;
+      text-decoration: none;
+      font-size: 15px;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+    .book-main {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 42px;
+      align-items: start;
+    }
+
+    .book-cover {
+      width: 100%;
+      aspect-ratio: 2 / 3;
+      object-fit: cover;
+      border-radius: 6px;
+      display: block;
+    }
+
+    .fallback-cover {
+      width: 100%;
+      aspect-ratio: 2 / 3;
+      background: #ffffff;
+      color: #171719;
+      border: 1px solid #d8d8d8;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 26px;
+      text-align: center;
+      font-size: 28px;
+      line-height: 1.2;
+    }
+
+    .book-title {
+      margin: 0 0 12px;
+      font-size: 36px;
+      font-weight: 400;
+    }
+
+    .book-series {
+      margin: 0 0 12px;
+      color: #bcbcc1;
+      font-size: 17px;
+    }
+
+    .book-genre {
+      margin: 0 0 22px;
+      color: #dedad4;
+      font-size: 16px;
+    }
+
+    .trope-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 28px;
+    }
+
+    .trope {
+      padding: 7px 12px;
+      border: 1px solid #4e4e53;
+      border-radius: 999px;
+      background: #242427;
+      color: #f4f1eb;
+      font-size: 13px;
+    }
+
+    .book-link {
+      display: inline-block;
+      min-width: 190px;
+      padding: 12px 20px;
+      margin-bottom: 34px;
+      background: #f4eeee;
+      color: #171719;
+      text-decoration: none;
+      text-align: center;
+      border-radius: 4px;
+    }
+
+    .book-link:hover {
+      background: #ffffff;
+    }
+
+    .book-details {
+      border-top: 1px solid #38383c;
+      margin-top: 10px;
+      padding-top: 28px;
+    }
+
+    .book-details h2 {
+      margin: 0 0 12px;
+      font-size: 22px;
+      font-weight: 400;
+    }
+
+    .book-blurb {
+      margin: 0;
+      color: #d5d1cc;
+      line-height: 1.7;
+      white-space: pre-line;
+    }
+
+    .book-error {
+      text-align: center;
+      padding: 70px 20px;
+      color: #d5d1cc;
+    }
+
+    @media (max-width: 700px) {
+      .book-main {
+        grid-template-columns: 1fr;
+      }
+
+      .cover-area {
+        max-width: 260px;
+        margin: 0 auto;
+      }
+
+      .book-title {
+        font-size: 30px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="book-page">
+
+    <a class="back-link" href="profile.html">← Back to Profile</a>
+
+    <div id="bookContent" hidden>
+
+      <div class="book-main">
+
+        <div class="cover-area" id="bookCoverArea"></div>
+
+        <div class="book-info">
+
+          <h1 class="book-title" id="bookTitle"></h1>
+
+          <p class="book-series" id="bookSeries"></p>
+
+          <p class="book-genre" id="bookGenre"></p>
+
+          <div class="trope-list" id="bookTropes"></div>
+
+          <a
+            class="book-link"
+            id="bookLink"
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+            hidden
+          >
+            View Book
+          </a>
+
+          <div class="book-details">
+            <h2>Blurb</h2>
+            <p class="book-blurb" id="bookBlurb"></p>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="book-error" id="bookError" hidden>
+      This book could not be found.
+    </div>
+
+  </main>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    const SUPABASE_URL = "https://mwwzlbhttgatylmpwzli.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_UFkxAcITFXu6OtYRTcUKKg_Fw9UcTqR";
+
+    const supabaseClient = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
+
+    const bookContent = document.getElementById("bookContent");
+    const bookError = document.getElementById("bookError");
+    const bookCoverArea = document.getElementById("bookCoverArea");
+    const bookTitle = document.getElementById("bookTitle");
+    const bookSeries = document.getElementById("bookSeries");
+    const bookGenre = document.getElementById("bookGenre");
+    const bookTropes = document.getElementById("bookTropes");
+    const bookLink = document.getElementById("bookLink");
+    const bookBlurb = document.getElementById("bookBlurb");
+
+    async function loadBook() {
+      const params = new URLSearchParams(window.location.search);
+      const bookId = params.get("id");
+
+      if (!bookId) {
+        bookError.hidden = false;
+        return;
+      }
+
+      const { data: book, error } = await supabaseClient
+        .from("books")
+        .select("*")
+        .eq("id", bookId)
+        .single();
+
+      if (error || !book) {
+        console.error("Error loading book:", error);
+        bookError.hidden = false;
+        return;
+      }
+
+      bookTitle.textContent = book.title;
+
+      if (book.series) {
+        bookSeries.textContent = book.series;
+      } else {
+        bookSeries.hidden = true;
+      }
+
+      if (book.genre) {
+        bookGenre.textContent = book.genre;
+      } else {
+        bookGenre.hidden = true;
+      }
+
+      if (book.cover_url) {
+        const cover = document.createElement("img");
+        cover.className = "book-cover";
+        cover.src = book.cover_url;
+        cover.alt = `${book.title} book cover`;
+        bookCoverArea.appendChild(cover);
+      } else {
+        const fallbackCover = document.createElement("div");
+        fallbackCover.className = "fallback-cover";
+        fallbackCover.textContent = book.title;
+        bookCoverArea.appendChild(fallbackCover);
+      }
+
+      if (book.tropes) {
+        book.tropes
+          .split(",")
+          .map((trope) => trope.trim())
+          .filter(Boolean)
+          .forEach((tropeText) => {
+            const trope = document.createElement("span");
+            trope.className = "trope";
+            trope.textContent = tropeText;
+            bookTropes.appendChild(trope);
+          });
+      }
+
+      if (book.book_link) {
+        bookLink.href = book.book_link;
+        bookLink.hidden = false;
+      }
+
+      bookBlurb.textContent =
+        book.blurb || "No blurb has been added for this book yet.";
+
+      document.title = `${book.title} | The Written Bond`;
+      bookContent.hidden = false;
+    }
+
+    loadBook();
+  </script>
+
+</body>
+</html>
