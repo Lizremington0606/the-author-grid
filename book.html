@@ -169,6 +169,9 @@
   <main class="book-page">
 
     <a class="back-link" href="profile.html">← Back to Profile</a>
+    <button id="editBookButton" class="edit-book-button" type="button" hidden>
+  Edit Book
+</button>
 
     <div id="bookContent" hidden>
 
@@ -209,6 +212,47 @@
     </div>
 
     <div class="book-error" id="bookError" hidden>
+
+    <div id="editBookForm" class="edit-book-form" hidden>
+
+  <h2>Edit Book</h2>
+
+  <label for="editTitle">Book title</label>
+  <input id="editTitle" type="text">
+
+  <label for="editSeries">Series</label>
+  <input id="editSeries" type="text">
+
+  <label for="editGenre">Genre</label>
+  <input id="editGenre" type="text">
+
+  <label for="editTropes">Tropes</label>
+  <input id="editTropes" type="text">
+
+  <label for="editBlurb">Blurb</label>
+  <textarea id="editBlurb" rows="7"></textarea>
+
+  <label for="editBookLink">Book link</label>
+  <input id="editBookLink" type="url">
+
+  <label for="editCover">Replace cover</label>
+  <input
+    id="editCover"
+    type="file"
+    accept="image/jpeg,image/png,image/webp"
+  >
+
+  <div class="edit-book-actions">
+    <button id="cancelEditBookButton" type="button">
+      Cancel
+    </button>
+
+    <button id="saveEditBookButton" type="button">
+      Save Changes
+    </button>
+  </div>
+
+</div>
       This book could not be found.
     </div>
 
@@ -235,6 +279,23 @@
     const bookTropes = document.getElementById("bookTropes");
     const bookLink = document.getElementById("bookLink");
     const bookBlurb = document.getElementById("bookBlurb");
+    const editBookButton = document.getElementById("editBookButton");
+    const editBookForm = document.getElementById("editBookForm");
+const editTitle = document.getElementById("editTitle");
+const editSeries = document.getElementById("editSeries");
+const editGenre = document.getElementById("editGenre");
+const editTropes = document.getElementById("editTropes");
+const editBlurb = document.getElementById("editBlurb");
+const editBookLink = document.getElementById("editBookLink");
+const editCover = document.getElementById("editCover");
+const cancelEditBookButton = document.getElementById("cancelEditBookButton");
+const saveEditBookButton = document.getElementById("saveEditBookButton");
+    cancelEditBookButton.addEventListener("click", () => {
+  editBookForm.hidden = true;
+  bookContent.hidden = false;
+  editBookButton.hidden = false;
+  editCover.value = "";
+});
 
     async function loadBook() {
       const params = new URLSearchParams(window.location.search);
@@ -306,6 +367,114 @@
         book.blurb || "No blurb has been added for this book yet.";
 
       document.title = `${book.title} | The Written Bond`;
+      const {
+  data: { user }
+} = await supabaseClient.auth.getUser();
+
+if (user && user.id === book.user_id) {
+  editBookButton.hidden = false;
+  editBookButton.addEventListener("click", () => {
+  editTitle.value = book.title || "";
+  editSeries.value = book.series || "";
+  editGenre.value = book.genre || "";
+  editTropes.value = book.tropes || "";
+  editBlurb.value = book.blurb || "";
+  editBookLink.value = book.book_link || "";
+
+  bookContent.hidden = true;
+  editBookForm.hidden = false;
+  editBookButton.hidden = true;
+});
+  saveEditBookButton.addEventListener("click", async () => {
+  const title = editTitle.value.trim();
+  const series = editSeries.value.trim();
+  const genre = editGenre.value.trim();
+  const tropes = editTropes.value.trim();
+  const blurb = editBlurb.value.trim();
+  const link = editBookLink.value.trim();
+  const newCoverFile = editCover.files[0];
+
+  if (!title) {
+    alert("Please add a book title.");
+    return;
+  }
+
+  if (!genre) {
+    alert("Please add a genre.");
+    return;
+  }
+
+  saveEditBookButton.disabled = true;
+  saveEditBookButton.textContent = "Saving...";
+
+  let newCoverUrl = book.cover_url || null;
+  let newCoverPath = book.cover_path || null;
+  let uploadedCoverPath = null;
+
+  try {
+    if (newCoverFile) {
+      const fileExtension = newCoverFile.name.split(".").pop();
+      const fileName = `${crypto.randomUUID()}.${fileExtension}`;
+      uploadedCoverPath = `${user.id}/${fileName}`;
+
+      const { error: uploadError } = await supabaseClient.storage
+        .from("book-covers")
+        .upload(uploadedCoverPath, newCoverFile);
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      const { data: publicUrlData } = supabaseClient.storage
+        .from("book-covers")
+        .getPublicUrl(uploadedCoverPath);
+
+      newCoverUrl = publicUrlData.publicUrl;
+      newCoverPath = uploadedCoverPath;
+    }
+
+    const { error: updateError } = await supabaseClient
+      .from("books")
+      .update({
+        title: title,
+        series: series || null,
+        genre: genre,
+        tropes: tropes || null,
+        blurb: blurb || null,
+        book_link: link || null,
+        cover_url: newCoverUrl,
+        cover_path: newCoverPath
+      })
+      .eq("id", book.id)
+      .eq("user_id", user.id);
+
+    if (updateError) {
+      if (uploadedCoverPath) {
+        await supabaseClient.storage
+          .from("book-covers")
+          .remove([uploadedCoverPath]);
+      }
+
+      throw updateError;
+    }
+
+    if (uploadedCoverPath && book.cover_path) {
+      await supabaseClient.storage
+        .from("book-covers")
+        .remove([book.cover_path]);
+    }
+
+    window.location.reload();
+
+  } catch (error) {
+    console.error("Error updating book:", error);
+    alert("Something went wrong while saving your changes.");
+
+    saveEditBookButton.disabled = false;
+    saveEditBookButton.textContent = "Save Changes";
+  }
+});
+}
       bookContent.hidden = false;
     }
 
