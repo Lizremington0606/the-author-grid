@@ -336,88 +336,26 @@
 .first-book-modal[hidden] {
   display: none;
 }
-
 .first-book-modal-box {
-  width: min(610px, 96vw);
+  width: min(600px, 94vw);
   max-height: 94vh;
   overflow-y: auto;
-  padding: 26px 26px 30px;
-  border: 1px solid rgba(45, 42, 39, 0.35);
-  border-radius: 10px;
-  background:
-    linear-gradient(
-      rgba(247, 244, 238, 0.97),
-      rgba(242, 239, 233, 0.97)
-    );
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
   color: #242220;
   text-align: center;
-  box-shadow:
-    0 22px 60px rgba(0, 0, 0, 0.34),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.45);
+  box-shadow: none;
 }
-
-.typewriter-scene {
-  position: relative;
+.first-book-popup-art {
+  display: block;
   width: 100%;
-  min-height: 500px;
-  margin: 0 auto 18px;
-  padding-top: 8px;
+  max-width: 560px;
+  height: auto;
+  margin: 0 auto 20px;
+  border-radius: 6px;
 }
-
-.typewriter-paper {
-  position: relative;
-  z-index: 2;
-  width: 78%;
-  min-height: 360px;
-  box-sizing: border-box;
-  margin: 0 auto;
-  padding: 34px 32px 145px;
-  border: 1px solid rgba(31, 29, 27, 0.55);
-  background:
-  radial-gradient(circle at 18% 22%, rgba(35, 33, 31, 0.025) 0 1px, transparent 1.5px),
-  radial-gradient(circle at 76% 64%, rgba(35, 33, 31, 0.02) 0 1px, transparent 1.5px),
-  linear-gradient(180deg, #f6f4ef 0%, #f2f0eb 100%);
-  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.10);
-  font-family: Georgia, "Times New Roman", serif;
-}
-
-.typewriter-paper h2 {
-  padding-bottom: 18px;
-border-bottom: 1px solid rgba(36, 34, 32, 0.35);
-  margin: 0 0 22px;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 27px;
-  font-weight: 700;
-  line-height: 1.18;
-  letter-spacing: -0.3px;
-}
-
-.typewriter-paper p {
-margin: 0 0 14px;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 1.6;
-}
-    .typewriter-paper p + p {
-  margin-top: 4px;
-}
-    .typewriter-paper strong {
-  font-weight: 700;
-  letter-spacing: 0.1px;
-}
-.typewriter-art {
-  position: absolute;
-  z-index: 3;
-  left: 50%;
-  bottom: -4px;
-  width: 88%;
-  max-width: 500px;
-  transform: translateX(-50%);
-  color: #242220;
-  opacity: 0.96;
-}
-
 .first-book-close {
   min-width: 160px;
   padding: 11px 22px;
@@ -441,22 +379,7 @@ margin: 0 0 14px;
     padding: 22px 18px;
   }
 
-  .typewriter-scene {
-    min-height: 455px;
-  }
 
-  .typewriter-paper {
-    width: 88%;
-   padding: 34px 32px 118px;
-  }
-
-  .typewriter-paper h2 {
-    font-size: 20px;
-  }
-
-  .typewriter-paper p {
-    font-size: 12px;
-  }
 }
     @media (max-width: 700px) {
       .book-main {
@@ -604,167 +527,11 @@ margin: 0 0 14px;
 
   <div class="first-book-modal-box">
 
-    <div class="typewriter-scene">
-
-      <div class="typewriter-paper">
-
-        <h2>You added your first book to the shelf!</h2>
-
-        <p>
-          Your first book is officially part of
-          <strong>The Written Bond.</strong>
-        </p>
-
-        <p>
-          The genre you selected helps your book appear on
-          <strong>Explore Books</strong>, where readers can browse by genre
-          and discover your work.
-        </p>
-
-      </div>
-
-    <svg
-  class="typewriter-art"
-  viewBox="0 0 620 290"
-  aria-hidden="true"
+ <img
+  class="first-book-popup-art"
+  src="first-book-popup.png.jpeg"
+  alt="You added your first book to the shelf!"
 >
-  <defs>
-    <filter id="wornInk">
-      <feTurbulence
-        type="fractalNoise"
-        baseFrequency="0.9"
-        numOctaves="2"
-        seed="7"
-        result="noise"
-      />
-      <feDisplacementMap
-        in="SourceGraphic"
-        in2="noise"
-        scale="0.8"
-      />
-    </filter>
-  </defs>
-
-  <g
-    fill="none"
-    stroke="currentColor"
-    stroke-width="3.2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    filter="url(#wornInk)"
-  >
-
-    <!-- carriage -->
-    <path d="M150 72 C225 62 395 62 470 72" />
-    <path d="M138 83 H484" />
-    <circle cx="129" cy="83" r="9" />
-    <circle cx="493" cy="83" r="9" />
-
-    <!-- return lever -->
-    <path d="M479 65 L523 42" />
-    <path d="M520 42 L540 48" />
-
-    <!-- typewriter upper body -->
-    <path
-      d="M176 91
-         C170 112 166 133 168 151
-         C170 168 184 177 202 177
-         H422
-         C440 177 454 168 456 151
-         C458 132 453 111 448 91
-         Z"
-    />
-
-    <!-- inner panel -->
-    <path d="M206 111 H418" />
-    <path d="M198 124 H426" />
-
-    <!-- side knobs -->
-    <circle cx="182" cy="145" r="9" />
-    <circle cx="442" cy="145" r="9" />
-
-    <!-- lower body -->
-    <path
-      d="M163 166
-         C148 173 136 190 130 213
-         H494
-         C488 190 476 173 461 166"
-    />
-
-    <path d="M130 213 H494" />
-    <path d="M145 213 L130 246 H494 L479 213" />
-
-    <!-- feet -->
-    <path d="M159 246 L151 259 H192" />
-    <path d="M465 246 L473 259 H432" />
-
-    <!-- keys row one -->
-    <circle cx="190" cy="190" r="8" />
-    <circle cx="216" cy="188" r="8" />
-    <circle cx="242" cy="187" r="8" />
-    <circle cx="268" cy="186" r="8" />
-    <circle cx="294" cy="186" r="8" />
-    <circle cx="320" cy="186" r="8" />
-    <circle cx="346" cy="187" r="8" />
-    <circle cx="372" cy="188" r="8" />
-    <circle cx="398" cy="190" r="8" />
-    <circle cx="424" cy="192" r="8" />
-
-    <!-- keys row two -->
-    <circle cx="205" cy="209" r="8" />
-    <circle cx="233" cy="207" r="8" />
-    <circle cx="261" cy="206" r="8" />
-    <circle cx="289" cy="205" r="8" />
-    <circle cx="317" cy="205" r="8" />
-    <circle cx="345" cy="206" r="8" />
-    <circle cx="373" cy="207" r="8" />
-    <circle cx="401" cy="209" r="8" />
-
-    <!-- space bar -->
-    <path d="M245 226 C280 230 344 230 379 226" />
-
-    <!-- little ink wear details -->
-    <path d="M181 101 L193 98" />
-    <path d="M432 103 L443 106" />
-    <path d="M154 231 L169 228" />
-    <path d="M451 230 L469 234" />
-
-    <!-- books on left -->
-    <path d="M39 231 H126" />
-    <path d="M45 218 H124 V231 H45 Z" />
-    <path d="M51 203 H117 V218 H51 Z" />
-    <path d="M59 188 H122 V203 H59 Z" />
-    <path d="M67 188 C78 182 96 181 108 188" />
-
-    <!-- ink bottle on right -->
-    <path d="M520 218 H570 L576 252 H514 Z" />
-    <path d="M530 204 H559 V218 H530 Z" />
-    <path d="M535 195 H554 V204 H535 Z" />
-
-    <!-- pen -->
-    <path d="M557 194 L590 151" />
-    <path d="M589 151 L596 144" />
-
-    <!-- small leafy sprig -->
-    <path d="M83 178 C65 158 61 137 65 115" />
-    <path d="M67 145 C50 142 43 132 41 122" />
-    <path d="M69 136 C83 130 88 119 89 108" />
-    <path d="M73 158 C58 159 49 153 44 145" />
-    <path d="M76 165 C91 160 97 150 100 141" />
-
-  </g>
-
-  <!-- faint distressed ink marks -->
-  <g fill="currentColor" opacity="0.22">
-    <circle cx="119" cy="253" r="2.2" />
-    <circle cx="102" cy="263" r="1.5" />
-    <circle cx="505" cy="263" r="2" />
-    <circle cx="579" cy="246" r="1.7" />
-    <circle cx="548" cy="271" r="1.2" />
-  </g>
-</svg>
-
-    </div>
 
     <button
       id="closeFirstBookModal"
