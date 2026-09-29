@@ -877,6 +877,7 @@ const signOutButton = document.getElementById("signOutButton");
   const tabButtons = document.querySelectorAll(".tab-button");
 const postsPanel = document.getElementById("postsPanel");
 const bookshelfPanel = document.getElementById("bookshelfPanel");
+  const bookshelfGrid = document.getElementById("bookshelfGrid");
 const savedPanel = document.getElementById("savedPanel");
   const addBookButton = document.getElementById("addBookButton");
 const addBookForm = document.getElementById("addBookForm");
@@ -888,9 +889,6 @@ const bookGenre = document.getElementById("bookGenre");
 const bookLink = document.getElementById("bookLink");
   const bookCover = document.getElementById("bookCover");
 const bookCoverPreview = document.getElementById("bookCoverPreview");
-  const bookTropesSearch = document.getElementById("bookTropesSearch");
-const selectedTropes = document.getElementById("selectedTropes");
-const tropeSuggestions = document.getElementById("tropeSuggestions");
 const bookTropes = document.getElementById("bookTropes");
   function switchProfileTab(tabName) {
   tabButtons.forEach((button) => {
@@ -928,6 +926,102 @@ cancelBookButton.addEventListener("click", () => {
   bookCoverPreview.innerHTML = `
     <img src="${previewUrl}" alt="Book cover preview">
   `;
+});
+  saveBookButton.addEventListener("click", async () => {
+  const title = bookTitle.value.trim();
+  const series = bookSeries.value.trim();
+  const genre = bookGenre.value.trim();
+  const tropes = bookTropes.value.trim();
+  const link = bookLink.value.trim();
+  const coverFile = bookCover.files[0];
+
+  if (!title) {
+    alert("Please add a book title.");
+    return;
+  }
+
+  if (!genre) {
+    alert("Please add a genre.");
+    return;
+  }
+
+  const {
+    data: { user },
+    error: userError
+  } = await supabaseClient.auth.getUser();
+
+  if (userError || !user) {
+    alert("You need to be signed in to post a book.");
+    return;
+  }
+
+  saveBookButton.disabled = true;
+  saveBookButton.textContent = "Posting...";
+
+  let coverUrl = null;
+  let coverPath = null;
+
+  try {
+    if (coverFile) {
+      const fileExtension = coverFile.name.split(".").pop();
+      const fileName = `${crypto.randomUUID()}.${fileExtension}`;
+      coverPath = `${user.id}/${fileName}`;
+
+      const { error: uploadError } = await supabaseClient.storage
+        .from("book-covers")
+        .upload(coverPath, coverFile);
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      const { data: publicUrlData } = supabaseClient.storage
+        .from("book-covers")
+        .getPublicUrl(coverPath);
+
+      coverUrl = publicUrlData.publicUrl;
+    }
+
+    const { error: insertError } = await supabaseClient
+      .from("books")
+      .insert({
+        user_id: user.id,
+        title: title,
+        series: series || null,
+        genre: genre,
+        tropes: tropes || null,
+        book_link: link || null,
+        cover_url: coverUrl
+      });
+
+    if (insertError) {
+      if (coverPath) {
+        await supabaseClient.storage
+          .from("book-covers")
+          .remove([coverPath]);
+      }
+
+      throw insertError;
+    }
+
+    bookTitle.value = "";
+    bookSeries.value = "";
+    bookGenre.value = "";
+    bookTropes.value = "";
+    bookLink.value = "";
+    bookCover.value = "";
+
+    addBookForm.hidden = true;
+    addBookButton.hidden = false;
+await loadBooks(user.id);
+    alert("Your book was posted!");
+  } catch (error) {
+    console.error("Error posting book:", error);
+    alert("Something went wrong while posting your book.");
+  } finally {
+    saveBookButton.disabled = false;
+    saveBookButton.textContent = "Post Book";
+  }
 });
 async function copyUsername() {
   const usernameText = username.textContent.trim();
@@ -1035,7 +1129,71 @@ function setSocialLink(id, url) {
     link.style.display = "none";
   }
 }
+async function loadBooks(userId) {
+  bookshelfGrid
+    .querySelectorAll(".book-card")
+    .forEach((card) => card.remove());
 
+  const { data: books, error } = await supabaseClient
+    .from("books")
+    .select("*")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    console.error("Error loading books:", error);
+    return;
+  }
+
+  books.forEach((book) => {
+    const card = document.createElement("div");
+    card.className = "book-card";
+
+    if (book.cover_url) {
+      const cover = document.createElement("img");
+      cover.className = "book-card-cover";
+      cover.src = book.cover_url;
+      cover.alt = `${book.title} book cover`;
+      card.appendChild(cover);
+    } else {
+      const placeholder = document.createElement("div");
+      placeholder.className = "book-card-cover book-card-placeholder";
+      placeholder.textContent = "No cover";
+      card.appendChild(placeholder);
+    }
+
+    const title = document.createElement("h3");
+    title.className = "book-card-title";
+    title.textContent = book.title;
+    card.appendChild(title);
+
+    if (book.series) {
+      const series = document.createElement("p");
+      series.className = "book-card-series";
+      series.textContent = book.series;
+      card.appendChild(series);
+    }
+
+    if (book.genre) {
+      const genre = document.createElement("p");
+      genre.className = "book-card-genre";
+      genre.textContent = book.genre;
+      card.appendChild(genre);
+    }
+
+    if (book.book_link) {
+      const link = document.createElement("a");
+      link.className = "book-card-link";
+      link.href = book.book_link;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = "View Book";
+      card.appendChild(link);
+    }
+
+    bookshelfGrid.insertBefore(card, addBookButton);
+  });
+}
 async function loadProfile() {
   const { data: { session } } = await supabaseClient.auth.getSession();
 
@@ -1059,7 +1217,7 @@ async function loadProfile() {
     alert(error.message);
     return;
   }
-
+await loadBooks(session.user.id);
   displayName.textContent = profile.display_name || "Your Name";
   username.textContent = profile.username
     ? `@${profile.username}`
