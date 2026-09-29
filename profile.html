@@ -310,6 +310,89 @@
   gap: 10px;
 }
 
+    .book-card {
+  position: relative;
+  min-width: 0;
+  cursor: pointer;
+}
+.book-delete-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 5;
+
+  width: 28px;
+  height: 28px;
+  padding: 0;
+
+  border: none;
+  border-radius: 50%;
+  background: rgba(244, 241, 235, 0.94);
+  color: #171719;
+
+  font-family: inherit;
+  font-size: 20px;
+  line-height: 28px;
+  text-align: center;
+
+  cursor: pointer;
+}
+
+.book-delete-button:hover {
+  background: #ffffff;
+}
+
+.book-delete-button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.book-card-cover {
+  width: 100%;
+  height: 230px;
+  display: block;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.book-card-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 22px;
+  background: #ffffff;
+  border: 1px solid #d8d8d8;
+  color: #171719;
+  text-align: center;
+}
+
+.book-placeholder-title {
+  font-family: 'Special Elite', monospace;
+  font-size: 22px;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.book-card-title {
+  margin: 10px 0 3px;
+  font-size: 16px;
+  color: #f4f1eb;
+}
+
+.book-card-series,
+.book-card-genre {
+  margin: 2px 0;
+  font-size: 13px;
+  color: #bcbcc1;
+}
+
+.book-card-link {
+  display: inline-block;
+  margin-top: 6px;
+  color: #f2eee8;
+  font-size: 13px;
+}
+
 .add-book-tile:hover {
   background: rgba(255, 255, 255, 0.07);
   border-color: rgba(255, 255, 255, 0.8);
@@ -806,7 +889,12 @@
   type="text"
   placeholder="Add your book's tropes"
 >
-
+<label for="bookBlurb">Blurb</label>
+<textarea
+  id="bookBlurb"
+  rows="6"
+  placeholder="Add your book blurb"
+></textarea>
       <label for="bookLink">Book link</label>
       <input id="bookLink" type="url" placeholder="https://">
 
@@ -886,6 +974,7 @@ const cancelBookButton = document.getElementById("cancelBookButton");
 const bookTitle = document.getElementById("bookTitle");
 const bookSeries = document.getElementById("bookSeries");
 const bookGenre = document.getElementById("bookGenre");
+  const bookBlurb = document.getElementById("bookBlurb");
 const bookLink = document.getElementById("bookLink");
   const bookCover = document.getElementById("bookCover");
 const bookCoverPreview = document.getElementById("bookCoverPreview");
@@ -932,6 +1021,7 @@ cancelBookButton.addEventListener("click", () => {
   const series = bookSeries.value.trim();
   const genre = bookGenre.value.trim();
   const tropes = bookTropes.value.trim();
+    const blurb = bookBlurb.value.trim();
   const link = bookLink.value.trim();
   const coverFile = bookCover.files[0];
 
@@ -989,9 +1079,11 @@ cancelBookButton.addEventListener("click", () => {
         title: title,
         series: series || null,
         genre: genre,
-        tropes: tropes || null,
-        book_link: link || null,
-        cover_url: coverUrl
+    tropes: tropes || null,
+blurb: blurb || null,
+book_link: link || null,
+cover_url: coverUrl,
+cover_path: coverPath
       });
 
     if (insertError) {
@@ -1008,6 +1100,7 @@ cancelBookButton.addEventListener("click", () => {
     bookSeries.value = "";
     bookGenre.value = "";
     bookTropes.value = "";
+    bookBlurb.value = "";
     bookLink.value = "";
     bookCover.value = "";
 
@@ -1148,19 +1241,67 @@ async function loadBooks(userId) {
   books.forEach((book) => {
     const card = document.createElement("div");
     card.className = "book-card";
+const deleteButton = document.createElement("button");
+deleteButton.className = "book-delete-button";
+deleteButton.type = "button";
+deleteButton.setAttribute("aria-label", `Delete ${book.title}`);
+deleteButton.textContent = "×";
 
+deleteButton.addEventListener("click", async (event) => {
+  event.stopPropagation();
+
+  const confirmed = confirm(`Delete "${book.title}"?`);
+
+  if (!confirmed) {
+    return;
+  }
+
+  deleteButton.disabled = true;
+
+  if (book.cover_path) {
+    const { error: coverDeleteError } = await supabaseClient.storage
+      .from("book-covers")
+      .remove([book.cover_path]);
+
+    if (coverDeleteError) {
+      console.error("Error deleting book cover:", coverDeleteError);
+    }
+  }
+
+  const { error: bookDeleteError } = await supabaseClient
+    .from("books")
+    .delete()
+    .eq("id", book.id)
+    .eq("user_id", userId);
+
+  if (bookDeleteError) {
+    console.error("Error deleting book:", bookDeleteError);
+    alert("Something went wrong while deleting the book.");
+    deleteButton.disabled = false;
+    return;
+  }
+
+  card.remove();
+});
+
+card.appendChild(deleteButton);
     if (book.cover_url) {
       const cover = document.createElement("img");
       cover.className = "book-card-cover";
       cover.src = book.cover_url;
       cover.alt = `${book.title} book cover`;
       card.appendChild(cover);
-    } else {
-      const placeholder = document.createElement("div");
-      placeholder.className = "book-card-cover book-card-placeholder";
-      placeholder.textContent = "No cover";
-      card.appendChild(placeholder);
-    }
+  } else {
+  const placeholder = document.createElement("div");
+  placeholder.className = "book-card-cover book-card-placeholder";
+
+  const placeholderTitle = document.createElement("span");
+  placeholderTitle.className = "book-placeholder-title";
+  placeholderTitle.textContent = book.title;
+
+  placeholder.appendChild(placeholderTitle);
+  card.appendChild(placeholder);
+}
 
     const title = document.createElement("h3");
     title.className = "book-card-title";
