@@ -986,12 +986,12 @@ cancelBookButton.addEventListener("click", () => {
     <img src="${previewUrl}" alt="Book cover preview">
   `;
 });
-  saveBookButton.addEventListener("click", async () => {
+saveBookButton.addEventListener("click", async () => {
   const title = bookTitle.value.trim();
   const series = bookSeries.value.trim();
   const genre = bookGenre.value.trim();
   const tropes = bookTropes.value.trim();
-    const blurb = bookBlurb.value.trim();
+  const blurb = bookBlurb.value.trim();
   const link = bookLink.value.trim();
   const coverFile = bookCover.files[0];
 
@@ -1022,6 +1022,23 @@ cancelBookButton.addEventListener("click", () => {
   let coverPath = null;
 
   try {
+    const {
+      count: existingBookCount,
+      error: countError
+    } = await supabaseClient
+      .from("books")
+      .select("id", {
+        count: "exact",
+        head: true
+      })
+      .eq("user_id", user.id);
+
+    if (countError) {
+      throw countError;
+    }
+
+    const isFirstBook = (existingBookCount ?? 0) === 0;
+
     if (coverFile) {
       const fileExtension = coverFile.name.split(".").pop();
       const fileName = `${crypto.randomUUID()}.${fileExtension}`;
@@ -1042,19 +1059,24 @@ cancelBookButton.addEventListener("click", () => {
       coverUrl = publicUrlData.publicUrl;
     }
 
-    const { error: insertError } = await supabaseClient
+    const {
+      data: insertedBook,
+      error: insertError
+    } = await supabaseClient
       .from("books")
       .insert({
         user_id: user.id,
         title: title,
         series: series || null,
         genre: genre,
-    tropes: tropes || null,
-blurb: blurb || null,
-book_link: link || null,
-cover_url: coverUrl,
-cover_path: coverPath
-      });
+        tropes: tropes || null,
+        blurb: blurb || null,
+        book_link: link || null,
+        cover_url: coverUrl,
+        cover_path: coverPath
+      })
+      .select("id, cover_url, cover_path")
+      .single();
 
     if (insertError) {
       if (coverPath) {
@@ -1074,13 +1096,28 @@ cover_path: coverPath
     bookLink.value = "";
     bookCover.value = "";
 
+    bookCoverPreview.innerHTML = `
+      <span class="book-cover-icon">＋</span>
+      <strong>Add book cover</strong>
+      <small>JPG, PNG or WEBP</small>
+    `;
+
     addBookForm.hidden = true;
     addBookButton.hidden = false;
-await loadBooks(user.id);
+
+    if (isFirstBook) {
+      window.location.href =
+        `book.html?id=${encodeURIComponent(insertedBook.id)}&firstBook=1`;
+      return;
+    }
+
+    await loadBooks(user.id);
     alert("Your book was posted!");
+
   } catch (error) {
     console.error("Error posting book:", error);
     alert("Something went wrong while posting your book.");
+
   } finally {
     saveBookButton.disabled = false;
     saveBookButton.textContent = "Post Book";
