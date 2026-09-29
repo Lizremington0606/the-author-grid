@@ -315,37 +315,7 @@
   min-width: 0;
   cursor: pointer;
 }
-.book-delete-button {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  z-index: 5;
 
-  width: 28px;
-  height: 28px;
-  padding: 0;
-
-  border: none;
-  border-radius: 50%;
-  background: rgba(244, 241, 235, 0.94);
-  color: #171719;
-
-  font-family: inherit;
-  font-size: 20px;
-  line-height: 28px;
-  text-align: center;
-
-  cursor: pointer;
-}
-
-.book-delete-button:hover {
-  background: #ffffff;
-}
-
-.book-delete-button:disabled {
-  opacity: 0.5;
-  cursor: default;
-}
 .book-card-cover {
   width: 100%;
   height: 230px;
@@ -1241,50 +1211,6 @@ async function loadBooks(userId) {
   books.forEach((book) => {
     const card = document.createElement("div");
     card.className = "book-card";
-const deleteButton = document.createElement("button");
-deleteButton.className = "book-delete-button";
-deleteButton.type = "button";
-deleteButton.setAttribute("aria-label", `Delete ${book.title}`);
-deleteButton.textContent = "×";
-
-deleteButton.addEventListener("click", async (event) => {
-  event.stopPropagation();
-
-  const confirmed = confirm(`Delete "${book.title}"?`);
-
-  if (!confirmed) {
-    return;
-  }
-
-  deleteButton.disabled = true;
-
-  if (book.cover_path) {
-    const { error: coverDeleteError } = await supabaseClient.storage
-      .from("book-covers")
-      .remove([book.cover_path]);
-
-    if (coverDeleteError) {
-      console.error("Error deleting book cover:", coverDeleteError);
-    }
-  }
-
-  const { error: bookDeleteError } = await supabaseClient
-    .from("books")
-    .delete()
-    .eq("id", book.id)
-    .eq("user_id", userId);
-
-  if (bookDeleteError) {
-    console.error("Error deleting book:", bookDeleteError);
-    alert("Something went wrong while deleting the book.");
-    deleteButton.disabled = false;
-    return;
-  }
-
-  card.remove();
-});
-
-card.appendChild(deleteButton);
     card.addEventListener("click", () => {
   window.location.href = `book.html?id=${encodeURIComponent(book.id)}`;
 });
