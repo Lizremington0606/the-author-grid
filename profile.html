@@ -329,13 +329,12 @@
 }
 
 .add-book-modal {
-  position: absolute;
-  top: 0;
-left: 0;
-right: 0;
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
   z-index: 20;
-  background: #171719;
-  padding: 28px;
+  background: transparent;
+  padding: 28px 0 40px;
 }
 
 .add-book-modal-content {
@@ -364,7 +363,8 @@ right: 0;
 }
 
 .add-book-modal-content input[type="text"],
-.add-book-modal-content input[type="url"] {
+.add-book-modal-content input[type="url"],
+.add-book-modal-content select {
   width: 100%;
   box-sizing: border-box;
   padding: 12px 13px;
@@ -760,26 +760,52 @@ right: 0;
       <input id="bookSeries" type="text">
 
       <label for="bookGenre">Genre</label>
-      <input id="bookGenre" type="text">
+     <select id="bookGenre">
+  <option value="">Choose a genre</option>
 
-   <label for="bookTropesSearch">Tropes</label>
+  <option value="Romance">Romance</option>
+  <option value="Fantasy">Fantasy</option>
+  <option value="Science Fiction">Science Fiction</option>
+  <option value="Mystery">Mystery</option>
+  <option value="Thriller">Thriller</option>
+  <option value="Horror">Horror</option>
+  <option value="Historical Fiction">Historical Fiction</option>
+  <option value="Contemporary Fiction">Contemporary Fiction</option>
+  <option value="Literary Fiction">Literary Fiction</option>
+  <option value="Action & Adventure">Action & Adventure</option>
+  <option value="Erotica">Erotica</option>
 
-<div class="trope-picker">
+  <option value="Young Adult">Young Adult</option>
+  <option value="New Adult">New Adult</option>
+  <option value="Middle Grade">Middle Grade</option>
+  <option value="Children's">Children's</option>
 
-  <div id="selectedTropes" class="selected-tropes"></div>
+  <option value="Graphic Novels & Comics">Graphic Novels & Comics</option>
+  <option value="Poetry">Poetry</option>
 
-  <input
-    id="bookTropesSearch"
-    type="text"
-    placeholder="Search tropes or type your own"
-    autocomplete="off"
-  >
+  <option value="Nonfiction">Nonfiction</option>
+  <option value="Memoir & Autobiography">Memoir & Autobiography</option>
+  <option value="Biography">Biography</option>
+  <option value="True Crime">True Crime</option>
+  <option value="Self-Help & Personal Development">Self-Help & Personal Development</option>
+  <option value="History">History</option>
+  <option value="Science & Nature">Science & Nature</option>
+  <option value="Business & Finance">Business & Finance</option>
+  <option value="Religion & Spirituality">Religion & Spirituality</option>
+  <option value="Cookbooks & Food">Cookbooks & Food</option>
+  <option value="Travel">Travel</option>
+  <option value="Humor">Humor</option>
+  <option value="Essays">Essays</option>
 
-  <div id="tropeSuggestions" class="trope-suggestions" hidden></div>
+  <option value="Other">Other</option>
+</select>
 
-</div>
-
-<input id="bookTropes" type="hidden">
+<label for="bookTropes">Tropes</label>
+<input
+  id="bookTropes"
+  type="text"
+  placeholder="Add your book's tropes"
+>
 
       <label for="bookLink">Book link</label>
       <input id="bookLink" type="url" placeholder="https://">
