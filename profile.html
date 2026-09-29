@@ -1285,6 +1285,9 @@ deleteButton.addEventListener("click", async (event) => {
 });
 
 card.appendChild(deleteButton);
+    card.addEventListener("click", () => {
+  window.location.href = `book.html?id=${encodeURIComponent(book.id)}`;
+});
     if (book.cover_url) {
       const cover = document.createElement("img");
       cover.className = "book-card-cover";
@@ -1322,14 +1325,7 @@ card.appendChild(deleteButton);
       card.appendChild(genre);
     }
 
-    if (book.book_link) {
-      const link = document.createElement("a");
-      link.className = "book-card-link";
-      link.href = book.book_link;
-      link.target = "_blank";
-      link.rel = "noopener noreferrer";
-      link.textContent = "View Book";
-      card.appendChild(link);
+
     }
 
     bookshelfGrid.insertBefore(card, addBookButton);
