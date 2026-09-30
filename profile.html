@@ -730,9 +730,22 @@
 
         <div class="profile-actions">
          <button id="editProfileButton" onclick="window.location.href='profile-setup.html?mode=edit'">Edit Profile</button>
+          <button id="followButton" type="button" hidden>Follow</button>
           
         </div>
+<div id="temporaryUserSearch" class="temporary-user-search">
+  <input
+    id="userSearchInput"
+    type="text"
+    placeholder="Search username"
+  >
 
+  <button id="userSearchButton" type="button">
+    Search
+  </button>
+
+  <div id="userSearchResults"></div>
+</div>
       </div>
 
       <div class="stats">
@@ -744,6 +757,25 @@
 </button>
         <div class="stat"><strong id="likesCount">0</strong> Likes</div>
       </div>
+      <div id="followListModal" class="follow-list-modal" hidden>
+  <div class="follow-list-box">
+
+    <div class="follow-list-header">
+      <h2 id="followListTitle">Followers</h2>
+
+      <button
+        id="closeFollowListButton"
+        type="button"
+        aria-label="Close"
+      >
+        ×
+      </button>
+    </div>
+
+    <div id="followListContent"></div>
+
+  </div>
+</div>
 
       <p class="bio" id="bio">
         Your bio will appear here.
@@ -932,6 +964,64 @@ const coverImageViewerImage = document.getElementById("coverImageViewerImage");
 const closeCoverImageViewer = document.getElementById("closeCoverImageViewer");
 const socialLinks = document.getElementById("socialLinks");
 const signOutButton = document.getElementById("signOutButton");
+  const editProfileButton = document.getElementById("editProfileButton");
+const followButton = document.getElementById("followButton");
+  const userSearchInput = document.getElementById("userSearchInput");
+const userSearchButton = document.getElementById("userSearchButton");
+const userSearchResults = document.getElementById("userSearchResults");
+  userSearchButton.addEventListener("click", async () => {
+  const searchTerm = userSearchInput.value.trim();
+
+  if (!searchTerm) {
+    userSearchResults.textContent = "Enter a username.";
+    return;
+  }
+
+  userSearchResults.textContent = "Searching...";
+
+  const { data: users, error } = await supabaseClient
+    .from("profiles")
+    .select("id, username, display_name")
+    .ilike("username", `%${searchTerm}%`)
+    .limit(10);
+
+  if (error) {
+    console.error("Error searching users:", error);
+    userSearchResults.textContent = "Something went wrong.";
+    return;
+  }
+
+  userSearchResults.innerHTML = "";
+
+  if (!users || users.length === 0) {
+    userSearchResults.textContent = "No users found.";
+    return;
+  }
+
+  users.forEach((person) => {
+    const resultButton = document.createElement("button");
+    resultButton.type = "button";
+    resultButton.className = "user-search-result";
+
+    const name = person.display_name || person.username;
+    resultButton.textContent = `${name} (@${person.username})`;
+
+    resultButton.addEventListener("click", () => {
+      window.location.href =
+        `profile.html?user=${encodeURIComponent(person.id)}`;
+    });
+
+    userSearchResults.appendChild(resultButton);
+  });
+});
+const followersCount = document.getElementById("followersCount");
+  const followersButton = document.getElementById("followersButton");
+const followingButton = document.getElementById("followingButton");
+  const followListModal = document.getElementById("followListModal");
+const followListTitle = document.getElementById("followListTitle");
+const followListContent = document.getElementById("followListContent");
+const closeFollowListButton = document.getElementById("closeFollowListButton");
+const followingCount = document.getElementById("followingCount");
   const tabButtons = document.querySelectorAll(".tab-button");
 const postsPanel = document.getElementById("postsPanel");
 const bookshelfPanel = document.getElementById("bookshelfPanel");
@@ -1292,7 +1382,147 @@ async function loadBooks(userId) {
     bookshelfGrid.insertBefore(card, addBookButton);
   });
 }
+  async function loadFollowCounts(userId) {
+  const {
+    count: followerTotal,
+    error: followerCountError
+  } = await supabaseClient
+    .from("follows")
+    .select("*", { count: "exact", head: true })
+    .eq("following_id", userId);
+
+  const {
+    count: followingTotal,
+    error: followingCountError
+  } = await supabaseClient
+    .from("follows")
+    .select("*", { count: "exact", head: true })
+    .eq("follower_id", userId);
+
+  if (followerCountError) {
+    console.error("Error loading followers:", followerCountError);
+  }
+
+  if (followingCountError) {
+    console.error("Error loading following:", followingCountError);
+  }
+
+  followersCount.textContent = followerTotal ?? 0;
+  followingCount.textContent = followingTotal ?? 0;
+    async function openFollowList(listType, userId) {
+  const isFollowers = listType === "followers";
+
+  followListTitle.textContent =
+    isFollowers ? "Followers" : "Following";
+
+  followListContent.textContent = "Loading...";
+  followListModal.hidden = false;
+
+  const idColumn =
+    isFollowers ? "follower_id" : "following_id";
+
+  const filterColumn =
+    isFollowers ? "following_id" : "follower_id";
+
+  const { data: followRows, error: followRowsError } =
+    await supabaseClient
+      .from("follows")
+      .select(idColumn)
+      .eq(filterColumn, userId)
+      .order("created_at", { ascending: false });
+
+  if (followRowsError) {
+    console.error("Error loading follow list:", followRowsError);
+    followListContent.textContent =
+      "Something went wrong while loading this list.";
+    return;
+  }
+
+  const userIds = (followRows || []).map(
+    (row) => row[idColumn]
+  );
+
+  if (userIds.length === 0) {
+    followListContent.textContent =
+      isFollowers
+        ? "No followers yet."
+        : "Not following anyone yet.";
+    return;
+  }
+
+  const { data: people, error: peopleError } =
+    await supabaseClient
+      .from("profiles")
+      .select("id, username, display_name")
+      .in("id", userIds);
+
+  if (peopleError) {
+    console.error("Error loading profiles:", peopleError);
+    followListContent.textContent =
+      "Something went wrong while loading this list.";
+    return;
+  }
+
+  followListContent.innerHTML = "";
+
+  const peopleById = new Map(
+    (people || []).map((person) => [person.id, person])
+  );
+
+  userIds.forEach((userId) => {
+    const person = peopleById.get(userId);
+
+    if (!person) {
+      return;
+    }
+
+    const personButton = document.createElement("button");
+    personButton.type = "button";
+    personButton.className = "follow-list-person";
+
+    const name =
+      person.display_name || person.username;
+
+    personButton.textContent =
+      `${name} (@${person.username})`;
+
+    personButton.addEventListener("click", () => {
+      window.location.href =
+        `profile.html?user=${encodeURIComponent(person.id)}`;
+    });
+
+    followListContent.appendChild(personButton);
+  });
+}
+}
 async function loadProfile() {
+  followersButton.addEventListener("click", async () => {
+  const {
+    data: { user }
+  } = await supabaseClient.auth.getUser();
+
+  const params = new URLSearchParams(window.location.search);
+  const viewedUserId = params.get("user");
+  const targetUserId = viewedUserId || user.id;
+
+  await openFollowList("followers", targetUserId);
+});
+
+followingButton.addEventListener("click", async () => {
+  const {
+    data: { user }
+  } = await supabaseClient.auth.getUser();
+
+  const params = new URLSearchParams(window.location.search);
+  const viewedUserId = params.get("user");
+  const targetUserId = viewedUserId || user.id;
+
+  await openFollowList("following", targetUserId);
+});
+
+closeFollowListButton.addEventListener("click", () => {
+  followListModal.hidden = true;
+});
   const { data: { session } } = await supabaseClient.auth.getSession();
 
   if (!session) {
@@ -1300,11 +1530,16 @@ async function loadProfile() {
     return;
   }
 
-  const { data: profile, error } = await supabaseClient
-    .from("profiles")
-    .select("*")
-    .eq("id", session.user.id)
-    .single();
+const params = new URLSearchParams(window.location.search);
+const viewedUserId = params.get("user");
+
+const profileUserId = viewedUserId || session.user.id;
+
+const { data: profile, error } = await supabaseClient
+  .from("profiles")
+  .select("*")
+  .eq("id", profileUserId)
+  .single();
 
   if (error) {
     if (error.code === "PGRST116") {
@@ -1315,7 +1550,85 @@ async function loadProfile() {
     alert(error.message);
     return;
   }
-await loadBooks(session.user.id);
+await loadBooks(profileUserId);
+  await loadFollowCounts(profileUserId);
+  const isOwnProfile = profileUserId === session.user.id;
+
+editProfileButton.hidden = !isOwnProfile;
+followButton.hidden = isOwnProfile;
+  if (!isOwnProfile) { 
+    followButton.addEventListener("click", async () => {
+  if (isOwnProfile) {
+    return;
+  }
+
+  followButton.disabled = true;
+
+  const isFollowing =
+    followButton.dataset.following === "true";
+
+  try {
+    if (isFollowing) {
+      const { error: unfollowError } =
+        await supabaseClient
+          .from("follows")
+          .delete()
+          .eq("follower_id", session.user.id)
+          .eq("following_id", profileUserId);
+
+      if (unfollowError) {
+        throw unfollowError;
+      }
+
+      followButton.textContent = "Follow";
+      followButton.dataset.following = "false";
+
+    } else {
+      const { error: followError } =
+        await supabaseClient
+          .from("follows")
+          .insert({
+            follower_id: session.user.id,
+            following_id: profileUserId
+          });
+
+      if (followError) {
+        throw followError;
+      }
+
+      followButton.textContent = "Following";
+      followButton.dataset.following = "true";
+    }
+
+  } catch (error) {
+    await loadFollowCounts(profileUserId);
+    console.error("Error changing follow status:", error);
+    alert("Something went wrong. Please try again.");
+
+  } finally {
+    followButton.disabled = false;
+  }
+});
+  const { data: existingFollow, error: followCheckError } =
+    await supabaseClient
+      .from("follows")
+      .select("follower_id")
+      .eq("follower_id", session.user.id)
+      .eq("following_id", profileUserId)
+      .maybeSingle();
+
+  if (followCheckError) {
+    console.error("Error checking follow status:", followCheckError);
+  }
+
+  if (existingFollow) {
+    followButton.textContent = "Following";
+    followButton.dataset.following = "true";
+  } else {
+    followButton.textContent = "Follow";
+    followButton.dataset.following = "false";
+  }
+}
   displayName.textContent = profile.display_name || "Your Name";
   username.textContent = profile.username
     ? `@${profile.username}`
