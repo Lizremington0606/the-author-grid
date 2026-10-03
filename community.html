@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>Community | The Written Bond</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Special+Elite&display=swap" rel="stylesheet">
 <link
   rel="stylesheet"
   href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
@@ -60,11 +63,13 @@ body {
       border-bottom: 1px solid rgba(255,255,255,.08);
     }
 
-    .site-name {
-      font-size: 31px;
-      letter-spacing: .4px;
-      white-space: nowrap;
-    }
+   .site-name {
+  font-family: "Special Elite", monospace;
+  font-size: 31px;
+  font-weight: 700;
+  letter-spacing: .4px;
+  white-space: nowrap;
+}
 
     .main-nav {
       display: flex;
@@ -167,9 +172,21 @@ box-shadow: none;
       background: rgba(249,247,243,.96);
       border-right: 1px solid #d8d3cc;
     }
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 17px;
+}
 
+.sidebar-logo {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
     .sidebar-heading {
-      margin: 0 0 17px;
+      margin: 0;
       font-size: 28px;
       font-weight: 500;
     }
@@ -300,10 +317,10 @@ box-shadow: none;
       min-height: 85px;
       margin: 0;
 
-      font-family: "Courier New", monospace;
-      font-size: clamp(42px, 6vw, 72px);
-      font-weight: 600;
-      letter-spacing: -2px;
+      font-family: "Special Elite", monospace;
+font-weight: 700;
+letter-spacing: .5px;
+-webkit-text-stroke: .3px currentColor;
       line-height: 1.05;
     }
 
@@ -402,15 +419,24 @@ box-shadow: none;
       text-align: center;
     }
 
-    .feature-icon {
-      margin-bottom: 14px;
-      font-size: 35px;
-    }
+   .feature-icon {
+  margin-bottom: 14px;
+}
 
-    .community-feature-card h3 {
-      margin: 0 0 9px;
-      font-size: 20px;
-    }
+.feature-icon img {
+  display: block;
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  margin: 0 auto;
+}
+
+.community-feature-card h3 {
+  margin: 0 0 9px;
+  font-family: "Dancing Script", cursive;
+  font-size: 28px;
+  font-weight: 700;
+}
 
     .community-feature-card p {
       margin: 0;
@@ -433,16 +459,18 @@ box-shadow: none;
       border-top: 1px solid #aaa59e;
     }
 
-    .keep-in-mind {
-      padding: 24px 28px;
-      border-radius: 6px;
-      background: rgba(236,232,226,.74);
-    }
+   .keep-in-mind {
+  padding: 24px 28px;
+  border-radius: 6px;
+  background: transparent;
+}
 
-    .keep-in-mind h2 {
-      margin: 0 0 13px;
-      font-size: 22px;
-    }
+.keep-in-mind h2 {
+  margin: 0 0 13px;
+  font-family: "Dancing Script", cursive;
+  font-size: 31px;
+  font-weight: 700;
+}
 
     .keep-in-mind ul {
       margin: 0;
@@ -459,12 +487,12 @@ box-shadow: none;
       border-left: 1px solid #aaa59e;
     }
 
-    .get-started h2 {
-      margin: 0 0 18px;
-      font-size: 35px;
-      font-weight: 400;
-      font-style: italic;
-    }
+.get-started h2 {
+  margin: 0 0 18px;
+  font-family: "Dancing Script", cursive;
+  font-size: 38px;
+  font-weight: 700;
+}
 
     .start-step {
       display: flex;
@@ -836,9 +864,17 @@ box-shadow: none;
 
     <aside id="communitySidebar" class="community-sidebar">
 
-      <h2 class="sidebar-heading">
-        Community
-      </h2>
+<div class="sidebar-brand">
+  <img
+    src="written-bond-logo.png"
+    alt="The Written Bond"
+    class="sidebar-logo"
+  >
+
+  <h2 class="sidebar-heading">
+    Community
+  </h2>
+</div>
 
 
       <div class="sidebar-user-search">
@@ -993,7 +1029,9 @@ box-shadow: none;
 
           <div class="community-feature-card">
 
-            <div class="feature-icon">♙</div>
+            <div class="feature-icon">
+  <img src="Community Learning in Supportive Hands.png" alt="Meet Other Writers">
+</div>
 
             <h3>
               Meet Other Writers
@@ -1008,7 +1046,9 @@ box-shadow: none;
 
           <div class="community-feature-card">
 
-            <div class="feature-icon">▢</div>
+           <div class="feature-icon">
+  <img src="message-chat.png" alt="Message and Chat">
+</div>
 
             <h3>
               Message & Chat
@@ -1023,7 +1063,9 @@ box-shadow: none;
 
           <div class="community-feature-card">
 
-            <div class="feature-icon">□</div>
+<div class="feature-icon">
+  <img src="local-events.png" alt="Find Events Near You">
+</div>
 
             <h3>
               Find Events Near You
@@ -1352,7 +1394,7 @@ box-shadow: none;
           </h1>
 
           <p>
-            Find book and writing-related happenings in your state.
+            Find bookish related events in your state.
           </p>
 
         </div>
