@@ -7,7 +7,7 @@
   <title>Community | The Written Bond</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Special+Elite&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Special+Elite&display=swap" rel="stylesheet">
 <link
   rel="stylesheet"
   href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
@@ -195,14 +195,23 @@ box-shadow: none;
       margin-bottom: 20px;
     }
 
-    .sidebar-user-search label {
-      display: block;
-      margin-bottom: 7px;
-      font-size: 12px;
-      letter-spacing: 1.1px;
-      text-transform: uppercase;
-      color: #666;
-    }
+ .sidebar-user-search label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 7px;
+  font-size: 12px;
+  letter-spacing: 1.1px;
+  text-transform: uppercase;
+  color: #666;
+}
+
+.user-search-label img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
 
     .sidebar-search-row {
       display: flex;
@@ -433,7 +442,7 @@ letter-spacing: .5px;
 
 .community-feature-card h3 {
   margin: 0 0 9px;
-  font-family: "Dancing Script", cursive;
+  font-family: "Caveat", cursive;
   font-size: 28px;
   font-weight: 700;
 }
@@ -467,7 +476,7 @@ letter-spacing: .5px;
 
 .keep-in-mind h2 {
   margin: 0 0 13px;
-  font-family: "Dancing Script", cursive;
+  font-family: "Caveat", cursive;
   font-size: 31px;
   font-weight: 700;
 }
@@ -489,7 +498,7 @@ letter-spacing: .5px;
 
 .get-started h2 {
   margin: 0 0 18px;
-  font-family: "Dancing Script", cursive;
+  font-family: "Caveat", cursive;
   font-size: 38px;
   font-weight: 700;
 }
@@ -864,24 +873,16 @@ letter-spacing: .5px;
 
     <aside id="communitySidebar" class="community-sidebar">
 
-<div class="sidebar-brand">
-  <img
-    src="written-bond-logo.png"
-    alt="The Written Bond"
-    class="sidebar-logo"
-  >
-
   <h2 class="sidebar-heading">
     Community
   </h2>
-</div>
 
+  <div class="sidebar-user-search">
 
-      <div class="sidebar-user-search">
-
-        <label for="communityUserSearch">
-          Find Written Bond Users
-        </label>
+<label for="communityUserSearch" class="user-search-label">
+  <img src="Interlocking Black WB Luxury Monogram.png" alt="">
+  <span>Find Written Bond Users</span>
+</label>
 
         <div class="sidebar-search-row">
 
@@ -1047,7 +1048,7 @@ letter-spacing: .5px;
           <div class="community-feature-card">
 
            <div class="feature-icon">
-  <img src="message-chat.png" alt="Message and Chat">
+  <img src="Overlapping Speech Bubbles with Book and Pen.png" alt="Message and Chat">
 </div>
 
             <h3>
@@ -1064,7 +1065,7 @@ letter-spacing: .5px;
           <div class="community-feature-card">
 
 <div class="feature-icon">
-  <img src="local-events.png" alt="Find Events Near You">
+  <img src="Black Map Pin Icon on Transparency.png" alt="Find Events Near You">
 </div>
 
             <h3>
