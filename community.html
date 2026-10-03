@@ -7,7 +7,7 @@
   <title>Community | The Written Bond</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Special+Elite&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Allura&family=Special+Elite&display=swap" rel="stylesheet">
 <link
   rel="stylesheet"
   href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
@@ -272,7 +272,12 @@ box-shadow: none;
       text-align: center;
       font-size: 19px;
     }
-
+.user-logo-icon img {
+  display: block;
+  width: 23px;
+  height: 23px;
+  object-fit: contain;
+}
     .sidebar-divider {
       height: 1px;
       margin: 20px 5px;
@@ -439,12 +444,15 @@ letter-spacing: .5px;
   object-fit: contain;
   margin: 0 auto;
 }
-
+.feature-icon img.message-chat-icon {
+  width: 90px;
+  height: 90px;
+}
 .community-feature-card h3 {
   margin: 0 0 9px;
-  font-family: "Caveat", cursive;
+  font-family: "Allura", cursive;
   font-size: 28px;
-  font-weight: 700;
+  font-weight: 400;
 }
 
     .community-feature-card p {
@@ -476,9 +484,9 @@ letter-spacing: .5px;
 
 .keep-in-mind h2 {
   margin: 0 0 13px;
-  font-family: "Caveat", cursive;
+  font-family: "Allura", cursive;
   font-size: 31px;
-  font-weight: 700;
+ font-weight: 400;
 }
 
     .keep-in-mind ul {
@@ -498,9 +506,9 @@ letter-spacing: .5px;
 
 .get-started h2 {
   margin: 0 0 18px;
-  font-family: "Caveat", cursive;
+  font-family: "Allura", cursive;
   font-size: 38px;
-  font-weight: 700;
+  font-weight: 400;
 }
 
     .start-step {
@@ -879,10 +887,6 @@ letter-spacing: .5px;
 
   <div class="sidebar-user-search">
 
-<label for="communityUserSearch" class="user-search-label">
-  <img src="Interlocking Black WB Luxury Monogram.png" alt="">
-  <span>Find Written Bond Users</span>
-</label>
 
         <div class="sidebar-search-row">
 
@@ -942,7 +946,9 @@ letter-spacing: .5px;
           type="button"
           data-panel="findUsersPanel"
         >
-          <span class="nav-icon"><i class="fa-solid fa-user-magnifying-glass"></i></span>
+          <span class="nav-icon user-logo-icon">
+  <img src="Interlocking Black WB Luxury Monogram.png" alt="">
+</span>
           Find Written Bond Users
         </button>
 
@@ -1048,7 +1054,11 @@ letter-spacing: .5px;
           <div class="community-feature-card">
 
            <div class="feature-icon">
-  <img src="Overlapping Speech Bubbles with Book and Pen.png" alt="Message and Chat">
+  <img
+  src="Overlapping Speech Bubbles with Book and Pen.png"
+  alt="Message and Chat"
+  class="message-chat-icon"
+>
 </div>
 
             <h3>
