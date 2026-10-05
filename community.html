@@ -592,7 +592,26 @@ letter-spacing: .5px;
 .feed-heading {
   margin-bottom: 24px;
 }
+    
+.feed-heading h1,
+.feed-heading p,
+.stories-header h2,
+.stories-empty,
+.story-name,
+.feed-tab {
+  color: #202022;
+  text-shadow:
+    0 1px 0 rgba(255,255,255,.95),
+    0 0 8px rgba(255,255,255,.95);
+}
 
+.feed-heading p {
+  font-weight: 600;
+}
+
+.stories-empty {
+  font-weight: 600;
+}
 
 /* STORIES */
 
@@ -685,14 +704,10 @@ letter-spacing: .5px;
   flex: 0 0 43px;
 
   border-radius: 50%;
-  background: #222;
-  color: white;
+  border: 1px solid #777;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  font-size: 21px;
+  background: #fff;
+  object-fit: cover;
 }
 
 .start-post-button {
@@ -1629,9 +1644,12 @@ letter-spacing: .5px;
 
       <div class="create-post-top">
 
-        <div class="post-avatar">
-          ◉
-        </div>
+<img
+  id="feedProfileAvatar"
+  class="post-avatar"
+  src="default-avatar.svg"
+  alt="Your profile picture"
+>
 
         <button
           id="openPostComposer"
@@ -2053,9 +2071,50 @@ letter-spacing: .5px;
   </main>
 
 
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
+const SUPABASE_URL =
+  "https://mwwzlbhttgatylmpwzli.supabase.co";
 
+const SUPABASE_KEY =
+  "sb_publishable_UFkxAcITFXu6OtYRTcUKKg_Fw9UcTqR";
+
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+async function loadFeedProfilePicture() {
+  const {
+    data: { user }
+  } = await supabaseClient.auth.getUser();
+
+  if (!user) return;
+
+  const { data: profile, error } =
+    await supabaseClient
+      .from("profiles")
+      .select("profile_image_url")
+      .eq("id", user.id)
+      .single();
+
+  if (error) {
+    console.error(
+      "Could not load feed profile picture:",
+      error
+    );
+    return;
+  }
+
+  if (profile?.profile_image_url) {
+    document.getElementById(
+      "feedProfileAvatar"
+    ).src = profile.profile_image_url;
+  }
+}
+
+loadFeedProfilePicture();
     /* =========================
        TYPEWRITER INTRO
     ========================= */
@@ -2383,6 +2442,18 @@ postVideo.addEventListener("change", () => {
 
   postMediaPreview.hidden = false;
 });
+    postMediaPreview.hidden = false;
+});
+
+/* =========================
+   FEED TABS
+========================= */
+
+// feed tab code here
+
+</script>
+
+</body>
   </script>
 
 </body>
