@@ -787,8 +787,9 @@ letter-spacing: .5px;
 
 .post-composer-header p {
   margin: 0;
-  color: #777;
+  color: #202022;
   font-size: 14px;
+  font-weight: 700;
 }
 
 .composer-close {
@@ -866,7 +867,87 @@ letter-spacing: .5px;
 
   cursor: pointer;
 }
+    #tagPeopleButton.active {
+  background: #2f73c9;
+  border-color: #2f73c9;
+  color: #ffffff;
+}
+.tag-people-search {
+  margin-top: 14px;
+  padding: 14px;
 
+  border: 1px solid #c8c3bc;
+  border-radius: 6px;
+
+  background: #ffffff;
+}
+
+.tag-people-search label {
+  display: block;
+  margin-bottom: 7px;
+
+  color: #202022;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.tag-search-row {
+  display: flex;
+  gap: 8px;
+}
+
+.tag-search-row input {
+  flex: 1;
+
+  padding: 10px 11px;
+
+  border: 1px solid #c8c3bc;
+  border-radius: 5px;
+
+  background: #ffffff;
+  color: #202022;
+
+  outline: none;
+}
+
+.tag-search-row button {
+  padding: 10px 15px;
+
+  border: 0;
+  border-radius: 5px;
+
+  background: #202022;
+  color: #ffffff;
+
+  cursor: pointer;
+}
+
+.tag-people-results {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+
+  margin-top: 10px;
+}
+
+.tag-person-result {
+  width: 100%;
+
+  padding: 10px 12px;
+
+  border: 1px solid #d4d0c9;
+  border-radius: 5px;
+
+  background: #f7f6f3;
+  color: #202022;
+
+  text-align: left;
+  cursor: pointer;
+}
+
+.tag-person-result:hover {
+  background: #ece9e4;
+}
 .composer-footer {
   margin-top: 18px;
 
@@ -882,7 +963,8 @@ letter-spacing: .5px;
   gap: 5px;
 
   font-size: 13px;
-  color: #555;
+color: #202022;
+font-weight: 700;
 }
 
 .privacy-control select {
@@ -1774,11 +1856,11 @@ letter-spacing: .5px;
         </label>
 
 
-        <button
-          class="composer-option"
-          type="button"
-        >
-
+      <button
+  id="tagPeopleButton"
+  class="composer-option"
+  type="button"
+>
           <i class="fa-solid fa-user-tag"></i>
 
           <span>
@@ -1789,7 +1871,36 @@ letter-spacing: .5px;
 
       </div>
 
+<div
+  id="tagPeopleSearch"
+  class="tag-people-search"
+  hidden
+>
+  <label for="tagPeopleInput">
+    Tag a Written Bond user
+  </label>
 
+  <div class="tag-search-row">
+    <input
+      id="tagPeopleInput"
+      type="text"
+      placeholder="Search username..."
+      autocomplete="off"
+    >
+
+    <button
+      id="tagPeopleSearchButton"
+      type="button"
+    >
+      Search
+    </button>
+  </div>
+
+  <div
+    id="tagPeopleResults"
+    class="tag-people-results"
+  ></div>
+</div>
       <div class="composer-footer">
 
         <label class="privacy-control">
@@ -2486,11 +2597,176 @@ feedTabs.forEach((tab) => {
 
   });
 });
+/* =========================
+   TAG PEOPLE
+========================= */
 
+const tagPeopleButton =
+  document.getElementById("tagPeopleButton");
+
+const tagPeopleSearch =
+  document.getElementById("tagPeopleSearch");
+
+const tagPeopleInput =
+  document.getElementById("tagPeopleInput");
+
+const tagPeopleSearchButton =
+  document.getElementById("tagPeopleSearchButton");
+
+const tagPeopleResults =
+  document.getElementById("tagPeopleResults");
+
+
+tagPeopleButton.addEventListener("click", () => {
+
+  const isOpen =
+    !tagPeopleSearch.hidden;
+
+  tagPeopleSearch.hidden =
+    isOpen;
+
+  tagPeopleButton.classList.toggle(
+    "active",
+    !isOpen
+  );
+
+  if (!isOpen) {
+    tagPeopleInput.focus();
+  }
+
+});
+
+
+async function searchTagPeople() {
+
+  const searchTerm =
+    tagPeopleInput.value.trim();
+
+  tagPeopleResults.innerHTML = "";
+
+  if (!searchTerm) {
+    tagPeopleResults.textContent =
+      "Enter a username.";
+    return;
+  }
+
+
+  tagPeopleResults.textContent =
+    "Searching...";
+
+
+  const { data: people, error } =
+    await supabaseClient
+      .from("profiles")
+      .select("id, username, display_name")
+      .ilike(
+        "username",
+        `%${searchTerm}%`
+      )
+      .limit(10);
+
+
+  if (error) {
+    console.error(
+      "Could not search users:",
+      error
+    );
+
+    tagPeopleResults.textContent =
+      "Could not search users.";
+    return;
+  }
+
+
+  tagPeopleResults.innerHTML = "";
+
+
+  if (!people || people.length === 0) {
+    tagPeopleResults.textContent =
+      "No Written Bond users found.";
+    return;
+  }
+
+
+  people.forEach((person) => {
+
+    const resultButton =
+      document.createElement("button");
+
+    resultButton.type =
+      "button";
+
+    resultButton.className =
+      "tag-person-result";
+
+    const displayName =
+      person.display_name ||
+      person.username;
+
+    resultButton.textContent =
+      `${displayName} (@${person.username})`;
+
+
+    resultButton.addEventListener(
+      "click",
+      () => {
+
+        const mention =
+          `@${person.username}`;
+
+        const currentText =
+          postCaption.value.trimEnd();
+
+        postCaption.value =
+          currentText
+            ? `${currentText} ${mention} `
+            : `${mention} `;
+
+        postCaption.focus();
+
+        tagPeopleSearch.hidden =
+          true;
+
+        tagPeopleButton.classList.remove(
+          "active"
+        );
+
+        tagPeopleInput.value =
+          "";
+
+        tagPeopleResults.innerHTML =
+          "";
+
+      }
+    );
+
+
+    tagPeopleResults.appendChild(
+      resultButton
+    );
+
+  });
+
+}
+
+
+tagPeopleSearchButton.addEventListener(
+  "click",
+  searchTagPeople
+);
+
+
+tagPeopleInput.addEventListener(
+  "keydown",
+  (event) => {
+
+    if (event.key === "Enter") {
+      event.preventDefault();
+      searchTagPeople();
+    }
+
+  }
+);
 </script>
-
-</body>
-  </script>
-
 </body>
 </html>
