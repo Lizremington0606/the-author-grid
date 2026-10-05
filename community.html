@@ -584,44 +584,408 @@ letter-spacing: .5px;
 
     /* FEED */
 
-    .create-post-card {
-      margin-bottom: 22px;
-    }
+.feed-page {
+  width: min(760px, 100%);
+  margin: 0 auto;
+}
 
-    .create-post-card textarea {
-      width: 100%;
-      min-height: 95px;
-      resize: vertical;
+.feed-heading {
+  margin-bottom: 24px;
+}
 
-      padding: 13px;
-      border: 1px solid #ccc6be;
-      border-radius: 5px;
-      background: #fff;
-      outline: none;
-    }
 
-    .post-tools {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 9px;
-      margin-top: 12px;
-    }
+/* STORIES */
 
-    .post-tools button,
-    .post-tools select {
-      padding: 9px 13px;
-      border: 1px solid #c8c2ba;
-      border-radius: 4px;
-      background: #fff;
-    }
+.stories-section {
+  margin-bottom: 22px;
+}
 
-    .post-tools .publish-button {
-      margin-left: auto;
-      border-color: #202022;
-      background: #202022;
-      color: #fff;
-    }
+.stories-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.stories-header h2 {
+  margin: 0;
+  font-family: "Playfair Display", serif;
+  font-size: 23px;
+}
+
+.stories-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  overflow-x: auto;
+  padding: 5px 2px 10px;
+}
+
+.story-card {
+  flex: 0 0 auto;
+  width: 76px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #222;
+  text-align: center;
+}
+
+.story-avatar {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 7px;
+  border: 2px solid #222;
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #fff;
+}
+
+.story-add {
+  font-size: 29px;
+  font-weight: 400;
+}
+
+.story-name {
+  display: block;
+  font-size: 12px;
+}
+
+.stories-empty {
+  min-width: 260px;
+  color: #777;
+  font-size: 14px;
+}
+
+
+/* CREATE POST */
+
+.create-post-box {
+  margin-bottom: 18px;
+  padding: 18px;
+
+  border: 1px solid rgba(45,45,45,.18);
+  border-radius: 8px;
+  background: rgba(255,255,255,.72);
+}
+
+.create-post-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.post-avatar {
+  width: 43px;
+  height: 43px;
+  flex: 0 0 43px;
+
+  border-radius: 50%;
+  background: #222;
+  color: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 21px;
+}
+
+.start-post-button {
+  flex: 1;
+
+  padding: 13px 16px;
+
+  border: 1px solid #c9c5be;
+  border-radius: 22px;
+
+  background: #f7f6f3;
+  color: #666;
+
+  text-align: left;
+  font-size: 15px;
+}
+
+.start-post-button:hover {
+  background: #efede9;
+}
+
+.create-post-actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+  margin-top: 14px;
+  padding-top: 12px;
+
+  border-top: 1px solid #ddd8d1;
+}
+
+.create-post-actions button {
+  min-height: 42px;
+
+  border: 0;
+  background: transparent;
+
+  color: #333;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+
+  font-size: 14px;
+}
+
+.create-post-actions button:hover {
+  background: rgba(0,0,0,.04);
+}
+
+
+/* POST COMPOSER */
+
+.post-composer {
+  margin-bottom: 20px;
+  padding: 22px;
+
+  border: 1px solid rgba(45,45,45,.2);
+  border-radius: 8px;
+
+  background: rgba(255,255,255,.94);
+}
+
+.post-composer-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 15px;
+
+  margin-bottom: 17px;
+}
+
+.post-composer-header h2 {
+  margin: 0 0 4px;
+
+  font-family: "Playfair Display", serif;
+  font-size: 24px;
+}
+
+.post-composer-header p {
+  margin: 0;
+  color: #777;
+  font-size: 14px;
+}
+
+.composer-close {
+  width: 36px;
+  height: 36px;
+
+  border: 0;
+  border-radius: 50%;
+
+  background: #ece9e4;
+  color: #222;
+
+  font-size: 25px;
+  line-height: 1;
+}
+
+.post-caption {
+  width: 100%;
+  min-height: 130px;
+
+  padding: 14px;
+
+  border: 1px solid #cbc7c0;
+  border-radius: 6px;
+
+  resize: vertical;
+  outline: none;
+
+  background: white;
+
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+.post-media-preview {
+  margin-top: 12px;
+
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.post-media-preview img,
+.post-media-preview video {
+  width: 100%;
+  max-height: 260px;
+
+  border-radius: 6px;
+
+  object-fit: cover;
+}
+
+.composer-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+
+  margin-top: 14px;
+}
+
+.composer-option {
+  min-height: 42px;
+
+  padding: 9px 13px;
+
+  border: 1px solid #c8c3bc;
+  border-radius: 5px;
+
+  background: white;
+  color: #222;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+
+  cursor: pointer;
+}
+
+.composer-footer {
+  margin-top: 18px;
+
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.privacy-control {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  font-size: 13px;
+  color: #555;
+}
+
+.privacy-control select {
+  min-width: 145px;
+
+  padding: 9px 11px;
+
+  border: 1px solid #c8c3bc;
+  border-radius: 5px;
+
+  background: white;
+}
+
+.publish-post-button {
+  min-width: 105px;
+
+  padding: 11px 18px;
+
+  border: 0;
+  border-radius: 5px;
+
+  background: #202022;
+  color: white;
+
+  font-weight: 600;
+}
+
+
+/* FEED TABS */
+
+.feed-tabs {
+  display: flex;
+  gap: 6px;
+
+  margin: 20px 0 16px;
+
+  border-bottom: 1px solid #bdb8b1;
+}
+
+.feed-tab {
+  padding: 11px 20px;
+
+  border: 0;
+  border-bottom: 2px solid transparent;
+
+  background: transparent;
+  color: #6a6865;
+
+  font-weight: 600;
+}
+
+.feed-tab.active {
+  border-bottom-color: #202022;
+  color: #202022;
+}
+
+
+/* POSTS */
+
+.feed-posts {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.feed-empty-state {
+  padding: 50px 25px;
+
+  border: 1px solid rgba(45,45,45,.15);
+  border-radius: 8px;
+
+  background: rgba(255,255,255,.55);
+
+  text-align: center;
+}
+
+.feed-empty-state i {
+  margin-bottom: 12px;
+
+  font-size: 34px;
+  color: #555;
+}
+
+.feed-empty-state h2 {
+  margin: 0 0 6px;
+
+  font-family: "Playfair Display", serif;
+  font-size: 23px;
+}
+
+.feed-empty-state p {
+  margin: 0;
+  color: #777;
+}
+
+
+/* MOBILE FEED */
+
+@media (max-width: 620px) {
+
+  .create-post-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .composer-footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .privacy-control select,
+  .publish-post-button {
+    width: 100%;
+  }
+
+}
 
 
     /* MESSAGES */
@@ -1194,81 +1558,304 @@ letter-spacing: .5px;
 
 
 
-      <!-- COMMUNITY FEED -->
+    <!-- COMMUNITY FEED -->
 
-      <div
-        id="communityFeedPanel"
-        class="community-panel"
-        hidden
-      >
+<div
+  id="communityFeedPanel"
+  class="community-panel"
+  hidden
+>
 
-        <div class="section-header">
+  <div class="feed-page">
 
-          <h1>
-            Community Feed
-          </h1>
+    <div class="section-header feed-heading">
 
-          <p>
-            Share updates, photos, videos, and moments with
-            The Written Bond community.
-          </p>
+      <h1>
+        Community Feed
+      </h1>
 
-        </div>
+      <p>
+        Share updates, connect with other writers, and see what the community is posting.
+      </p>
 
-
-        <div class="placeholder-card create-post-card">
-
-          <textarea
-            placeholder="What would you like to share?"
-          ></textarea>
+    </div>
 
 
-          <div class="post-tools">
+    <!-- STORIES -->
 
-            <button type="button">
-              + Photos
-            </button>
+    <section class="stories-section">
 
-            <button type="button">
-              + Video
-            </button>
+      <div class="stories-header">
 
-            <select aria-label="Post privacy">
-              <option>Public</option>
-              <option>Friends</option>
-            </select>
+        <h2>
+          Stories
+        </h2>
 
-            <button
-              class="publish-button"
-              type="button"
-            >
-              Post
-            </button>
-
-          </div>
-
-        </div>
+      </div>
 
 
-        <div class="placeholder-card">
+      <div class="stories-row">
 
-          <strong>
-            Community posts will appear here.
-          </strong>
+        <button
+          class="story-card your-story"
+          type="button"
+        >
 
-          <p>
-            Public posts can be seen by the community.
-            Friends-only posts will only be visible to approved friends.
-          </p>
+          <span class="story-avatar story-add">
+            +
+          </span>
+
+          <span class="story-name">
+            Your Story
+          </span>
+
+        </button>
+
+
+        <div class="stories-empty">
+
+          Stories from people you follow will appear here.
 
         </div>
 
       </div>
 
+    </section>
 
 
-      <!-- MY MESSAGES -->
+    <!-- CREATE POST -->
 
+    <section class="create-post-box">
+
+      <div class="create-post-top">
+
+        <div class="post-avatar">
+          ◉
+        </div>
+
+        <button
+          id="openPostComposer"
+          class="start-post-button"
+          type="button"
+        >
+          Share something with The Written Bond...
+        </button>
+
+      </div>
+
+
+      <div class="create-post-actions">
+
+        <button type="button">
+          <i class="fa-regular fa-image"></i>
+          Photo
+        </button>
+
+        <button type="button">
+          <i class="fa-solid fa-video"></i>
+          Video
+        </button>
+
+        <button type="button">
+          <i class="fa-solid fa-user-tag"></i>
+          Tag People
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- FULL POST COMPOSER -->
+
+    <section
+      id="postComposer"
+      class="post-composer"
+      hidden
+    >
+
+      <div class="post-composer-header">
+
+        <div>
+
+          <h2>
+            Create Post
+          </h2>
+
+          <p>
+            Share something with The Written Bond community.
+          </p>
+
+        </div>
+
+
+        <button
+          id="closePostComposer"
+          class="composer-close"
+          type="button"
+          aria-label="Close post composer"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <textarea
+        id="postCaption"
+        class="post-caption"
+        placeholder="Write something... Use @ to mention someone or # to add a hashtag."
+      ></textarea>
+
+
+      <div
+        id="postMediaPreview"
+        class="post-media-preview"
+        hidden
+      ></div>
+
+
+      <div class="composer-options">
+
+        <label class="composer-option">
+
+          <i class="fa-regular fa-images"></i>
+
+          <span>
+            Add Photos
+          </span>
+
+          <input
+            id="postPhotos"
+            type="file"
+            accept="image/*"
+            multiple
+            hidden
+          >
+
+        </label>
+
+
+        <label class="composer-option">
+
+          <i class="fa-solid fa-video"></i>
+
+          <span>
+            Add Video
+          </span>
+
+          <input
+            id="postVideo"
+            type="file"
+            accept="video/*"
+            hidden
+          >
+
+        </label>
+
+
+        <button
+          class="composer-option"
+          type="button"
+        >
+
+          <i class="fa-solid fa-user-tag"></i>
+
+          <span>
+            Tag People
+          </span>
+
+        </button>
+
+      </div>
+
+
+      <div class="composer-footer">
+
+        <label class="privacy-control">
+
+          <span>
+            Who can see this?
+          </span>
+
+          <select id="postPrivacy">
+
+            <option value="public">
+              Public
+            </option>
+
+            <option value="friends">
+              Friends Only
+            </option>
+
+            <option value="private">
+              Only Me
+            </option>
+
+          </select>
+
+        </label>
+
+
+        <button
+          id="publishPostButton"
+          class="publish-post-button"
+          type="button"
+        >
+          Post
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- FEED FILTERS -->
+
+    <div class="feed-tabs">
+
+      <button
+        class="feed-tab active"
+        type="button"
+        data-feed="public"
+      >
+        Public
+      </button>
+
+      <button
+        class="feed-tab"
+        type="button"
+        data-feed="friends"
+      >
+        Friends
+      </button>
+
+    </div>
+
+
+    <!-- POSTS -->
+
+    <section id="feedPosts" class="feed-posts">
+
+      <div class="feed-empty-state">
+
+        <i class="fa-regular fa-newspaper"></i>
+
+        <h2>
+          Nothing here yet
+        </h2>
+
+        <p>
+          Public posts from Written Bond users will appear here.
+        </p>
+
+      </div>
+
+    </section>
+
+  </div>
+
+</div>
       <div
         id="messagesPanel"
         class="community-panel"
@@ -1717,7 +2304,85 @@ letter-spacing: .5px;
         "click",
         closeMobileSidebar
       );
+/* =========================
+   COMMUNITY FEED COMPOSER
+========================= */
 
+const openPostComposer =
+  document.getElementById("openPostComposer");
+
+const postComposer =
+  document.getElementById("postComposer");
+
+const closePostComposer =
+  document.getElementById("closePostComposer");
+
+const postCaption =
+  document.getElementById("postCaption");
+
+const postPhotos =
+  document.getElementById("postPhotos");
+
+const postVideo =
+  document.getElementById("postVideo");
+
+const postMediaPreview =
+  document.getElementById("postMediaPreview");
+
+
+openPostComposer.addEventListener("click", () => {
+  postComposer.hidden = false;
+  postCaption.focus();
+});
+
+
+closePostComposer.addEventListener("click", () => {
+  postComposer.hidden = true;
+});
+
+
+postPhotos.addEventListener("change", () => {
+  postMediaPreview.innerHTML = "";
+
+  const files = Array.from(postPhotos.files);
+
+  if (files.length === 0) {
+    postMediaPreview.hidden = true;
+    return;
+  }
+
+  files.forEach((file) => {
+    const image = document.createElement("img");
+
+    image.src = URL.createObjectURL(file);
+    image.alt = "Selected post photo";
+
+    postMediaPreview.appendChild(image);
+  });
+
+  postMediaPreview.hidden = false;
+});
+
+
+postVideo.addEventListener("change", () => {
+  postMediaPreview.innerHTML = "";
+
+  const file = postVideo.files[0];
+
+  if (!file) {
+    postMediaPreview.hidden = true;
+    return;
+  }
+
+  const video = document.createElement("video");
+
+  video.src = URL.createObjectURL(file);
+  video.controls = true;
+
+  postMediaPreview.appendChild(video);
+
+  postMediaPreview.hidden = false;
+});
   </script>
 
 </body>
