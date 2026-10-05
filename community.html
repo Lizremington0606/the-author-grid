@@ -1091,7 +1091,66 @@ font-weight: 700;
 
 }
 
+/* COMMUNITY POSTS */
 
+.feed-posts {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.community-post {
+  width: 100%;
+  padding: 18px;
+  border: 1px solid #c8c3bc;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.88);
+  box-sizing: border-box;
+}
+
+.community-post-header {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin-bottom: 14px;
+}
+
+.community-post-avatar {
+  width: 46px;
+  height: 46px;
+  flex: 0 0 46px;
+  border-radius: 50%;
+  border: 1px solid #c8c3bc;
+  background: #ffffff;
+  object-fit: cover;
+}
+
+.community-post-author {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.community-post-author strong {
+  color: #202022;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.community-post-author span {
+  color: #66625e;
+  font-size: 12px;
+}
+
+.community-post-body {
+  margin: 0;
+  color: #202022;
+  font-size: 15px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
     /* MESSAGES */
 
     .messages-layout {
@@ -2590,7 +2649,7 @@ feedTabs.forEach((tab) => {
     tab.classList.add("active");
 
     const selectedFeed = tab.dataset.feed;
-
+loadCommunityPosts(selectedFeed);
     if (selectedFeed === "friends") {
       feedEmptyState.querySelector("h2").textContent =
         "No friends-only posts yet";
@@ -3081,6 +3140,234 @@ publishPostButtonEl.addEventListener(
 
   }
 );
+    /* =========================
+   LOAD COMMUNITY POSTS
+========================= */
+
+async function loadCommunityPosts(
+  feedType = "public"
+) {
+
+  const feedPosts =
+    document.getElementById("feedPosts");
+
+  feedPosts.innerHTML =
+    `<div class="feed-empty-state">
+      <p>Loading posts...</p>
+    </div>`;
+
+
+  let query =
+    supabaseClient
+      .from("posts")
+      .select(`
+        id,
+        created_at,
+        body,
+        privacy,
+        user_id,
+        profiles (
+          username,
+          display_name,
+          profile_image_url
+        )
+      `)
+      .order(
+        "created_at",
+        { ascending: false }
+      );
+
+
+  if (feedType === "public") {
+
+    query =
+      query.eq(
+        "privacy",
+        "public"
+      );
+
+  } else {
+
+    query =
+      query.eq(
+        "privacy",
+        "friends"
+      );
+
+  }
+
+
+  const {
+    data: posts,
+    error
+  } =
+    await query;
+
+
+  if (error) {
+
+    console.error(
+      "Could not load posts:",
+      error
+    );
+
+    feedPosts.innerHTML =
+      `<div class="feed-empty-state">
+        <h2>Posts could not load</h2>
+        <p>Please try again.</p>
+      </div>`;
+
+    return;
+
+  }
+
+
+  feedPosts.innerHTML = "";
+
+
+  if (
+    !posts ||
+    posts.length === 0
+  ) {
+
+    feedPosts.innerHTML =
+      feedType === "friends"
+        ? `<div class="feed-empty-state">
+            <h2>No friends-only posts yet</h2>
+            <p>Posts shared with friends will appear here.</p>
+          </div>`
+        : `<div class="feed-empty-state">
+            <h2>Nothing here yet</h2>
+            <p>Public posts from Written Bond users will appear here.</p>
+          </div>`;
+
+    return;
+
+  }
+
+
+  posts.forEach((post) => {
+
+    const profile =
+      post.profiles || {};
+
+    const displayName =
+      profile.display_name ||
+      profile.username ||
+      "Written Bond User";
+
+
+    const postCard =
+      document.createElement("article");
+
+    postCard.className =
+      "community-post";
+
+
+    const postHeader =
+      document.createElement("div");
+
+    postHeader.className =
+      "community-post-header";
+
+
+    const avatar =
+      document.createElement("img");
+
+    avatar.className =
+      "community-post-avatar";
+
+    avatar.src =
+      profile.profile_image_url ||
+      "default-avatar.svg";
+
+    avatar.alt =
+      `${displayName} profile picture`;
+
+
+    const authorInfo =
+      document.createElement("div");
+
+    authorInfo.className =
+      "community-post-author";
+
+
+    const authorName =
+      document.createElement("strong");
+
+    authorName.textContent =
+      displayName;
+
+
+    const username =
+      document.createElement("span");
+
+    username.textContent =
+      profile.username
+        ? `@${profile.username}`
+        : "";
+
+
+    const time =
+      document.createElement("span");
+
+    time.textContent =
+      new Date(
+        post.created_at
+      ).toLocaleString();
+
+
+    authorInfo.appendChild(
+      authorName
+    );
+
+    authorInfo.appendChild(
+      username
+    );
+
+    authorInfo.appendChild(
+      time
+    );
+
+
+    postHeader.appendChild(
+      avatar
+    );
+
+    postHeader.appendChild(
+      authorInfo
+    );
+
+
+    const postBody =
+      document.createElement("p");
+
+    postBody.className =
+      "community-post-body";
+
+    postBody.textContent =
+      post.body;
+
+
+    postCard.appendChild(
+      postHeader
+    );
+
+    postCard.appendChild(
+      postBody
+    );
+
+
+    feedPosts.appendChild(
+      postCard
+    );
+
+  });
+
+}
+
+
+loadCommunityPosts("public");
 </script>
 </body>
 </html>
