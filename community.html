@@ -114,19 +114,15 @@ body {
       white-space: nowrap;
     }
 
-    .profile-circle {
-      width: 39px;
-      height: 39px;
-      border-radius: 50%;
-      background: #efefef;
-      color: #1d1d1f;
+   .profile-circle {
+  width: 39px;
+  height: 39px;
+  border-radius: 50%;
+  border: 1px solid #efefef;
 
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      font-size: 22px;
-    }
+  background: #efefef;
+  object-fit: cover;
+}
 
 
     /* =========================
@@ -676,8 +672,9 @@ letter-spacing: .5px;
 
 .stories-empty {
   min-width: 260px;
-  color: #777;
+  color: #202022;
   font-size: 14px;
+  font-weight: 700;
 }
 
 
@@ -1261,7 +1258,12 @@ letter-spacing: .5px;
     >
 
     <a class="profile-link" href="profile.html">
-      <span class="profile-circle">◉</span>
+     <img
+  id="headerProfileAvatar"
+  class="profile-circle"
+  src="default-avatar.svg"
+  alt="Your profile picture"
+>
       <span>Profile</span>
     </a>
 
@@ -2107,11 +2109,15 @@ async function loadFeedProfilePicture() {
     return;
   }
 
-  if (profile?.profile_image_url) {
-    document.getElementById(
-      "feedProfileAvatar"
-    ).src = profile.profile_image_url;
-  }
+ if (profile?.profile_image_url) {
+  document.getElementById(
+    "feedProfileAvatar"
+  ).src = profile.profile_image_url;
+
+  document.getElementById(
+    "headerProfileAvatar"
+  ).src = profile.profile_image_url;
+}
 }
 
 loadFeedProfilePicture();
@@ -2447,7 +2453,39 @@ postVideo.addEventListener("change", () => {
    FEED TABS
 ========================= */
 
-// feed tab code here
+const feedTabs =
+  document.querySelectorAll(".feed-tab");
+
+const feedEmptyState =
+  document.querySelector(".feed-empty-state");
+
+feedTabs.forEach((tab) => {
+  tab.addEventListener("click", () => {
+
+    feedTabs.forEach((button) => {
+      button.classList.remove("active");
+    });
+
+    tab.classList.add("active");
+
+    const selectedFeed = tab.dataset.feed;
+
+    if (selectedFeed === "friends") {
+      feedEmptyState.querySelector("h2").textContent =
+        "No friends-only posts yet";
+
+      feedEmptyState.querySelector("p").textContent =
+        "Posts shared with friends will appear here.";
+    } else {
+      feedEmptyState.querySelector("h2").textContent =
+        "Nothing here yet";
+
+      feedEmptyState.querySelector("p").textContent =
+        "Public posts from Written Bond users will appear here.";
+    }
+
+  });
+});
 
 </script>
 
