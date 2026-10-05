@@ -2777,6 +2777,310 @@ tagPeopleInput.addEventListener(
 
   }
 );
+    /* =========================
+   PUBLISH COMMUNITY POST
+========================= */
+
+const publishPostButtonEl =
+  document.getElementById("publishPostButton");
+
+const postPrivacySelect =
+  document.getElementById("postPrivacy");
+
+
+function getPostHashtags(text) {
+
+  const matches =
+    text.match(/#[A-Za-z0-9_]+/g) || [];
+
+  return [
+    ...new Set(
+      matches.map((tag) =>
+        tag.slice(1).toLowerCase()
+      )
+    )
+  ];
+
+}
+
+
+function getPostMentions(text) {
+
+  const matches =
+    text.match(/@[A-Za-z0-9_.-]+/g) || [];
+
+  return [
+    ...new Set(
+      matches.map((mention) =>
+        mention.slice(1)
+      )
+    )
+  ];
+
+}
+
+
+async function savePostHashtags(
+  postId,
+  tags
+) {
+
+  for (const tag of tags) {
+
+    let hashtagId;
+
+
+    const {
+      data: existingHashtag,
+      error: existingHashtagError
+    } =
+      await supabaseClient
+        .from("hashtags")
+        .select("id")
+        .eq("tag", tag)
+        .maybeSingle();
+
+
+    if (existingHashtagError) {
+      throw existingHashtagError;
+    }
+
+
+    if (existingHashtag) {
+
+      hashtagId =
+        existingHashtag.id;
+
+    } else {
+
+      const {
+        data: newHashtag,
+        error: newHashtagError
+      } =
+        await supabaseClient
+          .from("hashtags")
+          .insert({
+            tag: tag
+          })
+          .select("id")
+          .single();
+
+
+      if (newHashtagError) {
+        throw newHashtagError;
+      }
+
+
+      hashtagId =
+        newHashtag.id;
+
+    }
+
+
+    const {
+      error: linkHashtagError
+    } =
+      await supabaseClient
+        .from("post_hashtags")
+        .insert({
+          post_id: postId,
+          hashtag_id: hashtagId
+        });
+
+
+    if (linkHashtagError) {
+      throw linkHashtagError;
+    }
+
+  }
+
+}
+
+
+async function savePostMentions(
+  postId,
+  usernames
+) {
+
+  if (usernames.length === 0) {
+    return;
+  }
+
+
+  const {
+    data: mentionedProfiles,
+    error
+  } =
+    await supabaseClient
+      .from("profiles")
+      .select("id, username")
+      .in("username", usernames);
+
+
+  if (error) {
+    throw error;
+  }
+
+
+  if (
+    !mentionedProfiles ||
+    mentionedProfiles.length === 0
+  ) {
+    return;
+  }
+
+
+  const mentionRows =
+    mentionedProfiles.map((profile) => ({
+      post_id: postId,
+      mentioned_user_id: profile.id
+    }));
+
+
+  const {
+    error: mentionInsertError
+  } =
+    await supabaseClient
+      .from("post_mentions")
+      .insert(mentionRows);
+
+
+  if (mentionInsertError) {
+    throw mentionInsertError;
+  }
+
+}
+
+
+publishPostButtonEl.addEventListener(
+  "click",
+  async () => {
+
+    const body =
+      postCaption.value.trim();
+
+    const privacy =
+      postPrivacySelect.value;
+
+
+    if (!body) {
+
+      alert(
+        "Write something before posting."
+      );
+
+      return;
+
+    }
+
+
+    publishPostButtonEl.disabled = true;
+    publishPostButtonEl.textContent =
+      "Posting...";
+
+
+    try {
+
+      const {
+        data: { user },
+        error: userError
+      } =
+        await supabaseClient.auth.getUser();
+
+
+      if (userError) {
+        throw userError;
+      }
+
+
+      if (!user) {
+
+        alert(
+          "You need to be signed in to post."
+        );
+
+        return;
+
+      }
+
+
+      const {
+        data: newPost,
+        error: postError
+      } =
+        await supabaseClient
+          .from("posts")
+          .insert({
+            user_id: user.id,
+            body: body,
+            privacy: privacy
+          })
+          .select("id")
+          .single();
+
+
+      if (postError) {
+        throw postError;
+      }
+
+
+      const hashtags =
+        getPostHashtags(body);
+
+      const mentions =
+        getPostMentions(body);
+
+
+      await savePostHashtags(
+        newPost.id,
+        hashtags
+      );
+
+
+      await savePostMentions(
+        newPost.id,
+        mentions
+      );
+
+
+      postCaption.value = "";
+      postPrivacySelect.value =
+        "public";
+
+      postMediaPreview.innerHTML = "";
+      postMediaPreview.hidden = true;
+
+      postComposer.hidden = true;
+
+
+      alert(
+        "Your post was published!"
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "Could not publish post:",
+        error
+      );
+
+      alert(
+        "Your post could not be published. Check the console for details."
+      );
+
+    } finally {
+
+      publishPostButtonEl.disabled =
+        false;
+
+      publishPostButtonEl.textContent =
+        "Post";
+
+    }
+
+  }
+);
 </script>
 </body>
 </html>
