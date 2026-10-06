@@ -3318,7 +3318,7 @@ function renderPostText(
         body,
         privacy,
         user_id,
-        profiles (
+        profiles!posts_user_id_fkey (
           username,
           display_name,
           profile_image_url
@@ -3484,7 +3484,7 @@ async function loadCommunityPosts(
         body,
         privacy,
         user_id,
-        profiles (
+        profiles!posts_user_id_fkey (
           username,
           display_name,
           profile_image_url
