@@ -1151,6 +1151,26 @@ font-weight: 700;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
+    .post-hashtag,
+.post-mention {
+  display: inline;
+  margin: 0;
+  padding: 0;
+
+  border: 0;
+  background: transparent;
+
+  color: #2f73c9;
+  font: inherit;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.post-hashtag:hover,
+.post-mention:hover {
+  text-decoration: underline;
+}
     /* MESSAGES */
 
     .messages-layout {
@@ -3143,7 +3163,305 @@ publishPostButtonEl.addEventListener(
     /* =========================
    LOAD COMMUNITY POSTS
 ========================= */
+function renderPostText(
+  container,
+  text
+) {
 
+  container.innerHTML = "";
+
+  const parts =
+    text.split(
+      /([#@][A-Za-z0-9_.-]+)/g
+    );
+
+
+  parts.forEach((part) => {
+
+    if (part.startsWith("#")) {
+
+      const hashtag =
+        document.createElement("button");
+
+      hashtag.type = "button";
+      hashtag.className =
+        "post-hashtag";
+
+      hashtag.textContent =
+        part;
+
+      hashtag.dataset.hashtag =
+        part.slice(1).toLowerCase();
+
+      container.appendChild(
+        hashtag
+      );
+
+    } else if (
+      part.startsWith("@")
+    ) {
+
+      const mention =
+        document.createElement("button");
+
+      mention.type = "button";
+      mention.className =
+        "post-mention";
+
+      mention.textContent =
+        part;
+
+      mention.dataset.username =
+        part.slice(1);
+
+      container.appendChild(
+        mention
+      );
+
+    } else {
+
+      container.appendChild(
+        document.createTextNode(
+          part
+        )
+      );
+
+    }
+
+  });
+
+}
+    async function loadHashtagPosts(tag) {
+
+  const feedPosts =
+    document.getElementById("feedPosts");
+
+  feedPosts.innerHTML =
+    `<div class="feed-empty-state">
+      <p>Loading #${tag}...</p>
+    </div>`;
+
+  const {
+    data: hashtag,
+    error: hashtagError
+  } =
+    await supabaseClient
+      .from("hashtags")
+      .select("id")
+      .eq("tag", tag)
+      .maybeSingle();
+
+  if (hashtagError) {
+    console.error(
+      "Could not load hashtag:",
+      hashtagError
+    );
+
+    return;
+  }
+
+  if (!hashtag) {
+    feedPosts.innerHTML =
+      `<div class="feed-empty-state">
+        <h2>#${tag}</h2>
+        <p>No posts use this hashtag yet.</p>
+      </div>`;
+
+    return;
+  }
+
+  const {
+    data: links,
+    error: linkError
+  } =
+    await supabaseClient
+      .from("post_hashtags")
+      .select("post_id")
+      .eq(
+        "hashtag_id",
+        hashtag.id
+      );
+
+  if (linkError) {
+    console.error(
+      "Could not load hashtag posts:",
+      linkError
+    );
+
+    return;
+  }
+
+  const postIds =
+    (links || []).map(
+      (link) => link.post_id
+    );
+
+  if (postIds.length === 0) {
+    feedPosts.innerHTML =
+      `<div class="feed-empty-state">
+        <h2>#${tag}</h2>
+        <p>No posts use this hashtag yet.</p>
+      </div>`;
+
+    return;
+  }
+
+  const {
+    data: posts,
+    error: postError
+  } =
+    await supabaseClient
+      .from("posts")
+      .select(`
+        id,
+        created_at,
+        body,
+        privacy,
+        user_id,
+        profiles (
+          username,
+          display_name,
+          profile_image_url
+        )
+      `)
+      .in("id", postIds)
+      .order(
+        "created_at",
+        { ascending: false }
+      );
+
+  if (postError) {
+    console.error(
+      "Could not load posts for hashtag:",
+      postError
+    );
+
+    return;
+  }
+
+  feedPosts.innerHTML = "";
+
+  const hashtagHeading =
+    document.createElement("div");
+
+  hashtagHeading.className =
+    "feed-empty-state";
+
+  hashtagHeading.innerHTML =
+    `<h2>#${tag}</h2>
+     <p>Posts using this hashtag.</p>`;
+
+  feedPosts.appendChild(
+    hashtagHeading
+  );
+
+  posts.forEach((post) => {
+
+    const profile =
+      post.profiles || {};
+
+    const displayName =
+      profile.display_name ||
+      profile.username ||
+      "Written Bond User";
+
+    const postCard =
+      document.createElement("article");
+
+    postCard.className =
+      "community-post";
+
+    const postHeader =
+      document.createElement("div");
+
+    postHeader.className =
+      "community-post-header";
+
+    const avatar =
+      document.createElement("img");
+
+    avatar.className =
+      "community-post-avatar";
+
+    avatar.src =
+      profile.profile_image_url ||
+      "default-avatar.svg";
+
+    avatar.alt =
+      `${displayName} profile picture`;
+
+    const authorInfo =
+      document.createElement("div");
+
+    authorInfo.className =
+      "community-post-author";
+
+    const authorName =
+      document.createElement("strong");
+
+    authorName.textContent =
+      displayName;
+
+    const username =
+      document.createElement("span");
+
+    username.textContent =
+      profile.username
+        ? `@${profile.username}`
+        : "";
+
+    const time =
+      document.createElement("span");
+
+    time.textContent =
+      new Date(
+        post.created_at
+      ).toLocaleString();
+
+    authorInfo.appendChild(
+      authorName
+    );
+
+    authorInfo.appendChild(
+      username
+    );
+
+    authorInfo.appendChild(
+      time
+    );
+
+    postHeader.appendChild(
+      avatar
+    );
+
+    postHeader.appendChild(
+      authorInfo
+    );
+
+    const postBody =
+      document.createElement("p");
+
+    postBody.className =
+      "community-post-body";
+
+    renderPostText(
+      postBody,
+      post.body
+    );
+
+    postCard.appendChild(
+      postHeader
+    );
+
+    postCard.appendChild(
+      postBody
+    );
+
+    feedPosts.appendChild(
+      postCard
+    );
+  });
+}
 async function loadCommunityPosts(
   feedType = "public"
 ) {
@@ -3345,8 +3663,10 @@ async function loadCommunityPosts(
     postBody.className =
       "community-post-body";
 
-    postBody.textContent =
-      post.body;
+    renderPostText(
+  postBody,
+  post.body
+);
 
 
     postCard.appendChild(
@@ -3365,9 +3685,77 @@ async function loadCommunityPosts(
   });
 
 }
+/* =========================
+   HASHTAG + MENTION CLICKS
+========================= */
+
+document
+  .getElementById("feedPosts")
+  .addEventListener(
+    "click",
+    async (event) => {
+
+      const hashtagButton =
+        event.target.closest(".post-hashtag");
+
+      const mentionButton =
+        event.target.closest(".post-mention");
 
 
+      if (hashtagButton) {
+
+        const tag =
+          hashtagButton.dataset.hashtag;
+
+        await loadHashtagPosts(tag);
+
+        return;
+      }
+
+
+      if (mentionButton) {
+
+        const username =
+          mentionButton.dataset.username;
+
+        const {
+          data: profile,
+          error
+        } =
+          await supabaseClient
+            .from("profiles")
+            .select("id")
+            .eq("username", username)
+            .maybeSingle();
+
+
+        if (error) {
+          console.error(
+            "Could not open user profile:",
+            error
+          );
+
+          return;
+        }
+
+
+        if (!profile) {
+          alert(
+            "That Written Bond profile could not be found."
+          );
+
+          return;
+        }
+
+
+        window.location.href =
+          `profile.html?user=${profile.id}`;
+      }
+
+    }
+  );
 loadCommunityPosts("public");
+    
 </script>
 </body>
 </html>
