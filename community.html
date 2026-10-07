@@ -2344,6 +2344,468 @@ margin: 0 auto;
   }
 
 }
+    /* STORY VIEWER */
+
+.story-viewer-modal {
+  position: fixed;
+  inset: 0;
+
+  z-index: 1400;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(0, 0, 0, 0.96);
+}
+
+.story-viewer-modal[hidden] {
+  display: none;
+}
+
+.story-viewer {
+  position: relative;
+
+  width: min(470px, 100%);
+  height: 100vh;
+
+  overflow: hidden;
+
+  background: #000000;
+}
+
+.story-viewer-progress {
+  position: absolute;
+  top: 10px;
+  left: 14px;
+  right: 14px;
+
+  z-index: 20;
+
+  height: 3px;
+
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.35);
+
+  overflow: hidden;
+}
+
+.story-viewer-progress-bar {
+  width: 0%;
+  height: 100%;
+
+  background: #ffffff;
+
+  border-radius: inherit;
+}
+
+.story-viewer-header {
+  position: absolute;
+  top: 24px;
+  left: 16px;
+  right: 16px;
+
+  z-index: 20;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.story-viewer-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  color: #ffffff;
+}
+
+.story-viewer-avatar {
+  width: 42px;
+  height: 42px;
+
+  border-radius: 50%;
+
+  object-fit: cover;
+
+  border: 2px solid #ffffff;
+}
+
+.story-viewer-name {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.story-viewer-time {
+  margin-top: 2px;
+
+  font-size: 12px;
+
+  opacity: 0.8;
+}
+
+.story-viewer-close {
+  width: 42px;
+  height: 42px;
+
+  border: 0;
+  border-radius: 50%;
+
+  background: rgba(32, 32, 34, 0.72);
+  color: #ffffff;
+
+  font-size: 26px;
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+.story-viewer-content {
+  position: absolute;
+  inset: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+
+  background: #000000;
+}
+
+.story-viewer-content > img,
+.story-viewer-content > video {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+.story-viewer-nav {
+  position: absolute;
+  top: 50%;
+
+  z-index: 25;
+
+  transform: translateY(-50%);
+
+  width: 46px;
+  height: 58px;
+
+  border: 0;
+
+  background: rgba(0, 0, 0, 0.22);
+  color: #ffffff;
+
+  font-size: 40px;
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+.story-viewer-prev {
+  left: 0;
+}
+
+.story-viewer-next {
+  right: 0;
+}
+
+.story-viewer-text {
+  position: absolute;
+
+  transform: translate(-50%, -50%);
+
+  max-width: 82%;
+
+  padding: 8px 12px;
+
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.15;
+
+  text-align: center;
+
+  white-space: pre-wrap;
+  word-break: break-word;
+
+  text-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+.story-viewer-mention {
+  position: absolute;
+
+  transform: translate(-50%, -50%);
+
+  padding: 9px 14px;
+
+  border-radius: 8px;
+
+  background: rgba(255, 255, 255, 0.92);
+  color: #202022;
+
+  font-size: 24px;
+  font-weight: 700;
+
+  text-decoration: none;
+}
+
+.story-viewer-book {
+  position: absolute;
+
+  transform: translate(-50%, -50%);
+
+  width: min(340px, 82%);
+
+  padding: 18px;
+
+  border-radius: 14px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.97),
+      rgba(237, 233, 226, 0.97)
+    );
+
+  color: #202022;
+
+  text-align: center;
+
+  box-shadow:
+    0 10px 32px rgba(0, 0, 0, 0.38);
+}
+
+.story-viewer-book img {
+  display: block;
+
+  width: 150px;
+  max-height: 220px;
+
+  margin: 0 auto 16px;
+
+  border-radius: 5px;
+
+  object-fit: cover;
+}
+
+.story-viewer-book-title {
+  font-family:
+    "Playfair Display",
+    Georgia,
+    serif;
+
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.story-viewer-book-author {
+  margin-top: 6px;
+
+  font-size: 15px;
+  font-weight: 600;
+
+  opacity: 0.75;
+}
+
+.story-viewer-book-description {
+  margin-top: 12px;
+
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.story-viewer-book-link {
+  display: inline-block;
+
+  margin-top: 16px;
+  padding: 10px 18px;
+
+  border-radius: 6px;
+
+  background: #202022;
+  color: #ffffff;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  text-decoration: none;
+}
+
+.story-viewer-drawing {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: fill;
+
+  pointer-events: none;
+}
+
+@media (max-width: 520px) {
+  .story-viewer {
+    width: 100%;
+  }
+
+  .story-viewer-nav {
+    width: 38px;
+  }
+}
+    /* STORY VIEWERS */
+
+.story-owner-viewers {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 18px;
+
+  z-index: 35;
+}
+
+.story-owner-viewers[hidden] {
+  display: none;
+}
+
+.story-viewers-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 9px 13px;
+
+  border: 0;
+  border-radius: 999px;
+
+  background: rgba(32, 32, 34, 0.78);
+  color: #ffffff;
+
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.story-viewers-panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 48px;
+
+  max-height: 340px;
+
+  overflow-y: auto;
+
+  padding: 16px;
+
+  border-radius: 12px;
+
+  background: rgba(255, 255, 255, 0.98);
+  color: #202022;
+
+  box-shadow:
+    0 10px 35px rgba(0, 0, 0, 0.38);
+}
+
+.story-viewers-panel[hidden] {
+  display: none;
+}
+
+.story-viewers-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 12px;
+}
+
+.story-viewers-panel-close {
+  width: 30px;
+  height: 30px;
+
+  border: 0;
+  border-radius: 50%;
+
+  background: #ece9e4;
+  color: #202022;
+
+  font-size: 20px;
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+.story-viewers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.story-viewer-person {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 8px;
+
+  border-radius: 8px;
+
+  text-decoration: none;
+  color: #202022;
+}
+
+.story-viewer-person:hover {
+  background: #f3f1ed;
+}
+
+.story-viewer-person-avatar {
+  width: 42px;
+  height: 42px;
+
+  flex: 0 0 42px;
+
+  border-radius: 50%;
+
+  object-fit: cover;
+}
+
+.story-viewer-person-info {
+  min-width: 0;
+}
+
+.story-viewer-person-name {
+  font-size: 14px;
+  font-weight: 700;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.story-viewer-person-username {
+  margin-top: 2px;
+
+  font-size: 12px;
+
+  opacity: 0.7;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.story-viewers-empty {
+  padding: 14px 4px;
+
+  font-size: 13px;
+  text-align: center;
+
+  opacity: 0.7;
+}
     /* MESSAGES */
 
     .messages-layout {
@@ -4031,6 +4493,134 @@ margin: 0 auto;
 
     </div>
 
+  </div>
+
+</div>
+  <!-- STORY VIEWER -->
+
+<div
+  id="storyViewerModal"
+  class="story-viewer-modal"
+  hidden
+>
+
+  <div class="story-viewer">
+
+    <div class="story-viewer-progress">
+      <div
+        id="storyViewerProgressBar"
+        class="story-viewer-progress-bar"
+      ></div>
+    </div>
+
+    <div class="story-viewer-header">
+
+      <div class="story-viewer-user">
+
+        <img
+          id="storyViewerAvatar"
+          class="story-viewer-avatar"
+          src="default-avatar.svg"
+          alt=""
+        >
+
+        <div>
+          <div
+            id="storyViewerName"
+            class="story-viewer-name"
+          ></div>
+
+          <div
+            id="storyViewerTime"
+            class="story-viewer-time"
+          ></div>
+        </div>
+
+      </div>
+
+      <button
+        id="closeStoryViewer"
+        class="story-viewer-close"
+        type="button"
+        aria-label="Close Story"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <div
+      id="storyViewerContent"
+      class="story-viewer-content"
+    ></div>
+
+
+    <button
+      id="previousStory"
+      class="story-viewer-nav story-viewer-prev"
+      type="button"
+      aria-label="Previous Story"
+    >
+      ‹
+    </button>
+
+    <button
+      id="nextStory"
+      class="story-viewer-nav story-viewer-next"
+      type="button"
+      aria-label="Next Story"
+    >
+      ›
+    </button>
+<div
+  id="storyOwnerViewers"
+  class="story-owner-viewers"
+  hidden
+>
+
+  <button
+    id="storyViewersButton"
+    class="story-viewers-button"
+    type="button"
+  >
+    <i class="fa-regular fa-eye"></i>
+    <span id="storyViewersButtonText">
+      Viewed by 0
+    </span>
+  </button>
+
+
+  <div
+    id="storyViewersPanel"
+    class="story-viewers-panel"
+    hidden
+  >
+
+    <div class="story-viewers-panel-header">
+
+      <strong>Story Viewers</strong>
+
+      <button
+        id="closeStoryViewersPanel"
+        class="story-viewers-panel-close"
+        type="button"
+        aria-label="Close viewers"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <div
+      id="storyViewersList"
+      class="story-viewers-list"
+    ></div>
+
+  </div>
+
+</div>
   </div>
 
 </div>
@@ -6614,12 +7204,38 @@ function stopStoryCamera() {
 
 openStoryCreator.addEventListener(
   "click",
-  async () => {
+  async (event) => {
 
-    storyCreatorModal.hidden =
-      false;
+    const clickedAddButton =
+      event.target.closest(
+        ".story-add"
+      );
 
-    await startStoryCamera();
+
+    if (clickedAddButton) {
+
+      storyCreatorModal.hidden =
+        false;
+
+      await startStoryCamera();
+
+      return;
+
+    }
+
+
+    const openedStories =
+      await openMyActiveStories();
+
+
+    if (!openedStories) {
+
+      storyCreatorModal.hidden =
+        false;
+
+      await startStoryCamera();
+
+    }
 
   }
 );
@@ -8643,6 +9259,971 @@ async function uploadStoryFile(
         false;
 
     }
+
+  }
+);
+    const storyViewerModal =
+  document.getElementById("storyViewerModal");
+
+const storyViewerContent =
+  document.getElementById("storyViewerContent");
+
+const storyViewerAvatar =
+  document.getElementById("storyViewerAvatar");
+
+const storyViewerName =
+  document.getElementById("storyViewerName");
+
+const storyViewerTime =
+  document.getElementById("storyViewerTime");
+
+const storyViewerProgressBar =
+  document.getElementById("storyViewerProgressBar");
+
+const closeStoryViewer =
+  document.getElementById("closeStoryViewer");
+
+const previousStory =
+  document.getElementById("previousStory");
+
+const nextStory =
+  document.getElementById("nextStory");
+
+
+let storyViewerStories = [];
+
+let storyViewerIndex = 0;
+
+
+function formatStoryViewerTime(
+  dateString
+) {
+
+  const storyDate =
+    new Date(dateString);
+
+  const now =
+    new Date();
+
+  const difference =
+    Math.max(
+      0,
+      now - storyDate
+    );
+
+
+  const minutes =
+    Math.floor(
+      difference / 60000
+    );
+
+  const hours =
+    Math.floor(
+      difference / 3600000
+    );
+
+
+  if (minutes < 1) {
+    return "Just now";
+  }
+
+  if (minutes < 60) {
+    return `${minutes}m`;
+  }
+
+  if (hours < 24) {
+    return `${hours}h`;
+  }
+
+  return "Yesterday";
+
+}
+
+
+async function getStorySignedUrl(
+  path
+) {
+
+  if (!path) {
+    return null;
+  }
+
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient.storage
+      .from("story-media")
+      .createSignedUrl(
+        path,
+        3600
+      );
+
+
+  if (error) {
+
+    console.error(
+      "Could not load Story media:",
+      error
+    );
+
+    return null;
+
+  }
+
+
+  return data?.signedUrl || null;
+
+}
+
+
+function closeStoryViewerModal() {
+
+  storyViewerContent
+    .querySelectorAll("video")
+    .forEach((video) => {
+
+      video.pause();
+
+    });
+
+
+  storyViewerContent.innerHTML =
+    "";
+
+  storyViewerModal.hidden =
+    true;
+
+}
+
+
+async function renderStoryViewer() {
+
+  const story =
+    storyViewerStories[
+      storyViewerIndex
+    ];
+
+  if (!story) {
+    closeStoryViewerModal();
+    return;
+  }
+
+
+  storyViewerContent.innerHTML =
+    "";
+
+
+  storyViewerProgressBar.style.width =
+    `${
+      (
+        (storyViewerIndex + 1) /
+        storyViewerStories.length
+      ) * 100
+    }%`;
+
+
+  storyViewerAvatar.src =
+    story.profile?.profile_image_url ||
+    "default-avatar.svg";
+
+
+  storyViewerName.textContent =
+    story.profile?.display_name ||
+    story.profile?.username ||
+    "Written Bond User";
+
+
+  storyViewerTime.textContent =
+    formatStoryViewerTime(
+      story.created_at
+    );
+
+
+  if (story.media_path) {
+
+    const mediaUrl =
+      await getStorySignedUrl(
+        story.media_path
+      );
+
+
+    if (mediaUrl) {
+
+      if (
+        story.media_type === "video"
+      ) {
+
+        const video =
+          document.createElement(
+            "video"
+          );
+
+        video.src =
+          mediaUrl;
+
+        video.autoplay =
+          true;
+
+        video.controls =
+          true;
+
+        video.playsInline =
+          true;
+
+
+        storyViewerContent.appendChild(
+          video
+        );
+
+      } else {
+
+        const image =
+          document.createElement(
+            "img"
+          );
+
+        image.src =
+          mediaUrl;
+
+        image.alt =
+          "Story";
+
+
+        storyViewerContent.appendChild(
+          image
+        );
+
+      }
+
+    }
+
+  }
+
+
+  if (story.drawing_path) {
+
+    const drawingUrl =
+      await getStorySignedUrl(
+        story.drawing_path
+      );
+
+
+    if (drawingUrl) {
+
+      const drawing =
+        document.createElement(
+          "img"
+        );
+
+      drawing.src =
+        drawingUrl;
+
+      drawing.alt =
+        "";
+
+      drawing.className =
+        "story-viewer-drawing";
+
+
+      storyViewerContent.appendChild(
+        drawing
+      );
+
+    }
+
+  }
+
+
+  const contentData =
+    story.content_data || {};
+
+
+  (
+    contentData.text || []
+  ).forEach((item) => {
+
+    const text =
+      document.createElement(
+        "div"
+      );
+
+    text.className =
+      "story-viewer-text";
+
+    text.textContent =
+      item.text;
+
+    text.style.left =
+      `${item.left}%`;
+
+    text.style.top =
+      `${item.top}%`;
+
+    text.style.fontFamily =
+      item.font || "Arial";
+
+    text.style.color =
+      item.color || "#ffffff";
+
+
+    storyViewerContent.appendChild(
+      text
+    );
+
+  });
+
+
+  (
+    contentData.mentions || []
+  ).forEach((item) => {
+
+    const mention =
+      document.createElement("a");
+
+    mention.className =
+      "story-viewer-mention";
+
+    mention.textContent =
+      `@${item.username}`;
+
+    mention.href =
+      `profile.html?user=${
+        encodeURIComponent(
+          item.user_id
+        )
+      }`;
+
+    mention.style.left =
+      `${item.left}%`;
+
+    mention.style.top =
+      `${item.top}%`;
+
+
+    storyViewerContent.appendChild(
+      mention
+    );
+
+  });
+
+
+  const bookCoverUrl =
+    story.book_cover_path
+      ? await getStorySignedUrl(
+          story.book_cover_path
+        )
+      : null;
+
+
+  (
+    contentData.books || []
+  ).forEach(
+    (book, index) => {
+
+      const bookCard =
+        document.createElement(
+          "div"
+        );
+
+      bookCard.className =
+        "story-viewer-book";
+
+      bookCard.style.left =
+        `${book.left}%`;
+
+      bookCard.style.top =
+        `${book.top}%`;
+
+
+      if (
+        index === 0 &&
+        bookCoverUrl
+      ) {
+
+        const cover =
+          document.createElement(
+            "img"
+          );
+
+        cover.src =
+          bookCoverUrl;
+
+        cover.alt =
+          `${book.title} cover`;
+
+        bookCard.appendChild(
+          cover
+        );
+
+      }
+
+
+      const title =
+        document.createElement(
+          "div"
+        );
+
+      title.className =
+        "story-viewer-book-title";
+
+      title.textContent =
+        book.title;
+
+
+      bookCard.appendChild(
+        title
+      );
+
+
+      if (book.author) {
+
+        const author =
+          document.createElement(
+            "div"
+          );
+
+        author.className =
+          "story-viewer-book-author";
+
+        author.textContent =
+          `by ${book.author}`;
+
+
+        bookCard.appendChild(
+          author
+        );
+
+      }
+
+
+      if (book.description) {
+
+        const description =
+          document.createElement(
+            "div"
+          );
+
+        description.className =
+          "story-viewer-book-description";
+
+        description.textContent =
+          book.description;
+
+
+        bookCard.appendChild(
+          description
+        );
+
+      }
+
+
+      if (book.link) {
+
+        const link =
+          document.createElement("a");
+
+        link.className =
+          "story-viewer-book-link";
+
+        link.href =
+          book.link;
+
+        link.target =
+          "_blank";
+
+        link.rel =
+          "noopener noreferrer";
+
+        link.textContent =
+          "View Book";
+
+
+        bookCard.appendChild(
+          link
+        );
+
+      }
+
+
+      storyViewerContent.appendChild(
+        bookCard
+      );
+
+    }
+  );
+  await updateStoryViewerTracking(
+  story
+);
+}
+
+
+async function openMyActiveStories() {
+
+  const {
+    data: { user }
+  } =
+    await supabaseClient.auth.getUser();
+
+
+  if (!user) {
+    return false;
+  }
+
+
+  const {
+    data: stories,
+    error
+  } =
+    await supabaseClient
+      .from("stories")
+      .select(
+        "id, user_id, created_at, expires_at, privacy, media_path, media_type, drawing_path, book_cover_path, content_data"
+      )
+      .eq(
+        "user_id",
+        user.id
+      )
+      .gt(
+        "expires_at",
+        new Date().toISOString()
+      )
+      .order(
+        "created_at",
+        {
+          ascending: true
+        }
+      );
+
+
+  if (error) {
+
+    console.error(
+      "Could not load your Stories:",
+      error
+    );
+
+    return false;
+
+  }
+
+
+  if (!stories?.length) {
+    return false;
+  }
+
+
+  const {
+    data: profile
+  } =
+    await supabaseClient
+      .from("profiles")
+      .select(
+        "username, display_name, profile_image_url"
+      )
+      .eq(
+        "id",
+        user.id
+      )
+      .single();
+
+
+  storyViewerStories =
+    stories.map((story) => ({
+      ...story,
+      profile
+    }));
+
+
+  storyViewerIndex = 0;
+
+  storyViewerModal.hidden =
+    false;
+
+
+  await renderStoryViewer();
+
+
+  return true;
+
+}
+
+
+closeStoryViewer.addEventListener(
+  "click",
+  closeStoryViewerModal
+);
+
+
+previousStory.addEventListener(
+  "click",
+  async () => {
+
+    if (storyViewerIndex > 0) {
+
+      storyViewerIndex -= 1;
+
+      await renderStoryViewer();
+
+    }
+
+  }
+);
+
+
+nextStory.addEventListener(
+  "click",
+  async () => {
+
+    if (
+      storyViewerIndex <
+      storyViewerStories.length - 1
+    ) {
+
+      storyViewerIndex += 1;
+
+      await renderStoryViewer();
+
+    } else {
+
+      closeStoryViewerModal();
+
+    }
+
+  }
+);
+    const storyOwnerViewers =
+  document.getElementById("storyOwnerViewers");
+
+const storyViewersButton =
+  document.getElementById("storyViewersButton");
+
+const storyViewersButtonText =
+  document.getElementById("storyViewersButtonText");
+
+const storyViewersPanel =
+  document.getElementById("storyViewersPanel");
+
+const closeStoryViewersPanel =
+  document.getElementById("closeStoryViewersPanel");
+
+const storyViewersList =
+  document.getElementById("storyViewersList");
+
+
+async function recordStoryView(
+  story
+) {
+
+  const {
+    data: { user }
+  } =
+    await supabaseClient.auth.getUser();
+
+
+  if (
+    !user ||
+    user.id === story.user_id
+  ) {
+    return;
+  }
+
+
+  const {
+    error
+  } =
+    await supabaseClient
+      .from("story_views")
+      .insert({
+        story_id:
+          story.id,
+
+        viewer_id:
+          user.id
+      });
+
+
+  if (
+    error &&
+    error.code !== "23505"
+  ) {
+
+    console.error(
+      "Could not record Story view:",
+      error
+    );
+
+  }
+
+}
+
+
+async function loadStoryViewers(
+  storyId
+) {
+
+  storyViewersList.innerHTML =
+    "";
+
+
+  const {
+    data: views,
+    error
+  } =
+    await supabaseClient
+      .from("story_views")
+      .select(`
+        viewer_id,
+        viewed_at,
+        profiles!story_views_viewer_id_fkey (
+          username,
+          display_name,
+          profile_image_url
+        )
+      `)
+      .eq(
+        "story_id",
+        storyId
+      )
+      .order(
+        "viewed_at",
+        {
+          ascending: false
+        }
+      );
+
+
+  if (error) {
+
+    console.error(
+      "Could not load Story viewers:",
+      error
+    );
+
+    storyViewersButtonText.textContent =
+      "Viewed by 0";
+
+    return;
+  }
+
+
+  const viewerCount =
+    views?.length || 0;
+
+
+  storyViewersButtonText.textContent =
+    viewerCount === 1
+      ? "Viewed by 1"
+      : `Viewed by ${viewerCount}`;
+
+
+  if (!viewerCount) {
+
+    const emptyMessage =
+      document.createElement("div");
+
+    emptyMessage.className =
+      "story-viewers-empty";
+
+    emptyMessage.textContent =
+      "No one has viewed this Story yet.";
+
+
+    storyViewersList.appendChild(
+      emptyMessage
+    );
+
+    return;
+
+  }
+
+
+  views.forEach(
+    (view) => {
+
+      const profile =
+        Array.isArray(view.profiles)
+          ? view.profiles[0]
+          : view.profiles;
+
+
+      const person =
+        document.createElement("a");
+
+      person.className =
+        "story-viewer-person";
+
+      person.href =
+        `profile.html?user=${
+          encodeURIComponent(
+            view.viewer_id
+          )
+        }`;
+
+
+      const avatar =
+        document.createElement("img");
+
+      avatar.className =
+        "story-viewer-person-avatar";
+
+      avatar.src =
+        profile?.profile_image_url ||
+        "default-avatar.svg";
+
+      avatar.alt =
+        "";
+
+
+      const info =
+        document.createElement("div");
+
+      info.className =
+        "story-viewer-person-info";
+
+
+      const name =
+        document.createElement("div");
+
+      name.className =
+        "story-viewer-person-name";
+
+      name.textContent =
+        profile?.display_name ||
+        profile?.username ||
+        "Written Bond User";
+
+
+      const username =
+        document.createElement("div");
+
+      username.className =
+        "story-viewer-person-username";
+
+      username.textContent =
+        profile?.username
+          ? `@${profile.username}`
+          : "";
+
+
+      info.appendChild(
+        name
+      );
+
+      info.appendChild(
+        username
+      );
+
+
+      person.appendChild(
+        avatar
+      );
+
+      person.appendChild(
+        info
+      );
+
+
+      storyViewersList.appendChild(
+        person
+      );
+
+    }
+  );
+
+}
+
+
+async function updateStoryViewerTracking(
+  story
+) {
+
+  storyViewersPanel.hidden =
+    true;
+
+
+  const {
+    data: { user }
+  } =
+    await supabaseClient.auth.getUser();
+
+
+  if (!user) {
+
+    storyOwnerViewers.hidden =
+      true;
+
+    return;
+
+  }
+
+
+  if (
+    user.id === story.user_id
+  ) {
+
+    storyOwnerViewers.hidden =
+      false;
+
+    await loadStoryViewers(
+      story.id
+    );
+
+  } else {
+
+    storyOwnerViewers.hidden =
+      true;
+
+    await recordStoryView(
+      story
+    );
+
+  }
+
+}
+
+
+storyViewersButton.addEventListener(
+  "click",
+  async () => {
+
+    const story =
+      storyViewerStories[
+        storyViewerIndex
+      ];
+
+    if (!story) {
+      return;
+    }
+
+
+    const willOpen =
+      storyViewersPanel.hidden;
+
+
+    storyViewersPanel.hidden =
+      !willOpen;
+
+
+    if (willOpen) {
+
+      await loadStoryViewers(
+        story.id
+      );
+
+    }
+
+  }
+);
+
+
+closeStoryViewersPanel.addEventListener(
+  "click",
+  () => {
+
+    storyViewersPanel.hidden =
+      true;
 
   }
 );
