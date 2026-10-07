@@ -286,6 +286,106 @@
     .feed {
       padding-top: 26px;
     }
+    .profile-posts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.profile-post-card {
+  padding: 18px;
+
+  border: 1px solid #353539;
+  border-radius: 7px;
+
+  background: rgba(24, 24, 27, 0.92);
+}
+
+.profile-post-header {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+
+  margin-bottom: 14px;
+}
+
+.profile-post-avatar {
+  width: 44px;
+  height: 44px;
+
+  flex: 0 0 44px;
+
+  border-radius: 50%;
+  object-fit: cover;
+
+  background: #29292c;
+}
+
+.profile-post-author {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.profile-post-author strong {
+  color: #ffffff;
+  font-size: 14px;
+}
+
+.profile-post-author span {
+  color: #aaa5ad;
+  font-size: 12px;
+}
+
+.profile-post-pinned {
+  display: inline-block;
+
+  margin-left: auto;
+
+  color: #d8d2db;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.profile-post-body {
+  margin: 0;
+
+  color: #f4f1eb;
+
+  font-size: 14px;
+  line-height: 1.65;
+
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.profile-post-media {
+  display: grid;
+  gap: 8px;
+
+  margin-top: 14px;
+
+  overflow: hidden;
+  border-radius: 7px;
+}
+
+.profile-post-media img,
+.profile-post-media video {
+  display: block;
+
+  width: 100%;
+  max-height: 560px;
+
+  border-radius: 7px;
+
+  background: #000;
+
+  object-fit: cover;
+}
+
+.profile-post-media video {
+  object-fit: contain;
+}
 .bookshelf-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
@@ -1319,6 +1419,371 @@ function setSocialLink(id, url) {
     link.style.display = "none";
   }
 }
+  function formatProfilePostTime(dateString) {
+  const postDate = new Date(dateString);
+  const now = new Date();
+
+  const secondsAgo =
+    Math.floor(
+      (now - postDate) / 1000
+    );
+
+  if (secondsAgo < 60) {
+    return "Just now";
+  }
+
+  const minutesAgo =
+    Math.floor(secondsAgo / 60);
+
+  if (minutesAgo < 60) {
+    return `${minutesAgo}m ago`;
+  }
+
+  const hoursAgo =
+    Math.floor(minutesAgo / 60);
+
+  if (hoursAgo < 24) {
+    return `${hoursAgo}h ago`;
+  }
+
+  const daysAgo =
+    Math.floor(hoursAgo / 24);
+
+  if (daysAgo === 1) {
+    return "Yesterday";
+  }
+
+  if (daysAgo < 7) {
+    return `${daysAgo}d ago`;
+  }
+
+  return postDate.toLocaleDateString(
+    "en-US",
+    {
+      month: "short",
+      day: "numeric"
+    }
+  );
+}
+
+
+async function loadProfilePosts(
+  userId,
+  profile
+) {
+
+  postsPanel.innerHTML =
+    `<div class="empty-state">
+      <p>Loading posts...</p>
+    </div>`;
+
+
+  const {
+    data: posts,
+    error
+  } =
+    await supabaseClient
+      .from("posts")
+      .select(`
+        id,
+        created_at,
+        body,
+        privacy,
+        is_pinned,
+        user_id
+      `)
+      .eq(
+        "user_id",
+        userId
+      )
+      .order(
+        "is_pinned",
+        { ascending: false }
+      )
+      .order(
+        "created_at",
+        { ascending: false }
+      );
+
+
+  if (error) {
+
+    console.error(
+      "Error loading profile posts:",
+      error
+    );
+
+    postsPanel.innerHTML =
+      `<div class="empty-state">
+        <h2>Posts could not load.</h2>
+        <p>Please try again.</p>
+      </div>`;
+
+    return;
+  }
+
+
+  postsPanel.innerHTML = "";
+
+
+  if (
+    !posts ||
+    posts.length === 0
+  ) {
+
+    postsPanel.innerHTML =
+      `<div class="empty-state">
+        <h2>No posts yet.</h2>
+        <p>Posts will appear here.</p>
+      </div>`;
+
+    return;
+  }
+
+
+  const postsList =
+    document.createElement("div");
+
+  postsList.className =
+    "profile-posts-list";
+
+
+  for (const post of posts) {
+
+    const card =
+      document.createElement("article");
+
+    card.className =
+      "profile-post-card";
+
+
+    const header =
+      document.createElement("div");
+
+    header.className =
+      "profile-post-header";
+
+
+    const avatar =
+      document.createElement("img");
+
+    avatar.className =
+      "profile-post-avatar";
+
+    avatar.src =
+      profile.profile_image_url ||
+      "default-avatar.svg";
+
+    avatar.alt =
+      "Profile picture";
+
+
+    const author =
+      document.createElement("div");
+
+    author.className =
+      "profile-post-author";
+
+
+    const authorName =
+      document.createElement("strong");
+
+    authorName.textContent =
+      profile.display_name ||
+      profile.username ||
+      "Written Bond User";
+
+
+    const postInfo =
+      document.createElement("span");
+
+    postInfo.textContent =
+      `${profile.username
+        ? `@${profile.username} · `
+        : ""}${formatProfilePostTime(
+          post.created_at
+        )}`;
+
+
+    author.appendChild(
+      authorName
+    );
+
+    author.appendChild(
+      postInfo
+    );
+
+
+    header.appendChild(
+      avatar
+    );
+
+    header.appendChild(
+      author
+    );
+
+
+    if (post.is_pinned) {
+
+      const pinned =
+        document.createElement("span");
+
+      pinned.className =
+        "profile-post-pinned";
+
+      pinned.textContent =
+        "📌 Pinned";
+
+      header.appendChild(
+        pinned
+      );
+
+    }
+
+
+    const body =
+      document.createElement("p");
+
+    body.className =
+      "profile-post-body";
+
+    body.textContent =
+      post.body;
+
+
+    card.appendChild(
+      header
+    );
+
+    card.appendChild(
+      body
+    );
+
+
+    const {
+      data: mediaItems,
+      error: mediaError
+    } =
+      await supabaseClient
+        .from("post_media")
+        .select(`
+          storage_path,
+          media_type,
+          sort_order
+        `)
+        .eq(
+          "post_id",
+          post.id
+        )
+        .order(
+          "sort_order",
+          { ascending: true }
+        );
+
+
+    if (mediaError) {
+
+      console.error(
+        "Error loading profile post media:",
+        mediaError
+      );
+
+    } else if (
+      mediaItems &&
+      mediaItems.length > 0
+    ) {
+
+      const mediaWrap =
+        document.createElement("div");
+
+      mediaWrap.className =
+        "profile-post-media";
+
+
+      for (const media of mediaItems) {
+
+        const {
+          data: signedData,
+          error: signedError
+        } =
+          await supabaseClient
+            .storage
+            .from("post-media")
+            .createSignedUrl(
+              media.storage_path,
+              3600
+            );
+
+
+        if (
+          signedError ||
+          !signedData?.signedUrl
+        ) {
+          continue;
+        }
+
+
+        if (
+          media.media_type === "image"
+        ) {
+
+          const image =
+            document.createElement("img");
+
+          image.src =
+            signedData.signedUrl;
+
+          image.alt =
+            "Post photo";
+
+          mediaWrap.appendChild(
+            image
+          );
+
+        } else {
+
+          const video =
+            document.createElement("video");
+
+          video.src =
+            signedData.signedUrl;
+
+          video.controls = true;
+
+          mediaWrap.appendChild(
+            video
+          );
+
+        }
+
+      }
+
+
+      if (
+        mediaWrap.children.length > 0
+      ) {
+
+        card.appendChild(
+          mediaWrap
+        );
+
+      }
+
+    }
+
+
+    postsList.appendChild(
+      card
+    );
+
+  }
+
+
+  postsPanel.appendChild(
+    postsList
+  );
+
+}
 async function loadBooks(userId) {
   bookshelfGrid
     .querySelectorAll(".book-card")
@@ -1551,6 +2016,10 @@ const { data: profile, error } = await supabaseClient
     return;
   }
 await loadBooks(profileUserId);
+  await loadProfilePosts(
+  profileUserId,
+  profile
+);
   await loadFollowCounts(profileUserId);
   const isOwnProfile = profileUserId === session.user.id;
 
