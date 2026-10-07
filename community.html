@@ -1179,33 +1179,7 @@ font-weight: 700;
   gap: 11px;
   margin-bottom: 14px;
 }
-.post-privacy-menu-label {
-  display: block;
-  padding: 8px 11px 4px;
 
-  color: #66625e;
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.post-privacy-menu-select {
-  display: block;
-  width: calc(100% - 10px);
-
-  margin: 0 5px 5px;
-  padding: 8px 30px 8px 9px;
-
-  border: 1px solid #c8c3bc;
-  border-radius: 4px;
-
-  background: #ffffff;
-  color: #202022;
-
-  font: inherit;
-  font-size: 13px;
-
-  cursor: pointer;
-}
 .community-post-avatar {
   width: 46px;
   height: 46px;
@@ -4808,31 +4782,7 @@ editPostVideo.addEventListener(
     "Edit Post";
 
 
-  const privacyLabel =
-    document.createElement("label");
-
-  privacyLabel.className =
-    "post-privacy-menu-label";
-
-  privacyLabel.textContent =
-    "Who can see this?";
-
-
-  const privacySelect =
-    document.createElement("select");
-
-  privacySelect.className =
-    "post-privacy-menu-select";
-
-  privacySelect.innerHTML = `
-    <option value="public">Public</option>
-    <option value="friends">Friends Only</option>
-    <option value="private">Only Me</option>
-  `;
-
-  privacySelect.value =
-    post.privacy;
-
+  
 
   const pinButton =
     document.createElement("button");
@@ -4855,14 +4805,6 @@ editPostVideo.addEventListener(
 
   menu.appendChild(
     editButton
-  );
-
-  menu.appendChild(
-    privacyLabel
-  );
-
-  menu.appendChild(
-    privacySelect
   );
 
   menu.appendChild(
@@ -4987,49 +4929,6 @@ return;
         post.id,
         getPostMentions(cleanBody)
       );
-
-
-      window.location.reload();
-
-    }
-  );
-
-
-  privacySelect.addEventListener(
-    "change",
-    async () => {
-
-      const {
-        error
-      } =
-        await supabaseClient
-          .from("posts")
-          .update({
-            privacy:
-              privacySelect.value,
-            updated_at:
-              new Date().toISOString()
-          })
-          .eq("id", post.id)
-          .eq("user_id", user.id);
-
-
-      if (error) {
-
-        console.error(
-          "Could not change post privacy:",
-          error
-        );
-
-        alert(
-          "The post privacy could not be changed."
-        );
-
-        privacySelect.value =
-          post.privacy;
-
-        return;
-      }
 
 
       window.location.reload();
