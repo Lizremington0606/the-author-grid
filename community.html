@@ -1714,6 +1714,594 @@ margin: 0 auto;
 
   cursor: pointer;
 }
+    /* STORY CREATOR */
+
+.story-creator-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1300;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(0, 0, 0, 0.96);
+}
+
+.story-creator-modal[hidden] {
+  display: none;
+}
+
+.story-creator {
+  width: min(470px, 100%);
+  height: 100vh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.story-canvas {
+  position: relative;
+
+  width: 100%;
+  height: 100%;
+
+  overflow: hidden;
+
+  background: #000000;
+}
+
+.story-camera,
+.story-photo-preview,
+.story-video-preview {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+
+  background: #000000;
+}
+
+.story-drawing-canvas {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  pointer-events: none;
+}
+
+.story-overlay-layer {
+  position: absolute;
+  inset: 0;
+
+  pointer-events: none;
+}
+
+.story-top-controls {
+  position: absolute;
+  top: 20px;
+  left: 18px;
+  right: 18px;
+
+  z-index: 20;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.story-circle-button {
+  width: 46px;
+  height: 46px;
+
+  border: 0;
+  border-radius: 50%;
+
+  background: rgba(32, 32, 34, 0.78);
+  color: #ffffff;
+
+  font-size: 19px;
+
+  cursor: pointer;
+}
+
+.story-tools {
+  position: absolute;
+  top: 90px;
+  right: 16px;
+
+  z-index: 20;
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.story-tool-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+
+  width: 64px;
+  min-height: 58px;
+
+  border: 0;
+  border-radius: 12px;
+
+  background: rgba(32, 32, 34, 0.78);
+  color: #ffffff;
+
+  font-size: 12px;
+
+  cursor: pointer;
+}
+
+.story-tool-button i {
+  font-size: 20px;
+}
+
+.story-tool-panel {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  top: 110px;
+
+  z-index: 40;
+
+  padding: 16px;
+
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.97);
+  color: #202022;
+
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.story-tool-panel[hidden] {
+  display: none;
+}
+
+.story-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 14px;
+}
+
+.story-panel-header strong {
+  font-size: 17px;
+}
+
+.story-panel-close {
+  width: 30px;
+  height: 30px;
+
+  border: 0;
+  border-radius: 50%;
+
+  background: #ece9e4;
+  color: #202022;
+
+  font-size: 20px;
+
+  cursor: pointer;
+}
+
+.story-tool-panel input[type="text"],
+.story-tool-panel input[type="url"],
+.story-tool-panel textarea,
+.story-tool-panel select {
+  width: 100%;
+
+  margin-top: 8px;
+  padding: 10px;
+
+  border: 1px solid #c8c3bc;
+  border-radius: 5px;
+
+  background: #ffffff;
+  color: #202022;
+
+  font: inherit;
+  box-sizing: border-box;
+}
+
+.story-tool-panel textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+.story-tool-panel label {
+  display: block;
+
+  margin-top: 12px;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.story-panel-action {
+  width: 100%;
+
+  margin-top: 14px;
+  padding: 10px 14px;
+
+  border: 0;
+  border-radius: 5px;
+
+  background: #202022;
+  color: #ffffff;
+
+  font: inherit;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.story-privacy-option {
+  display: flex !important;
+  align-items: center;
+  gap: 9px;
+
+  padding: 10px 0;
+}
+
+.story-draw-tools {
+  display: flex;
+  gap: 8px;
+}
+
+.story-draw-type {
+  flex: 1;
+
+  padding: 9px 8px;
+
+  border: 1px solid #c8c3bc;
+  border-radius: 5px;
+
+  background: #ffffff;
+  color: #202022;
+
+  cursor: pointer;
+}
+
+.story-draw-type.active {
+  background: #202022;
+  color: #ffffff;
+}
+
+.story-book-cover-upload {
+  display: block;
+
+  margin-top: 12px;
+  padding: 10px;
+
+  border: 1px solid #c8c3bc;
+  border-radius: 5px;
+
+  background: #f5f3ef;
+
+  text-align: center;
+
+  cursor: pointer;
+}
+
+.story-bottom-controls {
+  position: absolute;
+  left: 22px;
+  right: 22px;
+  bottom: 28px;
+
+  z-index: 20;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.story-gallery-button {
+  width: 52px;
+  height: 52px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 2px solid #ffffff;
+  border-radius: 8px;
+
+  background: rgba(32, 32, 34, 0.72);
+  color: #ffffff;
+
+  font-size: 21px;
+
+  cursor: pointer;
+}
+
+.story-capture-button {
+  width: 78px;
+  height: 78px;
+
+  padding: 5px;
+
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+
+  background: transparent;
+
+  cursor: pointer;
+}
+
+.story-capture-button span {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  border-radius: 50%;
+
+  background: #ffffff;
+}
+
+.story-flip-button {
+  width: 52px;
+  height: 52px;
+}
+
+.story-publish-controls {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 28px;
+
+  z-index: 30;
+
+  display: flex;
+  gap: 10px;
+}
+
+.story-publish-controls[hidden] {
+  display: none;
+}
+
+.story-discard-button,
+.story-publish-button {
+  flex: 1;
+
+  padding: 12px 14px;
+
+  border-radius: 7px;
+
+  font: inherit;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.story-discard-button {
+  border: 1px solid rgba(255, 255, 255, 0.75);
+
+  background: rgba(32, 32, 34, 0.75);
+  color: #ffffff;
+}
+
+.story-publish-button {
+  border: 0;
+
+  background: #ffffff;
+  color: #202022;
+}
+
+.story-mention-results {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+
+  margin-top: 10px;
+}
+
+@media (max-width: 520px) {
+  .story-creator {
+    width: 100%;
+  }
+
+  .story-canvas {
+    border-radius: 0;
+  }
+}
+    .story-text-overlay {
+  position: absolute;
+  left: 50%;
+  top: 45%;
+
+  transform: translate(-50%, -50%);
+
+  max-width: 82%;
+
+  padding: 8px 12px;
+
+  color: #ffffff;
+
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.15;
+  text-align: center;
+
+  white-space: pre-wrap;
+  word-break: break-word;
+
+  text-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.7);
+
+  pointer-events: auto;
+}
+    .story-mention-overlay {
+  position: absolute;
+  left: 50%;
+  top: 55%;
+
+  transform: translate(-50%, -50%);
+
+  max-width: 82%;
+
+  padding: 9px 14px;
+
+  border-radius: 8px;
+
+  background: rgba(255, 255, 255, 0.92);
+  color: #202022;
+
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.1;
+
+  text-align: center;
+
+  box-shadow:
+    0 3px 10px rgba(0, 0, 0, 0.28);
+
+  pointer-events: auto;
+}
+
+.story-mention-result {
+  width: 100%;
+
+  padding: 10px 12px;
+
+  border: 1px solid #d1ccc5;
+  border-radius: 6px;
+
+  background: #ffffff;
+  color: #202022;
+
+  font: inherit;
+  text-align: left;
+
+  cursor: pointer;
+}
+
+.story-mention-result:hover {
+  background: #f3f1ed;
+}
+    .story-book-card {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+
+  transform: translate(-50%, -50%);
+
+  width: min(340px, 82%);
+
+  padding: 18px;
+
+  border-radius: 14px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.97),
+      rgba(237, 233, 226, 0.97)
+    );
+
+  color: #202022;
+
+  box-shadow:
+    0 10px 32px rgba(0, 0, 0, 0.38);
+
+  text-align: center;
+
+  pointer-events: auto;
+}
+
+.story-book-card-cover {
+  display: block;
+
+  width: 150px;
+  max-height: 220px;
+
+  margin: 0 auto 16px;
+
+  border-radius: 5px;
+
+  object-fit: cover;
+
+  box-shadow:
+    0 5px 18px rgba(0, 0, 0, 0.28);
+}
+
+.story-book-card-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.story-book-card-title {
+  font-family:
+    "Playfair Display",
+    Georgia,
+    serif;
+
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.story-book-card-author {
+  margin-top: 6px;
+
+  font-size: 15px;
+  font-weight: 600;
+
+  opacity: 0.75;
+}
+
+.story-book-card-description {
+  margin-top: 12px;
+
+  max-height: 100px;
+
+  overflow: hidden;
+
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.story-book-card-link {
+  display: inline-block;
+
+  margin-top: 16px;
+  padding: 10px 18px;
+
+  border-radius: 6px;
+
+  background: #202022;
+  color: #ffffff;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  text-decoration: none;
+
+  cursor: pointer;
+}
+
+.story-book-card-link:hover {
+  background: #353538;
+}
+    .story-circle-button.active {
+  background: #ffffff;
+  color: #202022;
+}
     /* MESSAGES */
 
     .messages-layout {
@@ -2315,6 +2903,7 @@ margin: 0 auto;
       <div class="stories-row">
 
         <button
+          id="openStoryCreator"
           class="story-card your-story"
           type="button"
         >
@@ -2927,6 +3516,480 @@ margin: 0 auto;
     id="mediaViewerContent"
     class="media-viewer-content"
   ></div>
+
+</div>
+  <!-- STORY CREATOR -->
+
+<div
+  id="storyCreatorModal"
+  class="story-creator-modal"
+  hidden
+>
+
+  <div class="story-creator">
+
+    <!-- CAMERA / STORY CANVAS -->
+
+    <div
+      id="storyCanvas"
+      class="story-canvas"
+    >
+
+      <video
+        id="storyCamera"
+        class="story-camera"
+        autoplay
+        playsinline
+        muted
+      ></video>
+
+      <img
+        id="storyPhotoPreview"
+        class="story-photo-preview"
+        alt="Story photo"
+        hidden
+      >
+
+      <video
+        id="storyVideoPreview"
+        class="story-video-preview"
+        controls
+        playsinline
+        hidden
+      ></video>
+
+      <canvas
+        id="storyDrawingCanvas"
+        class="story-drawing-canvas"
+      ></canvas>
+
+      <div
+        id="storyOverlayLayer"
+        class="story-overlay-layer"
+      ></div>
+
+
+      <!-- TOP CONTROLS -->
+
+      <div class="story-top-controls">
+
+        <button
+          id="closeStoryCreator"
+          class="story-circle-button"
+          type="button"
+          aria-label="Close story creator"
+        >
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <button
+          id="storyFlashButton"
+          class="story-circle-button"
+          type="button"
+          aria-label="Flash"
+        >
+          <i class="fa-solid fa-bolt"></i>
+        </button>
+
+        <button
+          id="storySettingsButton"
+          class="story-circle-button"
+          type="button"
+          aria-label="Story settings"
+        >
+          <i class="fa-solid fa-gear"></i>
+        </button>
+
+      </div>
+
+
+      <!-- STORY TOOLS -->
+
+      <div class="story-tools">
+
+        <button
+          id="storyTextButton"
+          class="story-tool-button"
+          type="button"
+        >
+          <i class="fa-solid fa-font"></i>
+          <span>Text</span>
+        </button>
+
+        <button
+          id="storyMentionButton"
+          class="story-tool-button"
+          type="button"
+        >
+          <i class="fa-solid fa-at"></i>
+          <span>Mention</span>
+        </button>
+
+        <button
+          id="storyDrawButton"
+          class="story-tool-button"
+          type="button"
+        >
+          <i class="fa-solid fa-pencil"></i>
+          <span>Draw</span>
+        </button>
+
+        <button
+          id="storyBookButton"
+          class="story-tool-button"
+          type="button"
+        >
+          <i class="fa-solid fa-book-open"></i>
+          <span>Book</span>
+        </button>
+
+      </div>
+
+
+      <!-- SETTINGS PANEL -->
+
+      <div
+        id="storySettingsPanel"
+        class="story-tool-panel story-settings-panel"
+        hidden
+      >
+
+        <div class="story-panel-header">
+          <strong>Story Privacy</strong>
+
+          <button
+            class="story-panel-close"
+            type="button"
+            data-close-story-panel
+          >
+            ×
+          </button>
+        </div>
+
+        <label class="story-privacy-option">
+          <input
+            type="radio"
+            name="storyPrivacy"
+            value="public"
+            checked
+          >
+          <span>Public</span>
+        </label>
+
+        <label class="story-privacy-option">
+          <input
+            type="radio"
+            name="storyPrivacy"
+            value="friends"
+          >
+          <span>Friends Only</span>
+        </label>
+
+      </div>
+
+
+      <!-- TEXT PANEL -->
+
+      <div
+        id="storyTextPanel"
+        class="story-tool-panel"
+        hidden
+      >
+
+        <div class="story-panel-header">
+          <strong>Add Text</strong>
+
+          <button
+            class="story-panel-close"
+            type="button"
+            data-close-story-panel
+          >
+            ×
+          </button>
+        </div>
+
+        <textarea
+          id="storyTextInput"
+          placeholder="Write something..."
+        ></textarea>
+
+        <label>
+          Font
+          <select id="storyTextFont">
+            <option value="Arial">Classic</option>
+            <option value="Georgia">Book</option>
+            <option value="Special Elite">Typewriter</option>
+            <option value="Playfair Display">Elegant</option>
+            <option value="Courier New">Mono</option>
+          </select>
+        </label>
+
+        <label>
+          Text Color
+          <input
+            id="storyTextColor"
+            type="color"
+            value="#ffffff"
+          >
+        </label>
+
+        <button
+          id="addStoryText"
+          class="story-panel-action"
+          type="button"
+        >
+          Add Text
+        </button>
+
+      </div>
+
+
+      <!-- MENTION PANEL -->
+
+      <div
+        id="storyMentionPanel"
+        class="story-tool-panel"
+        hidden
+      >
+
+        <div class="story-panel-header">
+          <strong>Mention Someone</strong>
+
+          <button
+            class="story-panel-close"
+            type="button"
+            data-close-story-panel
+          >
+            ×
+          </button>
+        </div>
+
+        <input
+          id="storyMentionInput"
+          type="text"
+          placeholder="Search username..."
+          autocomplete="off"
+        >
+
+        <button
+          id="searchStoryMentions"
+          class="story-panel-action"
+          type="button"
+        >
+          Search
+        </button>
+
+        <div
+          id="storyMentionResults"
+          class="story-mention-results"
+        ></div>
+
+      </div>
+
+
+      <!-- DRAW PANEL -->
+
+      <div
+        id="storyDrawPanel"
+        class="story-tool-panel"
+        hidden
+      >
+
+        <div class="story-panel-header">
+          <strong>Draw</strong>
+
+          <button
+            class="story-panel-close"
+            type="button"
+            data-close-story-panel
+          >
+            ×
+          </button>
+        </div>
+
+        <div class="story-draw-tools">
+
+          <button
+            type="button"
+            class="story-draw-type active"
+            data-draw-type="pen"
+          >
+            Pen
+          </button>
+
+          <button
+            type="button"
+            class="story-draw-type"
+            data-draw-type="pencil"
+          >
+            Pencil
+          </button>
+
+          <button
+            type="button"
+            class="story-draw-type"
+            data-draw-type="highlighter"
+          >
+            Highlighter
+          </button>
+
+        </div>
+
+        <label>
+          Color
+          <input
+            id="storyDrawColor"
+            type="color"
+            value="#ffffff"
+          >
+        </label>
+
+        <button
+          id="clearStoryDrawing"
+          class="story-panel-action"
+          type="button"
+        >
+          Clear Drawing
+        </button>
+
+      </div>
+
+
+      <!-- BOOK PANEL -->
+
+      <div
+        id="storyBookPanel"
+        class="story-tool-panel story-book-panel"
+        hidden
+      >
+
+        <div class="story-panel-header">
+          <strong>Add a Book</strong>
+
+          <button
+            class="story-panel-close"
+            type="button"
+            data-close-story-panel
+          >
+            ×
+          </button>
+        </div>
+
+        <input
+          id="storyBookTitle"
+          type="text"
+          placeholder="Book title"
+        >
+
+        <input
+          id="storyBookAuthor"
+          type="text"
+          placeholder="Author"
+        >
+
+        <textarea
+          id="storyBookDescription"
+          placeholder="Book description or details..."
+        ></textarea>
+
+        <input
+          id="storyBookLink"
+          type="url"
+          placeholder="Book link"
+        >
+
+        <label class="story-book-cover-upload">
+          Add Book Cover
+
+          <input
+            id="storyBookCover"
+            type="file"
+            accept="image/*"
+            hidden
+          >
+        </label>
+
+        <button
+          id="addBookToStory"
+          class="story-panel-action"
+          type="button"
+        >
+          Add Book to Story
+        </button>
+
+      </div>
+
+
+      <!-- BOTTOM CAMERA CONTROLS -->
+
+      <div class="story-bottom-controls">
+
+        <label
+          class="story-gallery-button"
+          aria-label="Upload photo or video"
+        >
+          <i class="fa-regular fa-image"></i>
+
+          <input
+            id="storyMediaUpload"
+            type="file"
+            accept="image/*,video/*"
+            hidden
+          >
+        </label>
+
+
+        <button
+          id="storyCaptureButton"
+          class="story-capture-button"
+          type="button"
+          aria-label="Take photo"
+        >
+          <span></span>
+        </button>
+
+
+        <button
+          id="storyFlipCamera"
+          class="story-circle-button story-flip-button"
+          type="button"
+          aria-label="Flip camera"
+        >
+          <i class="fa-solid fa-camera-rotate"></i>
+        </button>
+
+      </div>
+
+
+      <!-- AFTER MEDIA IS CAPTURED -->
+
+      <div
+        id="storyPublishControls"
+        class="story-publish-controls"
+        hidden
+      >
+
+        <button
+          id="discardStoryMedia"
+          class="story-discard-button"
+          type="button"
+        >
+          Delete
+        </button>
+
+        <button
+          id="publishStoryButton"
+          class="story-publish-button"
+          type="button"
+        >
+          Share Story
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
 
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -5401,6 +6464,1633 @@ mediaViewerModal.addEventListener(
 
   }
 );
+    /* =========================
+   STORY CREATOR
+========================= */
+
+const openStoryCreator =
+  document.getElementById("openStoryCreator");
+
+const storyCreatorModal =
+  document.getElementById("storyCreatorModal");
+
+const closeStoryCreator =
+  document.getElementById("closeStoryCreator");
+
+const storyCamera =
+  document.getElementById("storyCamera");
+
+let storyCameraStream = null;
+
+let storyFacingMode =
+  "environment";
+
+
+async function startStoryCamera() {
+
+  if (
+    !navigator.mediaDevices ||
+    !navigator.mediaDevices.getUserMedia
+  ) {
+
+    alert(
+      "Your browser could not open the camera. You can still upload a photo or video."
+    );
+
+    return;
+  }
+
+
+  if (storyCameraStream) {
+
+    storyCameraStream
+      .getTracks()
+      .forEach(
+        (track) => track.stop()
+      );
+
+    storyCameraStream = null;
+  }
+
+
+  try {
+
+    storyCameraStream =
+      await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: {
+            ideal: storyFacingMode
+          }
+        },
+        audio: false
+      });
+
+
+    storyCamera.srcObject =
+      storyCameraStream;
+
+
+    await storyCamera.play();
+
+
+  } catch (error) {
+
+    console.error(
+      "Could not open story camera:",
+      error
+    );
+
+    alert(
+      "Camera access was not available. You can still upload a photo or video from your device."
+    );
+
+  }
+
+}
+
+
+function stopStoryCamera() {
+
+  if (!storyCameraStream) {
+    return;
+  }
+
+
+  storyCameraStream
+    .getTracks()
+    .forEach(
+      (track) => track.stop()
+    );
+
+
+  storyCameraStream = null;
+
+  storyCamera.srcObject = null;
+
+}
+
+
+openStoryCreator.addEventListener(
+  "click",
+  async () => {
+
+    storyCreatorModal.hidden =
+      false;
+
+    await startStoryCamera();
+
+  }
+);
+
+
+closeStoryCreator.addEventListener(
+  "click",
+  () => {
+
+    stopStoryCamera();
+
+    clearStoryMediaPreview();
+clearStoryEdits();
+    storyMediaUpload.value = "";
+
+    storyCamera.style.display =
+      "block";
+
+    showStoryCameraControls();
+
+    storyCreatorModal.hidden =
+      true;
+
+  }
+);
+    const storyPhotoPreview =
+  document.getElementById("storyPhotoPreview");
+
+const storyVideoPreview =
+  document.getElementById("storyVideoPreview");
+
+const storyMediaUpload =
+  document.getElementById("storyMediaUpload");
+
+const storyCaptureButton =
+  document.getElementById("storyCaptureButton");
+
+const storyFlipCamera =
+  document.getElementById("storyFlipCamera");
+
+const discardStoryMedia =
+  document.getElementById("discardStoryMedia");
+
+const storyPublishControls =
+  document.getElementById("storyPublishControls");
+
+const storyBottomControls =
+  document.querySelector(".story-bottom-controls");
+
+
+let storySelectedMediaFile = null;
+
+let storySelectedMediaUrl = null;
+
+
+function clearStoryMediaPreview() {
+
+  if (storySelectedMediaUrl) {
+    URL.revokeObjectURL(
+      storySelectedMediaUrl
+    );
+  }
+
+  storySelectedMediaFile = null;
+  storySelectedMediaUrl = null;
+
+  storyPhotoPreview.src = "";
+  storyPhotoPreview.hidden = true;
+
+  storyVideoPreview.pause();
+  storyVideoPreview.removeAttribute("src");
+  storyVideoPreview.load();
+  storyVideoPreview.hidden = true;
+
+}
+
+
+function showStoryPublishControls() {
+
+  storyBottomControls.style.display =
+    "none";
+
+  storyPublishControls.hidden =
+    false;
+
+}
+
+
+function showStoryCameraControls() {
+
+  storyBottomControls.style.display =
+    "flex";
+
+  storyPublishControls.hidden =
+    true;
+
+}
+
+
+storyCaptureButton.addEventListener(
+  "click",
+  async () => {
+
+    if (
+      !storyCamera.videoWidth ||
+      !storyCamera.videoHeight
+    ) {
+
+      alert(
+        "The camera is not ready yet."
+      );
+
+      return;
+    }
+
+
+    const captureCanvas =
+      document.createElement("canvas");
+
+    captureCanvas.width =
+      storyCamera.videoWidth;
+
+    captureCanvas.height =
+      storyCamera.videoHeight;
+
+
+    const context =
+      captureCanvas.getContext("2d");
+
+
+    context.drawImage(
+      storyCamera,
+      0,
+      0,
+      captureCanvas.width,
+      captureCanvas.height
+    );
+
+
+    captureCanvas.toBlob(
+      (blob) => {
+
+        if (!blob) {
+          return;
+        }
+
+
+        clearStoryMediaPreview();
+
+
+        storySelectedMediaFile =
+          new File(
+            [blob],
+            `story-${Date.now()}.jpg`,
+            {
+              type: "image/jpeg"
+            }
+          );
+
+
+        storySelectedMediaUrl =
+          URL.createObjectURL(
+            storySelectedMediaFile
+          );
+
+
+        storyPhotoPreview.src =
+          storySelectedMediaUrl;
+
+        storyPhotoPreview.hidden =
+          false;
+
+
+        storyCamera.style.display =
+          "none";
+
+
+        stopStoryCamera();
+
+        showStoryPublishControls();
+
+      },
+      "image/jpeg",
+      0.92
+    );
+
+  }
+);
+
+
+storyMediaUpload.addEventListener(
+  "change",
+  () => {
+
+    const file =
+      storyMediaUpload.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+
+    clearStoryMediaPreview();
+
+
+    storySelectedMediaFile =
+      file;
+
+    storySelectedMediaUrl =
+      URL.createObjectURL(file);
+
+
+    if (
+      file.type.startsWith("image/")
+    ) {
+
+      storyPhotoPreview.src =
+        storySelectedMediaUrl;
+
+      storyPhotoPreview.hidden =
+        false;
+
+    } else if (
+      file.type.startsWith("video/")
+    ) {
+
+      storyVideoPreview.src =
+        storySelectedMediaUrl;
+
+      storyVideoPreview.hidden =
+        false;
+
+      storyVideoPreview.play().catch(
+        () => {}
+      );
+
+    }
+
+
+    storyCamera.style.display =
+      "none";
+
+    stopStoryCamera();
+
+    showStoryPublishControls();
+
+  }
+);
+
+
+discardStoryMedia.addEventListener(
+  "click",
+  async () => {
+
+    clearStoryMediaPreview();
+clearStoryEdits();
+    storyMediaUpload.value = "";
+
+    storyCamera.style.display =
+      "block";
+
+    showStoryCameraControls();
+
+    await startStoryCamera();
+
+  }
+);
+
+
+storyFlipCamera.addEventListener(
+  "click",
+  async () => {
+
+    storyFacingMode =
+      storyFacingMode === "environment"
+        ? "user"
+        : "environment";
+
+    await startStoryCamera();
+
+  }
+);
+    const storySettingsButton =
+  document.getElementById("storySettingsButton");
+
+const storySettingsPanel =
+  document.getElementById("storySettingsPanel");
+
+
+function closeStoryToolPanels() {
+
+  document
+    .querySelectorAll(".story-tool-panel")
+    .forEach((panel) => {
+
+      panel.hidden = true;
+
+    });
+
+
+  const drawingCanvas =
+    document.getElementById(
+      "storyDrawingCanvas"
+    );
+
+  if (drawingCanvas) {
+    drawingCanvas.style.pointerEvents =
+      "none";
+  }
+
+}
+
+
+storySettingsButton.addEventListener(
+  "click",
+  () => {
+
+    const wasHidden =
+      storySettingsPanel.hidden;
+
+    closeStoryToolPanels();
+
+    storySettingsPanel.hidden =
+      !wasHidden;
+
+  }
+);
+
+
+document
+  .querySelectorAll(
+    "[data-close-story-panel]"
+  )
+  .forEach((button) => {
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        closeStoryToolPanels();
+
+      }
+    );
+
+  });
+    const storyTextButton =
+  document.getElementById("storyTextButton");
+
+const storyTextPanel =
+  document.getElementById("storyTextPanel");
+
+const storyTextInput =
+  document.getElementById("storyTextInput");
+
+const storyTextFont =
+  document.getElementById("storyTextFont");
+
+const storyTextColor =
+  document.getElementById("storyTextColor");
+
+const addStoryText =
+  document.getElementById("addStoryText");
+
+const storyOverlayLayer =
+  document.getElementById("storyOverlayLayer");
+
+
+storyTextButton.addEventListener(
+  "click",
+  () => {
+
+    const wasHidden =
+      storyTextPanel.hidden;
+
+    closeStoryToolPanels();
+
+    storyTextPanel.hidden =
+      !wasHidden;
+
+    if (!storyTextPanel.hidden) {
+      storyTextInput.focus();
+    }
+
+  }
+);
+
+
+addStoryText.addEventListener(
+  "click",
+  () => {
+
+    const text =
+      storyTextInput.value.trim();
+
+    if (!text) {
+      return;
+    }
+
+
+    const textOverlay =
+      document.createElement("div");
+
+    textOverlay.className =
+      "story-text-overlay";
+
+    textOverlay.textContent =
+      text;
+
+    textOverlay.style.fontFamily =
+      storyTextFont.value;
+
+    textOverlay.style.color =
+      storyTextColor.value;
+
+    textOverlay.style.cursor =
+      "move";
+
+    textOverlay.style.touchAction =
+      "none";
+
+
+    textOverlay.addEventListener(
+      "pointerdown",
+      (event) => {
+
+        event.preventDefault();
+
+        textOverlay.setPointerCapture(
+          event.pointerId
+        );
+
+
+        const storyCanvas =
+          document.getElementById(
+            "storyCanvas"
+          );
+
+        const canvasRect =
+          storyCanvas.getBoundingClientRect();
+
+        const textRect =
+          textOverlay.getBoundingClientRect();
+
+
+        const offsetX =
+          event.clientX -
+          (
+            textRect.left +
+            textRect.width / 2
+          );
+
+        const offsetY =
+          event.clientY -
+          (
+            textRect.top +
+            textRect.height / 2
+          );
+
+
+        function moveStoryText(
+          moveEvent
+        ) {
+
+          let nextX =
+            moveEvent.clientX -
+            canvasRect.left -
+            offsetX;
+
+          let nextY =
+            moveEvent.clientY -
+            canvasRect.top -
+            offsetY;
+
+
+          const halfWidth =
+            textOverlay.offsetWidth / 2;
+
+          const halfHeight =
+            textOverlay.offsetHeight / 2;
+
+
+          nextX = Math.max(
+            halfWidth,
+            Math.min(
+              canvasRect.width -
+                halfWidth,
+              nextX
+            )
+          );
+
+          nextY = Math.max(
+            halfHeight,
+            Math.min(
+              canvasRect.height -
+                halfHeight,
+              nextY
+            )
+          );
+
+
+          textOverlay.style.left =
+            `${nextX}px`;
+
+          textOverlay.style.top =
+            `${nextY}px`;
+
+        }
+
+
+        function stopMovingStoryText() {
+
+          textOverlay.removeEventListener(
+            "pointermove",
+            moveStoryText
+          );
+
+          textOverlay.removeEventListener(
+            "pointerup",
+            stopMovingStoryText
+          );
+
+          textOverlay.removeEventListener(
+            "pointercancel",
+            stopMovingStoryText
+          );
+
+        }
+
+
+        textOverlay.addEventListener(
+          "pointermove",
+          moveStoryText
+        );
+
+        textOverlay.addEventListener(
+          "pointerup",
+          stopMovingStoryText
+        );
+
+        textOverlay.addEventListener(
+          "pointercancel",
+          stopMovingStoryText
+        );
+
+      }
+    );
+
+
+    storyOverlayLayer.appendChild(
+      textOverlay
+    );
+
+
+    storyTextInput.value = "";
+
+    closeStoryToolPanels();
+
+  }
+);
+    const storyDrawButton =
+  document.getElementById("storyDrawButton");
+
+const storyDrawPanel =
+  document.getElementById("storyDrawPanel");
+
+const storyDrawingCanvas =
+  document.getElementById("storyDrawingCanvas");
+
+const storyDrawColor =
+  document.getElementById("storyDrawColor");
+
+const clearStoryDrawing =
+  document.getElementById("clearStoryDrawing");
+
+const storyDrawTypeButtons =
+  document.querySelectorAll(".story-draw-type");
+
+const storyDrawingContext =
+  storyDrawingCanvas.getContext("2d");
+
+
+let storyDrawType = "pen";
+
+let isDrawingStory = false;
+
+
+function resizeStoryDrawingCanvas() {
+
+  const storyCanvas =
+    document.getElementById("storyCanvas");
+
+  const rect =
+    storyCanvas.getBoundingClientRect();
+
+
+  if (
+    storyDrawingCanvas.width !==
+      Math.round(rect.width) ||
+    storyDrawingCanvas.height !==
+      Math.round(rect.height)
+  ) {
+
+    const oldDrawing =
+      document.createElement("canvas");
+
+    oldDrawing.width =
+      storyDrawingCanvas.width;
+
+    oldDrawing.height =
+      storyDrawingCanvas.height;
+
+    oldDrawing
+      .getContext("2d")
+      .drawImage(
+        storyDrawingCanvas,
+        0,
+        0
+      );
+
+
+    storyDrawingCanvas.width =
+      Math.round(rect.width);
+
+    storyDrawingCanvas.height =
+      Math.round(rect.height);
+
+
+    if (
+      oldDrawing.width > 0 &&
+      oldDrawing.height > 0
+    ) {
+
+      storyDrawingContext.drawImage(
+        oldDrawing,
+        0,
+        0,
+        oldDrawing.width,
+        oldDrawing.height,
+        0,
+        0,
+        storyDrawingCanvas.width,
+        storyDrawingCanvas.height
+      );
+
+    }
+
+  }
+
+}
+
+
+function setStoryDrawingStyle() {
+
+  storyDrawingContext.lineCap =
+    "round";
+
+  storyDrawingContext.lineJoin =
+    "round";
+
+  storyDrawingContext.strokeStyle =
+    storyDrawColor.value;
+
+
+  if (storyDrawType === "pencil") {
+
+    storyDrawingContext.lineWidth = 2;
+    storyDrawingContext.globalAlpha = 0.9;
+
+  } else if (
+    storyDrawType === "highlighter"
+  ) {
+
+    storyDrawingContext.lineWidth = 20;
+    storyDrawingContext.globalAlpha = 0.35;
+
+  } else {
+
+    storyDrawingContext.lineWidth = 6;
+    storyDrawingContext.globalAlpha = 1;
+
+  }
+
+}
+
+
+storyDrawButton.addEventListener(
+  "click",
+  () => {
+
+    const wasHidden =
+      storyDrawPanel.hidden;
+
+    closeStoryToolPanels();
+
+    storyDrawPanel.hidden =
+      !wasHidden;
+
+
+    if (!storyDrawPanel.hidden) {
+
+      resizeStoryDrawingCanvas();
+
+      storyDrawingCanvas.style.pointerEvents =
+        "auto";
+
+    }
+
+  }
+);
+
+
+storyDrawTypeButtons.forEach(
+  (button) => {
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        storyDrawType =
+          button.dataset.drawType;
+
+        storyDrawTypeButtons.forEach(
+          (otherButton) => {
+
+            otherButton.classList.remove(
+              "active"
+            );
+
+          }
+        );
+
+        button.classList.add(
+          "active"
+        );
+
+      }
+    );
+
+  }
+);
+
+
+storyDrawingCanvas.addEventListener(
+  "pointerdown",
+  (event) => {
+
+    isDrawingStory = true;
+
+    storyDrawingCanvas.setPointerCapture(
+      event.pointerId
+    );
+
+
+    const rect =
+      storyDrawingCanvas.getBoundingClientRect();
+
+    const x =
+      event.clientX - rect.left;
+
+    const y =
+      event.clientY - rect.top;
+
+
+    setStoryDrawingStyle();
+
+    storyDrawingContext.beginPath();
+
+    storyDrawingContext.moveTo(
+      x,
+      y
+    );
+
+  }
+);
+
+
+storyDrawingCanvas.addEventListener(
+  "pointermove",
+  (event) => {
+
+    if (!isDrawingStory) {
+      return;
+    }
+
+
+    const rect =
+      storyDrawingCanvas.getBoundingClientRect();
+
+    const x =
+      event.clientX - rect.left;
+
+    const y =
+      event.clientY - rect.top;
+
+
+    setStoryDrawingStyle();
+
+    storyDrawingContext.lineTo(
+      x,
+      y
+    );
+
+    storyDrawingContext.stroke();
+
+  }
+);
+
+
+function stopStoryDrawing() {
+
+  if (!isDrawingStory) {
+    return;
+  }
+
+  isDrawingStory = false;
+
+  storyDrawingContext.closePath();
+
+}
+
+
+storyDrawingCanvas.addEventListener(
+  "pointerup",
+  stopStoryDrawing
+);
+
+storyDrawingCanvas.addEventListener(
+  "pointercancel",
+  stopStoryDrawing
+);
+
+
+clearStoryDrawing.addEventListener(
+  "click",
+  () => {
+
+    storyDrawingContext.clearRect(
+      0,
+      0,
+      storyDrawingCanvas.width,
+      storyDrawingCanvas.height
+    );
+
+  }
+);
+    const storyMentionButton =
+  document.getElementById("storyMentionButton");
+
+const storyMentionPanel =
+  document.getElementById("storyMentionPanel");
+
+const storyMentionInput =
+  document.getElementById("storyMentionInput");
+
+const searchStoryMentions =
+  document.getElementById("searchStoryMentions");
+
+const storyMentionResults =
+  document.getElementById("storyMentionResults");
+
+
+storyMentionButton.addEventListener(
+  "click",
+  () => {
+
+    const wasHidden =
+      storyMentionPanel.hidden;
+
+    closeStoryToolPanels();
+
+    storyMentionPanel.hidden =
+      !wasHidden;
+
+    if (!storyMentionPanel.hidden) {
+      storyMentionInput.focus();
+    }
+
+  }
+);
+
+
+searchStoryMentions.addEventListener(
+  "click",
+  async () => {
+
+    const searchText =
+      storyMentionInput.value
+        .trim()
+        .replace(/^@/, "");
+
+    storyMentionResults.innerHTML = "";
+
+
+    if (!searchText) {
+      return;
+    }
+
+
+    searchStoryMentions.disabled = true;
+
+    searchStoryMentions.textContent =
+      "Searching...";
+
+
+    const {
+      data: profiles,
+      error
+    } =
+      await supabaseClient
+        .from("profiles")
+        .select(
+          "id, username, display_name, profile_image_url"
+        )
+        .ilike(
+          "username",
+          `%${searchText}%`
+        )
+        .limit(10);
+
+
+    searchStoryMentions.disabled = false;
+
+    searchStoryMentions.textContent =
+      "Search";
+
+
+    if (error) {
+
+      console.error(
+        "Could not search story mentions:",
+        error
+      );
+
+      storyMentionResults.textContent =
+        "Could not search users.";
+
+      return;
+    }
+
+
+    if (!profiles?.length) {
+
+      storyMentionResults.textContent =
+        "No users found.";
+
+      return;
+    }
+
+
+    profiles.forEach(
+      (profile) => {
+
+        const resultButton =
+          document.createElement("button");
+
+        resultButton.type =
+          "button";
+
+        resultButton.className =
+          "story-mention-result";
+
+        resultButton.dataset.userId =
+          profile.id;
+
+        resultButton.dataset.username =
+          profile.username;
+
+        resultButton.textContent =
+          profile.display_name
+            ? `${profile.display_name}  @${profile.username}`
+            : `@${profile.username}`;
+
+
+        storyMentionResults.appendChild(
+          resultButton
+        );
+
+      }
+    );
+
+  }
+);
+    const storyBookButton =
+  document.getElementById("storyBookButton");
+
+const storyBookPanel =
+  document.getElementById("storyBookPanel");
+
+const storyBookTitle =
+  document.getElementById("storyBookTitle");
+
+const storyBookAuthor =
+  document.getElementById("storyBookAuthor");
+
+const storyBookDescription =
+  document.getElementById("storyBookDescription");
+
+const storyBookLink =
+  document.getElementById("storyBookLink");
+
+const storyBookCover =
+  document.getElementById("storyBookCover");
+
+const addBookToStory =
+  document.getElementById("addBookToStory");
+
+
+storyBookButton.addEventListener(
+  "click",
+  () => {
+
+    const wasHidden =
+      storyBookPanel.hidden;
+
+    closeStoryToolPanels();
+
+    storyBookPanel.hidden =
+      !wasHidden;
+
+    if (!storyBookPanel.hidden) {
+      storyBookTitle.focus();
+    }
+
+  }
+);
+
+
+addBookToStory.addEventListener(
+  "click",
+  () => {
+
+    const title =
+      storyBookTitle.value.trim();
+
+    const author =
+      storyBookAuthor.value.trim();
+
+    const description =
+      storyBookDescription.value.trim();
+
+    const link =
+      storyBookLink.value.trim();
+
+    const coverFile =
+      storyBookCover.files?.[0];
+
+
+    if (!title) {
+
+      alert(
+        "Add a book title first."
+      );
+
+      return;
+    }
+
+
+    const bookCard =
+      document.createElement("div");
+
+    bookCard.className =
+      "story-book-card";
+bookCard.style.cursor =
+  "move";
+
+bookCard.style.touchAction =
+  "none";
+
+
+bookCard.addEventListener(
+  "pointerdown",
+  (event) => {
+
+    if (event.target.closest("a")) {
+      return;
+    }
+
+    event.preventDefault();
+
+    bookCard.setPointerCapture(
+      event.pointerId
+    );
+
+
+    const storyCanvas =
+      document.getElementById(
+        "storyCanvas"
+      );
+
+    const canvasRect =
+      storyCanvas.getBoundingClientRect();
+
+    const cardRect =
+      bookCard.getBoundingClientRect();
+
+
+    const offsetX =
+      event.clientX -
+      (
+        cardRect.left +
+        cardRect.width / 2
+      );
+
+    const offsetY =
+      event.clientY -
+      (
+        cardRect.top +
+        cardRect.height / 2
+      );
+
+
+    function moveBookCard(
+      moveEvent
+    ) {
+
+      let nextX =
+        moveEvent.clientX -
+        canvasRect.left -
+        offsetX;
+
+      let nextY =
+        moveEvent.clientY -
+        canvasRect.top -
+        offsetY;
+
+
+      const halfWidth =
+        bookCard.offsetWidth / 2;
+
+      const halfHeight =
+        bookCard.offsetHeight / 2;
+
+
+      nextX = Math.max(
+        halfWidth,
+        Math.min(
+          canvasRect.width -
+            halfWidth,
+          nextX
+        )
+      );
+
+      nextY = Math.max(
+        halfHeight,
+        Math.min(
+          canvasRect.height -
+            halfHeight,
+          nextY
+        )
+      );
+
+
+      bookCard.style.left =
+        `${nextX}px`;
+
+      bookCard.style.top =
+        `${nextY}px`;
+
+    }
+
+
+    function stopMovingBookCard() {
+
+      bookCard.removeEventListener(
+        "pointermove",
+        moveBookCard
+      );
+
+      bookCard.removeEventListener(
+        "pointerup",
+        stopMovingBookCard
+      );
+
+      bookCard.removeEventListener(
+        "pointercancel",
+        stopMovingBookCard
+      );
+
+    }
+
+
+    bookCard.addEventListener(
+      "pointermove",
+      moveBookCard
+    );
+
+    bookCard.addEventListener(
+      "pointerup",
+      stopMovingBookCard
+    );
+
+    bookCard.addEventListener(
+      "pointercancel",
+      stopMovingBookCard
+    );
+
+  }
+);
+
+    if (coverFile) {
+
+      const cover =
+        document.createElement("img");
+
+      cover.className =
+        "story-book-card-cover";
+
+      cover.src =
+        URL.createObjectURL(coverFile);
+
+      cover.alt =
+        `${title} cover`;
+
+      bookCard.appendChild(
+        cover
+      );
+
+    }
+
+
+    const bookInfo =
+      document.createElement("div");
+
+    bookInfo.className =
+      "story-book-card-info";
+
+
+    const titleElement =
+      document.createElement("div");
+
+    titleElement.className =
+      "story-book-card-title";
+
+    titleElement.textContent =
+      title;
+
+    bookInfo.appendChild(
+      titleElement
+    );
+
+
+    if (author) {
+
+      const authorElement =
+        document.createElement("div");
+
+      authorElement.className =
+        "story-book-card-author";
+
+      authorElement.textContent =
+        `by ${author}`;
+
+      bookInfo.appendChild(
+        authorElement
+      );
+
+    }
+
+
+    if (description) {
+
+      const descriptionElement =
+        document.createElement("div");
+
+      descriptionElement.className =
+        "story-book-card-description";
+
+      descriptionElement.textContent =
+        description;
+
+      bookInfo.appendChild(
+        descriptionElement
+      );
+
+    }
+
+
+    if (link) {
+
+      const bookLink =
+        document.createElement("a");
+
+      bookLink.className =
+        "story-book-card-link";
+
+      bookLink.href =
+        link;
+
+      bookLink.target =
+        "_blank";
+
+      bookLink.rel =
+        "noopener noreferrer";
+
+      bookLink.textContent =
+        "View Book";
+
+      bookInfo.appendChild(
+        bookLink
+      );
+
+    }
+
+
+    bookCard.appendChild(
+      bookInfo
+    );
+
+
+    storyOverlayLayer.appendChild(
+      bookCard
+    );
+
+
+    storyBookTitle.value = "";
+
+    storyBookAuthor.value = "";
+
+    storyBookDescription.value = "";
+
+    storyBookLink.value = "";
+
+    storyBookCover.value = "";
+
+
+    closeStoryToolPanels();
+
+  }
+);
+    const storyFlashButton =
+  document.getElementById("storyFlashButton");
+
+let storyFlashEnabled = false;
+
+
+async function turnOffStoryFlash() {
+
+  if (!storyCameraStream) {
+    storyFlashEnabled = false;
+    storyFlashButton.classList.remove(
+      "active"
+    );
+    return;
+  }
+
+
+  const videoTrack =
+    storyCameraStream
+      .getVideoTracks()[0];
+
+  if (!videoTrack) {
+    return;
+  }
+
+
+  const capabilities =
+    videoTrack.getCapabilities
+      ? videoTrack.getCapabilities()
+      : {};
+
+
+  if (!capabilities.torch) {
+
+    storyFlashEnabled = false;
+
+    storyFlashButton.classList.remove(
+      "active"
+    );
+
+    return;
+  }
+
+
+  try {
+
+    await videoTrack.applyConstraints({
+      advanced: [
+        {
+          torch: false
+        }
+      ]
+    });
+
+
+    storyFlashEnabled = false;
+
+    storyFlashButton.classList.remove(
+      "active"
+    );
+
+  } catch (error) {
+
+    console.error(
+      "Could not turn off story flash:",
+      error
+    );
+
+  }
+
+}
+
+
+storyFlashButton.addEventListener(
+  "click",
+  async () => {
+
+    if (!storyCameraStream) {
+      return;
+    }
+
+
+    const videoTrack =
+      storyCameraStream
+        .getVideoTracks()[0];
+
+    if (!videoTrack) {
+      return;
+    }
+
+
+    const capabilities =
+      videoTrack.getCapabilities
+        ? videoTrack.getCapabilities()
+        : {};
+
+
+    if (!capabilities.torch) {
+
+      alert(
+        "Flash is not available on this camera or browser."
+      );
+
+      return;
+    }
+
+
+    try {
+
+      storyFlashEnabled =
+        !storyFlashEnabled;
+
+
+      await videoTrack.applyConstraints({
+        advanced: [
+          {
+            torch:
+              storyFlashEnabled
+          }
+        ]
+      });
+
+
+      storyFlashButton.classList.toggle(
+        "active",
+        storyFlashEnabled
+      );
+
+    } catch (error) {
+
+      storyFlashEnabled = false;
+
+      storyFlashButton.classList.remove(
+        "active"
+      );
+
+      console.error(
+        "Could not change story flash:",
+        error
+      );
+
+    }
+
+  }
+);
+    function clearStoryEdits() {
+
+  storyOverlayLayer.innerHTML =
+    "";
+
+  storyDrawingContext.clearRect(
+    0,
+    0,
+    storyDrawingCanvas.width,
+    storyDrawingCanvas.height
+  );
+
+  storyTextInput.value =
+    "";
+
+  storyMentionInput.value =
+    "";
+
+  storyMentionResults.innerHTML =
+    "";
+
+  storyBookTitle.value =
+    "";
+
+  storyBookAuthor.value =
+    "";
+
+  storyBookDescription.value =
+    "";
+
+  storyBookLink.value =
+    "";
+
+  storyBookCover.value =
+    "";
+
+  closeStoryToolPanels();
+
+}
    async function addPostOwnerMenu(
   post,
   postCard
