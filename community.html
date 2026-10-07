@@ -1100,6 +1100,7 @@ font-weight: 700;
 }
 
 .community-post {
+  position: relative;
   width: 100%;
   padding: 18px;
   border: 1px solid #c8c3bc;
@@ -1107,7 +1108,71 @@ font-weight: 700;
   background: rgba(255, 255, 255, 0.88);
   box-sizing: border-box;
 }
+.post-owner-menu {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  z-index: 5;
+}
 
+.post-menu-button {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+
+  border: 0;
+  border-radius: 50%;
+
+  background: transparent;
+  color: #202022;
+
+  font-size: 24px;
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+.post-menu-button:hover {
+  background: rgba(32, 32, 34, 0.08);
+}
+
+.post-menu-dropdown {
+  position: absolute;
+  top: 36px;
+  right: 0;
+
+  min-width: 130px;
+  padding: 5px;
+
+  border: 1px solid #c8c3bc;
+  border-radius: 6px;
+
+  background: #ffffff;
+
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+.post-menu-dropdown button {
+  display: block;
+  width: 100%;
+
+  padding: 9px 11px;
+
+  border: 0;
+  border-radius: 4px;
+
+  background: transparent;
+  color: #202022;
+
+  text-align: left;
+  font: inherit;
+
+  cursor: pointer;
+}
+
+.post-menu-dropdown button:hover {
+  background: #f1efeb;
+}
 .community-post-header {
   display: flex;
   align-items: center;
@@ -3231,6 +3296,293 @@ function renderPostText(
   });
 
 }
+    function formatPostTime(dateString) {
+  const postDate = new Date(dateString);
+  const now = new Date();
+
+  const secondsAgo =
+    Math.floor(
+      (now - postDate) / 1000
+    );
+
+  if (secondsAgo < 60) {
+    return "Just now";
+  }
+
+  const minutesAgo =
+    Math.floor(secondsAgo / 60);
+
+  if (minutesAgo < 60) {
+    return `${minutesAgo}m ago`;
+  }
+
+  const hoursAgo =
+    Math.floor(minutesAgo / 60);
+
+  if (hoursAgo < 24) {
+    return `${hoursAgo}h ago`;
+  }
+
+  const daysAgo =
+    Math.floor(hoursAgo / 24);
+
+  if (daysAgo === 1) {
+    return "Yesterday";
+  }
+
+  if (daysAgo < 7) {
+    return `${daysAgo}d ago`;
+  }
+
+  return postDate.toLocaleDateString(
+    "en-US",
+    {
+      month: "short",
+      day: "numeric"
+    }
+  );
+}
+    async function addPostOwnerMenu(
+  post,
+  postCard
+) {
+
+  const {
+    data: { user }
+  } =
+    await supabaseClient.auth.getUser();
+
+
+  if (
+    !user ||
+    user.id !== post.user_id
+  ) {
+    return;
+  }
+
+
+  const menuWrap =
+    document.createElement("div");
+
+  menuWrap.className =
+    "post-owner-menu";
+
+
+  const menuButton =
+    document.createElement("button");
+
+  menuButton.type = "button";
+  menuButton.className =
+    "post-menu-button";
+
+  menuButton.textContent = "⋯";
+
+  menuButton.setAttribute(
+    "aria-label",
+    "Post options"
+  );
+
+
+  const menu =
+    document.createElement("div");
+
+  menu.className =
+    "post-menu-dropdown";
+
+  menu.hidden = true;
+
+
+  const editButton =
+    document.createElement("button");
+
+  editButton.type = "button";
+  editButton.textContent =
+    "Edit Post";
+
+
+  const deleteButton =
+    document.createElement("button");
+
+  deleteButton.type = "button";
+  deleteButton.textContent =
+    "Delete Post";
+
+
+  menu.appendChild(
+    editButton
+  );
+
+  menu.appendChild(
+    deleteButton
+  );
+
+
+  menuWrap.appendChild(
+    menuButton
+  );
+
+  menuWrap.appendChild(
+    menu
+  );
+
+
+  postCard.appendChild(
+    menuWrap
+  );
+
+
+  menuButton.addEventListener(
+    "click",
+    () => {
+
+      menu.hidden =
+        !menu.hidden;
+
+    }
+  );
+
+
+  editButton.addEventListener(
+    "click",
+    async () => {
+
+      const updatedBody =
+        prompt(
+          "Edit your post:",
+          post.body
+        );
+
+
+      if (updatedBody === null) {
+        return;
+      }
+
+
+      const cleanBody =
+        updatedBody.trim();
+
+
+      if (!cleanBody) {
+
+        alert(
+          "A post cannot be empty."
+        );
+
+        return;
+      }
+
+
+      const {
+        error: updateError
+      } =
+        await supabaseClient
+          .from("posts")
+          .update({
+            body: cleanBody,
+            updated_at:
+              new Date().toISOString()
+          })
+          .eq("id", post.id)
+          .eq("user_id", user.id);
+
+
+      if (updateError) {
+
+        console.error(
+          "Could not edit post:",
+          updateError
+        );
+
+        alert(
+          "Your post could not be edited."
+        );
+
+        return;
+      }
+
+
+      await supabaseClient
+        .from("post_hashtags")
+        .delete()
+        .eq(
+          "post_id",
+          post.id
+        );
+
+
+      await supabaseClient
+        .from("post_mentions")
+        .delete()
+        .eq(
+          "post_id",
+          post.id
+        );
+
+
+      await savePostHashtags(
+        post.id,
+        getPostHashtags(cleanBody)
+      );
+
+
+      await savePostMentions(
+        post.id,
+        getPostMentions(cleanBody)
+      );
+
+
+      window.location.reload();
+
+    }
+  );
+
+
+  deleteButton.addEventListener(
+    "click",
+    async () => {
+
+      const confirmed =
+        confirm(
+          "Delete this post? This cannot be undone."
+        );
+
+
+      if (!confirmed) {
+        return;
+      }
+
+
+      const {
+        error: deleteError
+      } =
+        await supabaseClient
+          .from("posts")
+          .delete()
+          .eq("id", post.id)
+          .eq("user_id", user.id);
+
+
+      if (deleteError) {
+
+        console.error(
+          "Could not delete post:",
+          deleteError
+        );
+
+        alert(
+          "Your post could not be deleted."
+        );
+
+        return;
+      }
+
+
+      postCard.remove();
+
+    }
+  );
+
+}
     async function loadHashtagPosts(tag) {
 
   const feedPosts =
@@ -3413,10 +3765,8 @@ function renderPostText(
     const time =
       document.createElement("span");
 
-    time.textContent =
-      new Date(
-        post.created_at
-      ).toLocaleString();
+  time.textContent =
+  formatPostTime(post.created_at);
 
     authorInfo.appendChild(
       authorName
@@ -3456,7 +3806,10 @@ function renderPostText(
     postCard.appendChild(
       postBody
     );
-
+addPostOwnerMenu(
+  post,
+  postCard
+);
     feedPosts.appendChild(
       postCard
     );
@@ -3629,11 +3982,8 @@ async function loadCommunityPosts(
     const time =
       document.createElement("span");
 
-    time.textContent =
-      new Date(
-        post.created_at
-      ).toLocaleString();
-
+time.textContent =
+  formatPostTime(post.created_at);
 
     authorInfo.appendChild(
       authorName
