@@ -2302,6 +2302,48 @@ margin: 0 auto;
   background: #ffffff;
   color: #202022;
 }
+    /* DESKTOP DRAW TOOL */
+
+@media (min-width: 700px) {
+
+  #storyDrawPanel {
+    left: 14px;
+    right: auto;
+    top: 100px;
+
+    width: 190px;
+    padding: 12px;
+  }
+
+  #storyDrawPanel .story-panel-header {
+    margin-bottom: 10px;
+  }
+
+  #storyDrawPanel .story-draw-tools {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  #storyDrawPanel .story-draw-type {
+    width: 100%;
+    padding: 7px 8px;
+  }
+
+  #storyDrawPanel label {
+    margin-top: 9px;
+  }
+
+  #storyDrawPanel #storyDrawColor {
+    width: 100%;
+    height: 35px;
+  }
+
+  #storyDrawPanel #clearStoryDrawing {
+    margin-top: 10px;
+    padding: 8px;
+  }
+
+}
     /* MESSAGES */
 
     .messages-layout {
@@ -8091,6 +8133,519 @@ storyFlashButton.addEventListener(
   closeStoryToolPanels();
 
 }
+    const publishStoryButton =
+  document.getElementById("publishStoryButton");
+
+
+function getStoryOverlayPosition(element) {
+
+  const storyCanvas =
+    document.getElementById("storyCanvas");
+
+  const canvasRect =
+    storyCanvas.getBoundingClientRect();
+
+  const elementRect =
+    element.getBoundingClientRect();
+
+
+  const centerX =
+    elementRect.left +
+    elementRect.width / 2 -
+    canvasRect.left;
+
+  const centerY =
+    elementRect.top +
+    elementRect.height / 2 -
+    canvasRect.top;
+
+
+  return {
+    left:
+      (centerX / canvasRect.width) * 100,
+
+    top:
+      (centerY / canvasRect.height) * 100
+  };
+
+}
+
+
+function collectStoryContentData() {
+
+  const text =
+    Array.from(
+      storyOverlayLayer.querySelectorAll(
+        ".story-text-overlay"
+      )
+    ).map((element) => {
+
+      const position =
+        getStoryOverlayPosition(element);
+
+      return {
+        text: element.textContent,
+        font: element.style.fontFamily,
+        color: element.style.color,
+        left: position.left,
+        top: position.top
+      };
+
+    });
+
+
+  const mentions =
+    Array.from(
+      storyOverlayLayer.querySelectorAll(
+        ".story-mention-overlay"
+      )
+    ).map((element) => {
+
+      const position =
+        getStoryOverlayPosition(element);
+
+      return {
+        user_id:
+          element.dataset.userId,
+
+        username:
+          element.dataset.username,
+
+        left: position.left,
+        top: position.top
+      };
+
+    });
+
+
+  const books =
+    Array.from(
+      storyOverlayLayer.querySelectorAll(
+        ".story-book-card"
+      )
+    ).map((element) => {
+
+      const position =
+        getStoryOverlayPosition(element);
+
+      const title =
+        element.querySelector(
+          ".story-book-card-title"
+        )?.textContent || "";
+
+      const author =
+        element.querySelector(
+          ".story-book-card-author"
+        )?.textContent
+          ?.replace(/^by\s+/i, "") || "";
+
+      const description =
+        element.querySelector(
+          ".story-book-card-description"
+        )?.textContent || "";
+
+      const link =
+        element.querySelector(
+          ".story-book-card-link"
+        )?.href || "";
+
+
+      return {
+        title,
+        author,
+        description,
+        link,
+        left: position.left,
+        top: position.top
+      };
+
+    });
+
+
+  return {
+    text,
+    mentions,
+    books
+  };
+
+}
+
+
+function storyDrawingIsBlank() {
+
+  if (
+    !storyDrawingCanvas.width ||
+    !storyDrawingCanvas.height
+  ) {
+    return true;
+  }
+
+
+  const pixels =
+    storyDrawingContext.getImageData(
+      0,
+      0,
+      storyDrawingCanvas.width,
+      storyDrawingCanvas.height
+    ).data;
+
+
+  for (
+    let index = 3;
+    index < pixels.length;
+    index += 4
+  ) {
+
+    if (pixels[index] !== 0) {
+      return false;
+    }
+
+  }
+
+
+  return true;
+
+}
+
+
+function storyCanvasToBlob() {
+
+  return new Promise((resolve) => {
+
+    storyDrawingCanvas.toBlob(
+      resolve,
+      "image/png"
+    );
+
+  });
+
+}
+
+
+async function uploadStoryFile(
+  userId,
+  file,
+  label
+) {
+
+  const extension =
+    file.type.startsWith("video/")
+      ? "mp4"
+      : file.type === "image/png"
+        ? "png"
+        : "jpg";
+
+
+  const path =
+    `${userId}/${Date.now()}-${label}-${Math.random()
+      .toString(36)
+      .slice(2)}.${extension}`;
+
+
+  const {
+    error
+  } =
+    await supabaseClient.storage
+      .from("story-media")
+      .upload(
+        path,
+        file,
+        {
+          contentType:
+            file.type,
+
+          upsert: false
+        }
+      );
+
+
+  if (error) {
+    throw error;
+  }
+
+
+  return path;
+
+}
+    publishStoryButton.addEventListener(
+  "click",
+  async () => {
+
+    const {
+      data: { user }
+    } =
+      await supabaseClient.auth.getUser();
+
+
+    if (!user) {
+
+      alert(
+        "You need to be signed in to share a Story."
+      );
+
+      return;
+    }
+
+
+    const contentData =
+      collectStoryContentData();
+
+
+    const hasText =
+      contentData.text.length > 0;
+
+    const hasMentions =
+      contentData.mentions.length > 0;
+
+    const hasBooks =
+      contentData.books.length > 0;
+
+    const hasDrawing =
+      !storyDrawingIsBlank();
+
+
+    if (
+      !storySelectedMediaFile &&
+      !hasText &&
+      !hasMentions &&
+      !hasBooks &&
+      !hasDrawing
+    ) {
+
+      alert(
+        "Add a photo, video, text, drawing, mention or book before sharing your Story."
+      );
+
+      return;
+    }
+
+
+    const privacy =
+      document.querySelector(
+        'input[name="storyPrivacy"]:checked'
+      )?.value || "public";
+
+
+    publishStoryButton.disabled =
+      true;
+
+    publishStoryButton.textContent =
+      "Sharing...";
+
+
+    const uploadedPaths = [];
+
+    let mediaPath = null;
+    let mediaType = null;
+    let drawingPath = null;
+    let bookCoverPath = null;
+
+
+    try {
+
+      if (storySelectedMediaFile) {
+
+        mediaPath =
+          await uploadStoryFile(
+            user.id,
+            storySelectedMediaFile,
+            "media"
+          );
+
+        uploadedPaths.push(
+          mediaPath
+        );
+
+
+        mediaType =
+          storySelectedMediaFile.type
+            .startsWith("video/")
+              ? "video"
+              : "image";
+
+      }
+
+
+      if (hasDrawing) {
+
+        const drawingBlob =
+          await storyCanvasToBlob();
+
+
+        if (drawingBlob) {
+
+          const drawingFile =
+            new File(
+              [drawingBlob],
+              `story-drawing-${Date.now()}.png`,
+              {
+                type: "image/png"
+              }
+            );
+
+
+          drawingPath =
+            await uploadStoryFile(
+              user.id,
+              drawingFile,
+              "drawing"
+            );
+
+          uploadedPaths.push(
+            drawingPath
+          );
+
+        }
+
+      }
+
+
+      const bookCover =
+        storyOverlayLayer.querySelector(
+          ".story-book-card-cover"
+        );
+
+
+      if (bookCover?.src) {
+
+        const coverResponse =
+          await fetch(
+            bookCover.src
+          );
+
+        const coverBlob =
+          await coverResponse.blob();
+
+
+        const coverFile =
+          new File(
+            [coverBlob],
+            `story-book-cover-${Date.now()}`,
+            {
+              type:
+                coverBlob.type ||
+                "image/jpeg"
+            }
+          );
+
+
+        bookCoverPath =
+          await uploadStoryFile(
+            user.id,
+            coverFile,
+            "book-cover"
+          );
+
+        uploadedPaths.push(
+          bookCoverPath
+        );
+
+      }
+
+
+      const {
+        error
+      } =
+        await supabaseClient
+          .from("stories")
+          .insert({
+            user_id:
+              user.id,
+
+            privacy:
+              privacy,
+
+            media_path:
+              mediaPath,
+
+            media_type:
+              mediaType,
+
+            drawing_path:
+              drawingPath,
+
+            book_cover_path:
+              bookCoverPath,
+
+            content_data:
+              contentData
+          });
+
+
+      if (error) {
+        throw error;
+      }
+
+
+      stopStoryCamera();
+
+      clearStoryMediaPreview();
+
+      clearStoryEdits();
+
+      storyMediaUpload.value =
+        "";
+
+      storyCamera.style.display =
+        "block";
+
+      showStoryCameraControls();
+
+      storyCreatorModal.hidden =
+        true;
+
+
+      publishStoryButton.textContent =
+        "Shared!";
+
+
+      setTimeout(
+        () => {
+
+          publishStoryButton.textContent =
+            "Share Story";
+
+        },
+        1200
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "Could not share Story:",
+        error
+      );
+
+
+      if (uploadedPaths.length) {
+
+        await supabaseClient.storage
+          .from("story-media")
+          .remove(
+            uploadedPaths
+          );
+
+      }
+
+
+      alert(
+        "Your Story could not be shared. Please try again."
+      );
+
+
+      publishStoryButton.textContent =
+        "Share Story";
+
+    } finally {
+
+      publishStoryButton.disabled =
+        false;
+
+    }
+
+  }
+);
    async function addPostOwnerMenu(
   post,
   postCard
