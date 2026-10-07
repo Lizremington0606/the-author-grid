@@ -1242,6 +1242,33 @@ font-weight: 700;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
+    .community-post-media {
+  display: grid;
+  gap: 8px;
+
+  margin-top: 14px;
+
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.community-post-image,
+.community-post-video {
+  display: block;
+
+  width: 100%;
+  max-height: 560px;
+
+  border-radius: 7px;
+
+  background: #000;
+
+  object-fit: cover;
+}
+
+.community-post-video {
+  object-fit: contain;
+}
     .post-hashtag,
 .post-mention {
   display: inline;
@@ -1261,6 +1288,260 @@ font-weight: 700;
 .post-hashtag:hover,
 .post-mention:hover {
   text-decoration: underline;
+}
+    /* EDIT POST MODAL */
+
+.edit-post-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px;
+
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.edit-post-modal[hidden] {
+  display: none;
+}
+
+.edit-post-dialog {
+  width: min(680px, 100%);
+  max-height: 90vh;
+  overflow-y: auto;
+
+  padding: 22px;
+
+  border: 1px solid #c8c3bc;
+  border-radius: 10px;
+
+  background: #ffffff;
+
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18);
+}
+
+.edit-post-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+
+  margin-bottom: 18px;
+}
+
+.edit-post-header h2 {
+  margin: 0 0 4px;
+
+  color: #202022;
+  font-size: 24px;
+}
+
+.edit-post-header p {
+  margin: 0;
+
+  color: #66625e;
+  font-size: 14px;
+}
+
+.edit-post-close {
+  width: 34px;
+  height: 34px;
+
+  border: 0;
+  border-radius: 50%;
+
+  background: #f1efeb;
+  color: #202022;
+
+  font-size: 22px;
+
+  cursor: pointer;
+}
+
+.edit-post-caption {
+  width: 100%;
+  min-height: 130px;
+
+  padding: 12px;
+
+  border: 1px solid #c8c3bc;
+  border-radius: 6px;
+
+  background: #ffffff;
+  color: #202022;
+
+  font: inherit;
+  line-height: 1.5;
+
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.edit-post-existing-media,
+.edit-post-new-media-preview {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+
+  margin-top: 14px;
+}
+
+.edit-post-media-item {
+  position: relative;
+
+  overflow: hidden;
+
+  border: 1px solid #d5d0c9;
+  border-radius: 7px;
+
+  background: #f7f6f3;
+}
+
+.edit-post-media-item img,
+.edit-post-media-item video {
+  display: block;
+
+  width: 100%;
+  height: 190px;
+
+  object-fit: cover;
+
+  background: #000;
+}
+
+.edit-post-remove-media {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+
+  width: 30px;
+  height: 30px;
+
+  border: 0;
+  border-radius: 50%;
+
+  background: rgba(32, 32, 34, 0.85);
+  color: #ffffff;
+
+  font-size: 18px;
+
+  cursor: pointer;
+}
+
+.edit-post-media-actions {
+  display: flex;
+  gap: 10px;
+
+  margin-top: 14px;
+}
+
+.edit-post-media-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+
+  padding: 9px 12px;
+
+  border: 1px solid #c8c3bc;
+  border-radius: 5px;
+
+  background: #ffffff;
+  color: #202022;
+
+  cursor: pointer;
+}
+
+.edit-post-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+
+  margin-top: 20px;
+}
+
+.edit-post-footer select {
+  padding: 9px 34px 9px 11px;
+
+  border: 0;
+  border-radius: 4px;
+
+  background-color: transparent;
+  color: #202022;
+
+  font: inherit;
+
+  cursor: pointer;
+
+  appearance: none;
+  -webkit-appearance: none;
+
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23202022' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+}
+
+.edit-post-footer-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.edit-post-cancel,
+.edit-post-save {
+  padding: 10px 15px;
+
+  border-radius: 5px;
+
+  font: inherit;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.edit-post-cancel {
+  border: 1px solid #c8c3bc;
+
+  background: #ffffff;
+  color: #202022;
+}
+
+.edit-post-save {
+  border: 0;
+
+  background: #202022;
+  color: #ffffff;
+}
+
+@media (max-width: 650px) {
+
+  .edit-post-modal {
+    padding: 12px;
+  }
+
+  .edit-post-existing-media,
+  .edit-post-new-media-preview {
+    grid-template-columns: 1fr;
+  }
+
+  .edit-post-footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .edit-post-footer-buttons {
+    width: 100%;
+  }
+
+  .edit-post-cancel,
+  .edit-post-save {
+    flex: 1;
+  }
 }
     /* MESSAGES */
 
@@ -2363,7 +2644,101 @@ font-weight: 700;
 
   </main>
 
+<div id="editPostModal" class="edit-post-modal" hidden>
+  <div class="edit-post-dialog">
 
+    <div class="edit-post-header">
+      <div>
+        <h2>Edit Post</h2>
+        <p>Update your post and media.</p>
+      </div>
+
+      <button
+        id="closeEditPostModal"
+        class="edit-post-close"
+        type="button"
+        aria-label="Close edit post"
+      >
+        ×
+      </button>
+    </div>
+
+    <textarea
+      id="editPostCaption"
+      class="edit-post-caption"
+      placeholder="Edit your post..."
+    ></textarea>
+
+    <div
+      id="editPostExistingMedia"
+      class="edit-post-existing-media"
+    ></div>
+
+    <div class="edit-post-media-actions">
+
+      <label class="edit-post-media-button">
+        <i class="fa-regular fa-images"></i>
+        Add Photos
+
+        <input
+          id="editPostPhotos"
+          type="file"
+          accept="image/*"
+          multiple
+          hidden
+        >
+      </label>
+
+      <label class="edit-post-media-button">
+        <i class="fa-solid fa-video"></i>
+        Add Video
+
+        <input
+          id="editPostVideo"
+          type="file"
+          accept="video/*"
+          hidden
+        >
+      </label>
+
+    </div>
+
+    <div
+      id="editPostNewMediaPreview"
+      class="edit-post-new-media-preview"
+      hidden
+    ></div>
+
+    <div class="edit-post-footer">
+
+      <select id="editPostPrivacy">
+        <option value="public">Public</option>
+        <option value="friends">Friends Only</option>
+        <option value="private">Only Me</option>
+      </select>
+
+      <div class="edit-post-footer-buttons">
+        <button
+          id="cancelEditPost"
+          type="button"
+          class="edit-post-cancel"
+        >
+          Cancel
+        </button>
+
+        <button
+          id="saveEditPost"
+          type="button"
+          class="edit-post-save"
+        >
+          Save Changes
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+</div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
 const SUPABASE_URL =
@@ -3121,7 +3496,125 @@ async function savePostMentions(
 
 }
 
+async function uploadPostMedia(
+  postId,
+  userId
+) {
 
+  const mediaFiles = [];
+
+
+  Array.from(
+    postPhotos.files || []
+  ).forEach((file) => {
+
+    mediaFiles.push({
+      file: file,
+      type: "image"
+    });
+
+  });
+
+
+  if (
+    postVideo.files &&
+    postVideo.files[0]
+  ) {
+
+    mediaFiles.push({
+      file: postVideo.files[0],
+      type: "video"
+    });
+
+  }
+
+
+  for (
+    let index = 0;
+    index < mediaFiles.length;
+    index++
+  ) {
+
+    const media =
+      mediaFiles[index];
+
+    const file =
+      media.file;
+
+
+    const extension =
+      file.name.includes(".")
+        ? file.name
+            .split(".")
+            .pop()
+            .toLowerCase()
+        : "file";
+
+
+    const uniqueName =
+      `${Date.now()}-${index}-${Math.random()
+        .toString(36)
+        .slice(2)}.${extension}`;
+
+
+    const storagePath =
+      `${userId}/${postId}/${uniqueName}`;
+
+
+    const {
+      error: uploadError
+    } =
+      await supabaseClient
+        .storage
+        .from("post-media")
+        .upload(
+          storagePath,
+          file,
+          {
+            contentType:
+              file.type ||
+              undefined,
+            upsert: false
+          }
+        );
+
+
+    if (uploadError) {
+      throw uploadError;
+    }
+
+
+    const {
+      error: mediaRowError
+    } =
+      await supabaseClient
+        .from("post_media")
+        .insert({
+          post_id: postId,
+          storage_path:
+            storagePath,
+          media_type:
+            media.type,
+          sort_order:
+            index
+        });
+
+
+    if (mediaRowError) {
+
+      await supabaseClient
+        .storage
+        .from("post-media")
+        .remove([
+          storagePath
+        ]);
+
+      throw mediaRowError;
+    }
+
+  }
+
+}
 publishPostButtonEl.addEventListener(
   "click",
   async () => {
@@ -3211,7 +3704,10 @@ publishPostButtonEl.addEventListener(
         newPost.id,
         mentions
       );
-
+await uploadPostMedia(
+  newPost.id,
+  user.id
+);
 
       postCaption.value = "";
       postPrivacySelect.value =
@@ -3219,7 +3715,8 @@ publishPostButtonEl.addEventListener(
 
       postMediaPreview.innerHTML = "";
       postMediaPreview.hidden = true;
-
+postPhotos.value = "";
+postVideo.value = "";
       postComposer.hidden = true;
 
 
@@ -3368,6 +3865,889 @@ function renderPostText(
     }
   );
 }
+    async function addPostMediaToCard(
+  postId,
+  postCard
+) {
+
+  const {
+    data: mediaItems,
+    error
+  } =
+    await supabaseClient
+      .from("post_media")
+      .select(`
+        storage_path,
+        media_type,
+        sort_order
+      `)
+      .eq(
+        "post_id",
+        postId
+      )
+      .order(
+        "sort_order",
+        { ascending: true }
+      );
+
+
+  if (error) {
+
+    console.error(
+      "Could not load post media:",
+      error
+    );
+
+    return;
+  }
+
+
+  if (
+    !mediaItems ||
+    mediaItems.length === 0
+  ) {
+    return;
+  }
+
+
+  const mediaWrap =
+    document.createElement("div");
+
+  mediaWrap.className =
+    "community-post-media";
+
+
+  for (const media of mediaItems) {
+
+    const {
+      data: signedData,
+      error: signedError
+    } =
+      await supabaseClient
+        .storage
+        .from("post-media")
+        .createSignedUrl(
+          media.storage_path,
+          3600
+        );
+
+
+    if (
+      signedError ||
+      !signedData?.signedUrl
+    ) {
+
+      console.error(
+        "Could not load media file:",
+        signedError
+      );
+
+      continue;
+    }
+
+
+    if (
+      media.media_type === "image"
+    ) {
+
+      const image =
+        document.createElement("img");
+
+      image.src =
+        signedData.signedUrl;
+
+      image.alt =
+        "Post photo";
+
+      image.className =
+        "community-post-image";
+
+      mediaWrap.appendChild(
+        image
+      );
+
+    }
+
+
+    if (
+      media.media_type === "video"
+    ) {
+
+      const video =
+        document.createElement("video");
+
+      video.src =
+        signedData.signedUrl;
+
+      video.controls = true;
+
+      video.className =
+        "community-post-video";
+
+      mediaWrap.appendChild(
+        video
+      );
+
+    }
+
+  }
+
+
+  if (
+    mediaWrap.children.length > 0
+  ) {
+
+    postCard.appendChild(
+      mediaWrap
+    );
+
+  }
+
+}
+    /* =========================
+   EDIT POST MODAL
+========================= */
+
+const editPostModal =
+  document.getElementById("editPostModal");
+
+const closeEditPostModal =
+  document.getElementById("closeEditPostModal");
+
+const cancelEditPost =
+  document.getElementById("cancelEditPost");
+const saveEditPost =
+  document.getElementById("saveEditPost");
+const editPostCaption =
+  document.getElementById("editPostCaption");
+
+const editPostPrivacy =
+  document.getElementById("editPostPrivacy");
+
+const editPostExistingMedia =
+  document.getElementById("editPostExistingMedia");
+
+const editPostPhotos =
+  document.getElementById("editPostPhotos");
+
+const editPostVideo =
+  document.getElementById("editPostVideo");
+
+const editPostNewMediaPreview =
+  document.getElementById("editPostNewMediaPreview");
+
+
+let editingCommunityPost = null;
+
+let editMediaToRemove =
+  new Map();
+
+let editNewPhotoFiles = [];
+
+let editNewVideoFile = null;
+
+
+function closeEditPostEditor() {
+
+  editPostModal.hidden = true;
+
+  editingCommunityPost = null;
+
+  editMediaToRemove.clear();
+
+  editNewPhotoFiles = [];
+
+  editNewVideoFile = null;
+
+  editPostPhotos.value = "";
+
+  editPostVideo.value = "";
+
+  editPostExistingMedia.innerHTML = "";
+
+  editPostNewMediaPreview.innerHTML = "";
+
+  editPostNewMediaPreview.hidden = true;
+}
+
+
+closeEditPostModal.addEventListener(
+  "click",
+  closeEditPostEditor
+);
+
+
+cancelEditPost.addEventListener(
+  "click",
+  closeEditPostEditor
+);
+
+
+editPostModal.addEventListener(
+  "click",
+  (event) => {
+
+    if (event.target === editPostModal) {
+      closeEditPostEditor();
+    }
+
+  }
+);
+
+
+async function openEditPostEditor(post) {
+
+  editingCommunityPost = post;
+
+  editMediaToRemove.clear();
+
+  editNewPhotoFiles = [];
+
+  editNewVideoFile = null;
+
+  editPostPhotos.value = "";
+
+  editPostVideo.value = "";
+
+  editPostCaption.value =
+    post.body || "";
+
+  editPostPrivacy.value =
+    post.privacy || "public";
+
+  editPostExistingMedia.innerHTML =
+    "";
+
+  editPostNewMediaPreview.innerHTML =
+    "";
+
+  editPostNewMediaPreview.hidden =
+    true;
+
+  editPostModal.hidden = false;
+
+
+  const {
+    data: mediaItems,
+    error
+  } =
+    await supabaseClient
+      .from("post_media")
+      .select(`
+        id,
+        storage_path,
+        media_type,
+        sort_order
+      `)
+      .eq(
+        "post_id",
+        post.id
+      )
+      .order(
+        "sort_order",
+        { ascending: true }
+      );
+
+
+  if (error) {
+
+    console.error(
+      "Could not load media for editing:",
+      error
+    );
+
+    return;
+  }
+
+
+  for (const media of mediaItems || []) {
+
+    const {
+      data: signedData,
+      error: signedError
+    } =
+      await supabaseClient
+        .storage
+        .from("post-media")
+        .createSignedUrl(
+          media.storage_path,
+          3600
+        );
+
+
+    if (
+      signedError ||
+      !signedData?.signedUrl
+    ) {
+      continue;
+    }
+
+
+    const mediaItem =
+      document.createElement("div");
+
+    mediaItem.className =
+      "edit-post-media-item";
+
+
+    if (media.media_type === "image") {
+
+      const image =
+        document.createElement("img");
+
+      image.src =
+        signedData.signedUrl;
+
+      image.alt =
+        "Existing post photo";
+
+      mediaItem.appendChild(image);
+
+    } else {
+
+      const video =
+        document.createElement("video");
+
+      video.src =
+        signedData.signedUrl;
+
+      video.controls = true;
+
+      mediaItem.appendChild(video);
+
+    }
+
+
+    const removeButton =
+      document.createElement("button");
+
+    removeButton.type = "button";
+
+    removeButton.className =
+      "edit-post-remove-media";
+
+    removeButton.textContent = "×";
+
+    removeButton.setAttribute(
+      "aria-label",
+      "Remove media"
+    );
+
+
+    removeButton.addEventListener(
+      "click",
+      () => {
+
+        editMediaToRemove.set(
+          media.id,
+          media.storage_path
+        );
+
+        mediaItem.remove();
+
+      }
+    );
+
+
+    mediaItem.appendChild(
+      removeButton
+    );
+
+    editPostExistingMedia.appendChild(
+      mediaItem
+    );
+
+  }
+
+}
+
+
+function renderNewEditMedia() {
+
+  editPostNewMediaPreview.innerHTML = "";
+
+
+  editNewPhotoFiles.forEach(
+    (file, index) => {
+
+      const mediaItem =
+        document.createElement("div");
+
+      mediaItem.className =
+        "edit-post-media-item";
+
+
+      const image =
+        document.createElement("img");
+
+      image.src =
+        URL.createObjectURL(file);
+
+      image.alt =
+        "New post photo";
+
+
+      const removeButton =
+        document.createElement("button");
+
+      removeButton.type = "button";
+
+      removeButton.className =
+        "edit-post-remove-media";
+
+      removeButton.textContent = "×";
+
+
+      removeButton.addEventListener(
+        "click",
+        () => {
+
+          editNewPhotoFiles.splice(
+            index,
+            1
+          );
+
+          renderNewEditMedia();
+
+        }
+      );
+
+
+      mediaItem.appendChild(image);
+
+      mediaItem.appendChild(
+        removeButton
+      );
+
+      editPostNewMediaPreview.appendChild(
+        mediaItem
+      );
+
+    }
+  );
+
+
+  if (editNewVideoFile) {
+
+    const mediaItem =
+      document.createElement("div");
+
+    mediaItem.className =
+      "edit-post-media-item";
+
+
+    const video =
+      document.createElement("video");
+
+    video.src =
+      URL.createObjectURL(
+        editNewVideoFile
+      );
+
+    video.controls = true;
+
+
+    const removeButton =
+      document.createElement("button");
+
+    removeButton.type = "button";
+
+    removeButton.className =
+      "edit-post-remove-media";
+
+    removeButton.textContent = "×";
+
+
+    removeButton.addEventListener(
+      "click",
+      () => {
+
+        editNewVideoFile = null;
+
+        editPostVideo.value = "";
+
+        renderNewEditMedia();
+
+      }
+    );
+
+
+    mediaItem.appendChild(video);
+
+    mediaItem.appendChild(
+      removeButton
+    );
+
+    editPostNewMediaPreview.appendChild(
+      mediaItem
+    );
+
+  }
+
+
+  editPostNewMediaPreview.hidden =
+    editPostNewMediaPreview.children.length === 0;
+
+}
+
+
+editPostPhotos.addEventListener(
+  "change",
+  () => {
+
+    editNewPhotoFiles =
+      Array.from(
+        editPostPhotos.files || []
+      );
+
+    renderNewEditMedia();
+
+  }
+);
+
+
+editPostVideo.addEventListener(
+  "change",
+  () => {
+
+    editNewVideoFile =
+      editPostVideo.files?.[0] || null;
+
+    renderNewEditMedia();
+
+  }
+);
+    saveEditPost.addEventListener(
+  "click",
+  async () => {
+
+    if (!editingCommunityPost) {
+      return;
+    }
+
+    const cleanBody =
+      editPostCaption.value.trim();
+
+    if (!cleanBody) {
+      alert(
+        "A post cannot be empty."
+      );
+
+      return;
+    }
+
+    saveEditPost.disabled = true;
+    saveEditPost.textContent =
+      "Saving...";
+
+    try {
+
+      const {
+        data: { user },
+        error: userError
+      } =
+        await supabaseClient.auth.getUser();
+
+      if (userError) {
+        throw userError;
+      }
+
+      if (!user) {
+        throw new Error(
+          "You must be signed in."
+        );
+      }
+
+      const postId =
+        editingCommunityPost.id;
+
+
+      /* UPDATE TEXT + PRIVACY */
+
+      const {
+        error: updateError
+      } =
+        await supabaseClient
+          .from("posts")
+          .update({
+            body: cleanBody,
+            privacy:
+              editPostPrivacy.value,
+            updated_at:
+              new Date().toISOString()
+          })
+          .eq("id", postId)
+          .eq(
+            "user_id",
+            user.id
+          );
+
+      if (updateError) {
+        throw updateError;
+      }
+
+
+      /* UPDATE HASHTAGS */
+
+      const {
+        error: hashtagDeleteError
+      } =
+        await supabaseClient
+          .from("post_hashtags")
+          .delete()
+          .eq(
+            "post_id",
+            postId
+          );
+
+      if (hashtagDeleteError) {
+        throw hashtagDeleteError;
+      }
+
+      await savePostHashtags(
+        postId,
+        getPostHashtags(cleanBody)
+      );
+
+
+      /* UPDATE MENTIONS */
+
+      const {
+        error: mentionDeleteError
+      } =
+        await supabaseClient
+          .from("post_mentions")
+          .delete()
+          .eq(
+            "post_id",
+            postId
+          );
+
+      if (mentionDeleteError) {
+        throw mentionDeleteError;
+      }
+
+      await savePostMentions(
+        postId,
+        getPostMentions(cleanBody)
+      );
+
+
+      /* REMOVE OLD MEDIA */
+
+      if (
+        editMediaToRemove.size > 0
+      ) {
+
+        const mediaIds =
+          Array.from(
+            editMediaToRemove.keys()
+          );
+
+        const storagePaths =
+          Array.from(
+            editMediaToRemove.values()
+          );
+
+        const {
+          error: mediaDeleteError
+        } =
+          await supabaseClient
+            .from("post_media")
+            .delete()
+            .in(
+              "id",
+              mediaIds
+            )
+            .eq(
+              "post_id",
+              postId
+            );
+
+        if (mediaDeleteError) {
+          throw mediaDeleteError;
+        }
+
+        const {
+          error: storageDeleteError
+        } =
+          await supabaseClient
+            .storage
+            .from("post-media")
+            .remove(
+              storagePaths
+            );
+
+        if (storageDeleteError) {
+          console.warn(
+            "Media database rows were removed, but some storage files could not be deleted:",
+            storageDeleteError
+          );
+        }
+      }
+
+
+      /* FIND NEXT MEDIA POSITION */
+
+      const {
+        data: existingMedia,
+        error: existingMediaError
+      } =
+        await supabaseClient
+          .from("post_media")
+          .select("sort_order")
+          .eq(
+            "post_id",
+            postId
+          )
+          .order(
+            "sort_order",
+            { ascending: false }
+          )
+          .limit(1);
+
+      if (existingMediaError) {
+        throw existingMediaError;
+      }
+
+      let nextSortOrder =
+        existingMedia &&
+        existingMedia.length > 0
+          ? existingMedia[0]
+              .sort_order + 1
+          : 0;
+
+
+      /* ADD NEW MEDIA */
+
+      const newMediaFiles =
+        editNewPhotoFiles.map(
+          (file) => ({
+            file: file,
+            type: "image"
+          })
+        );
+
+      if (editNewVideoFile) {
+        newMediaFiles.push({
+          file:
+            editNewVideoFile,
+          type: "video"
+        });
+      }
+
+
+      for (
+        let index = 0;
+        index < newMediaFiles.length;
+        index++
+      ) {
+
+        const media =
+          newMediaFiles[index];
+
+        const file =
+          media.file;
+
+        const extension =
+          file.name.includes(".")
+            ? file.name
+                .split(".")
+                .pop()
+                .toLowerCase()
+            : "file";
+
+        const uniqueName =
+          `${Date.now()}-${index}-${Math.random()
+            .toString(36)
+            .slice(2)}.${extension}`;
+
+        const storagePath =
+          `${user.id}/${postId}/${uniqueName}`;
+
+
+        const {
+          error: uploadError
+        } =
+          await supabaseClient
+            .storage
+            .from("post-media")
+            .upload(
+              storagePath,
+              file,
+              {
+                contentType:
+                  file.type ||
+                  undefined,
+                upsert: false
+              }
+            );
+
+        if (uploadError) {
+          throw uploadError;
+        }
+
+
+        const {
+          error: mediaInsertError
+        } =
+          await supabaseClient
+            .from("post_media")
+            .insert({
+              post_id:
+                postId,
+              storage_path:
+                storagePath,
+              media_type:
+                media.type,
+              sort_order:
+                nextSortOrder
+            });
+
+        if (mediaInsertError) {
+
+          await supabaseClient
+            .storage
+            .from("post-media")
+            .remove([
+              storagePath
+            ]);
+
+          throw mediaInsertError;
+        }
+
+        nextSortOrder++;
+      }
+
+
+      closeEditPostEditor();
+
+      window.location.reload();
+
+
+    } catch (error) {
+
+      console.error(
+        "Could not save edited post:",
+        error
+      );
+
+      alert(
+        "Your changes could not be saved."
+      );
+
+    } finally {
+
+      saveEditPost.disabled =
+        false;
+
+      saveEditPost.textContent =
+        "Save Changes";
+
+    }
+
+  }
+);
    async function addPostOwnerMenu(
   post,
   postCard
@@ -3522,7 +4902,8 @@ function renderPostText(
   editButton.addEventListener(
     "click",
     async () => {
-
+openEditPostEditor(post);
+return;
       const updatedBody =
         prompt(
           "Edit your post:",
@@ -3970,6 +5351,10 @@ profiles!posts_user_id_fkey (
     postCard.appendChild(
       postBody
     );
+    addPostMediaToCard(
+  post.id,
+  postCard
+);
 addPostOwnerMenu(
   post,
   postCard
@@ -4191,7 +5576,10 @@ time.textContent =
     postCard.appendChild(
       postBody
     );
-
+addPostMediaToCard(
+  post.id,
+  postCard
+);
 addPostOwnerMenu(
   post,
   postCard
