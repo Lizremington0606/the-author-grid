@@ -1179,7 +1179,33 @@ font-weight: 700;
   gap: 11px;
   margin-bottom: 14px;
 }
+.post-privacy-menu-label {
+  display: block;
+  padding: 8px 11px 4px;
 
+  color: #66625e;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.post-privacy-menu-select {
+  display: block;
+  width: calc(100% - 10px);
+
+  margin: 0 5px 5px;
+  padding: 8px 30px 8px 9px;
+
+  border: 1px solid #c8c3bc;
+  border-radius: 4px;
+
+  background: #ffffff;
+  color: #202022;
+
+  font: inherit;
+  font-size: 13px;
+
+  cursor: pointer;
+}
 .community-post-avatar {
   width: 46px;
   height: 46px;
@@ -3342,16 +3368,18 @@ function renderPostText(
     }
   );
 }
-    async function addPostOwnerMenu(
+   async function addPostOwnerMenu(
   post,
   postCard
 ) {
 
   const {
-    data: { user }
+    data: { session }
   } =
-    await supabaseClient.auth.getUser();
+    await supabaseClient.auth.getSession();
 
+  const user =
+    session?.user;
 
   if (
     !user ||
@@ -3400,6 +3428,43 @@ function renderPostText(
     "Edit Post";
 
 
+  const privacyLabel =
+    document.createElement("label");
+
+  privacyLabel.className =
+    "post-privacy-menu-label";
+
+  privacyLabel.textContent =
+    "Who can see this?";
+
+
+  const privacySelect =
+    document.createElement("select");
+
+  privacySelect.className =
+    "post-privacy-menu-select";
+
+  privacySelect.innerHTML = `
+    <option value="public">Public</option>
+    <option value="friends">Friends Only</option>
+    <option value="private">Only Me</option>
+  `;
+
+  privacySelect.value =
+    post.privacy;
+
+
+  const pinButton =
+    document.createElement("button");
+
+  pinButton.type = "button";
+
+  pinButton.textContent =
+    post.is_pinned
+      ? "Unpin from Profile"
+      : "Pin to Profile";
+
+
   const deleteButton =
     document.createElement("button");
 
@@ -3410,6 +3475,18 @@ function renderPostText(
 
   menu.appendChild(
     editButton
+  );
+
+  menu.appendChild(
+    privacyLabel
+  );
+
+  menu.appendChild(
+    privacySelect
+  );
+
+  menu.appendChild(
+    pinButton
   );
 
   menu.appendChild(
@@ -3537,6 +3614,93 @@ function renderPostText(
   );
 
 
+  privacySelect.addEventListener(
+    "change",
+    async () => {
+
+      const {
+        error
+      } =
+        await supabaseClient
+          .from("posts")
+          .update({
+            privacy:
+              privacySelect.value,
+            updated_at:
+              new Date().toISOString()
+          })
+          .eq("id", post.id)
+          .eq("user_id", user.id);
+
+
+      if (error) {
+
+        console.error(
+          "Could not change post privacy:",
+          error
+        );
+
+        alert(
+          "The post privacy could not be changed."
+        );
+
+        privacySelect.value =
+          post.privacy;
+
+        return;
+      }
+
+
+      window.location.reload();
+
+    }
+  );
+
+
+  pinButton.addEventListener(
+    "click",
+    async () => {
+
+      const newPinnedValue =
+        !post.is_pinned;
+
+
+      const {
+        error
+      } =
+        await supabaseClient
+          .from("posts")
+          .update({
+            is_pinned:
+              newPinnedValue,
+            updated_at:
+              new Date().toISOString()
+          })
+          .eq("id", post.id)
+          .eq("user_id", user.id);
+
+
+      if (error) {
+
+        console.error(
+          "Could not change pinned post:",
+          error
+        );
+
+        alert(
+          "The post could not be pinned."
+        );
+
+        return;
+      }
+
+
+      window.location.reload();
+
+    }
+  );
+
+
   deleteButton.addEventListener(
     "click",
     async () => {
@@ -3583,7 +3747,6 @@ function renderPostText(
   );
 
 }
-    async function loadHashtagPosts(tag) {
 
   const feedPosts =
     document.getElementById("feedPosts");
@@ -3665,12 +3828,13 @@ function renderPostText(
     await supabaseClient
       .from("posts")
       .select(`
-        id,
-        created_at,
-        body,
-        privacy,
-        user_id,
-        profiles!posts_user_id_fkey (
+      id,
+created_at,
+body,
+privacy,
+is_pinned,
+user_id,
+profiles!posts_user_id_fkey (
           username,
           display_name,
           profile_image_url
@@ -3832,12 +3996,13 @@ async function loadCommunityPosts(
     supabaseClient
       .from("posts")
       .select(`
-        id,
-        created_at,
-        body,
-        privacy,
-        user_id,
-        profiles!posts_user_id_fkey (
+       id,
+created_at,
+body,
+privacy,
+is_pinned,
+user_id,
+profiles!posts_user_id_fkey (
           username,
           display_name,
           profile_image_url
