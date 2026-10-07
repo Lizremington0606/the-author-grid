@@ -831,7 +831,49 @@ letter-spacing: .5px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
 }
+.post-preview-item {
+  position: relative;
+  overflow: hidden;
 
+  border-radius: 7px;
+}
+
+.post-preview-item img,
+.post-preview-item video {
+  display: block;
+
+  width: 100%;
+  max-height: 300px;
+
+  border-radius: 7px;
+
+  object-fit: cover;
+  background: #000;
+}
+
+.post-preview-item video {
+  object-fit: contain;
+}
+
+.post-preview-remove {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+
+  width: 30px;
+  height: 30px;
+
+  border: 0;
+  border-radius: 50%;
+
+  background: rgba(32, 32, 34, 0.85);
+  color: #ffffff;
+
+  font-size: 18px;
+  line-height: 1;
+
+  cursor: pointer;
+}
 .post-media-preview img,
 .post-media-preview video {
   width: 100%;
@@ -3025,14 +3067,164 @@ const closePostComposer =
 const postCaption =
   document.getElementById("postCaption");
 
-const postPhotos =
-  document.getElementById("postPhotos");
+postPhotos.addEventListener(
+  "change",
+  () => {
 
-const postVideo =
-  document.getElementById("postVideo");
+    const newFiles =
+      Array.from(
+        postPhotos.files || []
+      );
 
-const postMediaPreview =
-  document.getElementById("postMediaPreview");
+    selectedPostPhotos.push(
+      ...newFiles
+    );
+
+    postPhotos.value = "";
+
+    postMediaPreview.innerHTML = "";
+
+
+    selectedPostPhotos.forEach(
+      (file, index) => {
+
+        const mediaItem =
+          document.createElement("div");
+
+        mediaItem.className =
+          "post-preview-item";
+
+
+        const image =
+          document.createElement("img");
+
+        image.src =
+          URL.createObjectURL(file);
+
+        image.alt =
+          "Selected post photo";
+
+
+        const removeButton =
+          document.createElement("button");
+
+        removeButton.type = "button";
+
+        removeButton.className =
+          "post-preview-remove";
+
+        removeButton.textContent = "×";
+
+        removeButton.setAttribute(
+          "aria-label",
+          "Remove photo"
+        );
+
+
+        removeButton.addEventListener(
+          "click",
+          () => {
+
+            selectedPostPhotos.splice(
+              index,
+              1
+            );
+
+            postPhotos.dispatchEvent(
+              new Event("change")
+            );
+
+          }
+        );
+
+
+        mediaItem.appendChild(
+          image
+        );
+
+        mediaItem.appendChild(
+          removeButton
+        );
+
+        postMediaPreview.appendChild(
+          mediaItem
+        );
+
+      }
+    );
+const selectedVideo =
+  postVideo.files?.[0];
+
+if (selectedVideo) {
+
+  const videoItem =
+    document.createElement("div");
+
+  videoItem.className =
+    "post-preview-item post-preview-video-item";
+
+
+  const video =
+    document.createElement("video");
+
+  video.src =
+    URL.createObjectURL(selectedVideo);
+
+  video.controls = true;
+
+
+  const removeVideoButton =
+    document.createElement("button");
+
+  removeVideoButton.type =
+    "button";
+
+  removeVideoButton.className =
+    "post-preview-remove";
+
+  removeVideoButton.textContent =
+    "×";
+
+  removeVideoButton.setAttribute(
+    "aria-label",
+    "Remove video"
+  );
+
+
+  removeVideoButton.addEventListener(
+    "click",
+    () => {
+
+      postVideo.value = "";
+
+      videoItem.remove();
+
+      postMediaPreview.hidden =
+        selectedPostPhotos.length === 0;
+
+    }
+  );
+
+
+  videoItem.appendChild(
+    video
+  );
+
+  videoItem.appendChild(
+    removeVideoButton
+  );
+
+  postMediaPreview.appendChild(
+    videoItem
+  );
+}
+
+    postMediaPreview.hidden =
+      selectedPostPhotos.length === 0 &&
+      !postVideo.files?.[0];
+
+  }
+);
 
 
 openPostComposer.addEventListener("click", () => {
@@ -3069,25 +3261,95 @@ postPhotos.addEventListener("change", () => {
 });
 
 
-postVideo.addEventListener("change", () => {
-  postMediaPreview.innerHTML = "";
+postVideo.addEventListener(
+  "change",
+  () => {
 
-  const file = postVideo.files[0];
+    const oldVideoPreview =
+      postMediaPreview.querySelector(
+        ".post-preview-video-item"
+      );
 
-  if (!file) {
-    postMediaPreview.hidden = true;
-    return;
+    if (oldVideoPreview) {
+      oldVideoPreview.remove();
+    }
+
+
+    const file =
+      postVideo.files?.[0];
+
+    if (!file) {
+
+      postMediaPreview.hidden =
+        selectedPostPhotos.length === 0;
+
+      return;
+    }
+
+
+    const mediaItem =
+      document.createElement("div");
+
+    mediaItem.className =
+      "post-preview-item post-preview-video-item";
+
+
+    const video =
+      document.createElement("video");
+
+    video.src =
+      URL.createObjectURL(file);
+
+    video.controls = true;
+
+
+    const removeButton =
+      document.createElement("button");
+
+    removeButton.type = "button";
+
+    removeButton.className =
+      "post-preview-remove";
+
+    removeButton.textContent = "×";
+
+    removeButton.setAttribute(
+      "aria-label",
+      "Remove video"
+    );
+
+
+    removeButton.addEventListener(
+      "click",
+      () => {
+
+        postVideo.value = "";
+
+        mediaItem.remove();
+
+        postMediaPreview.hidden =
+          selectedPostPhotos.length === 0;
+
+      }
+    );
+
+
+    mediaItem.appendChild(
+      video
+    );
+
+    mediaItem.appendChild(
+      removeButton
+    );
+
+    postMediaPreview.appendChild(
+      mediaItem
+    );
+
+    postMediaPreview.hidden = false;
+
   }
-
-  const video = document.createElement("video");
-
-  video.src = URL.createObjectURL(file);
-  video.controls = true;
-
-  postMediaPreview.appendChild(video);
-
-  postMediaPreview.hidden = false;
-});
+);
 
 /* =========================
    FEED TABS
@@ -3478,16 +3740,14 @@ async function uploadPostMedia(
   const mediaFiles = [];
 
 
-  Array.from(
-    postPhotos.files || []
-  ).forEach((file) => {
+ selectedPostPhotos.forEach((file) => {
 
-    mediaFiles.push({
-      file: file,
-      type: "image"
-    });
-
+  mediaFiles.push({
+    file: file,
+    type: "image"
   });
+
+});
 
 
   if (
@@ -3691,6 +3951,7 @@ await uploadPostMedia(
       postMediaPreview.hidden = true;
 postPhotos.value = "";
 postVideo.value = "";
+      selectedPostPhotos = [];
       postComposer.hidden = true;
 
 
