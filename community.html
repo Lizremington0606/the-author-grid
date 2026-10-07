@@ -1653,6 +1653,67 @@ margin: 0 auto;
 .delete-post-confirm:hover {
   background: #353538;
 }
+    /* MEDIA VIEWER */
+
+.media-viewer-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 50px;
+
+  background: rgba(0, 0, 0, 0.88);
+}
+
+.media-viewer-modal[hidden] {
+  display: none;
+}
+
+.media-viewer-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  height: 100%;
+}
+
+.media-viewer-content img,
+.media-viewer-content video {
+  display: block;
+
+  max-width: 92vw;
+  max-height: 88vh;
+
+  border-radius: 8px;
+
+  object-fit: contain;
+}
+
+.media-viewer-close {
+  position: fixed;
+  top: 22px;
+  right: 26px;
+  z-index: 1201;
+
+  width: 42px;
+  height: 42px;
+
+  border: 0;
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.95);
+  color: #202022;
+
+  font-size: 26px;
+  line-height: 1;
+
+  cursor: pointer;
+}
     /* MESSAGES */
 
     .messages-layout {
@@ -2851,6 +2912,23 @@ margin: 0 auto;
 
   </div>
 </div>
+  <div id="mediaViewerModal" class="media-viewer-modal" hidden>
+
+  <button
+    id="closeMediaViewer"
+    class="media-viewer-close"
+    type="button"
+    aria-label="Close media viewer"
+  >
+    ×
+  </button>
+
+  <div
+    id="mediaViewerContent"
+    class="media-viewer-content"
+  ></div>
+
+</div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
 const SUPABASE_URL =
@@ -3208,7 +3286,20 @@ postPhotos.addEventListener(
 
         image.alt =
           "Selected post photo";
+image.style.cursor =
+  "pointer";
 
+image.addEventListener(
+  "click",
+  () => {
+
+    openMediaViewer(
+      image.src,
+      "image"
+    );
+
+  }
+);
 
         const removeButton =
           document.createElement("button");
@@ -3276,7 +3367,20 @@ if (selectedVideo) {
     URL.createObjectURL(selectedVideo);
 
   video.controls = true;
+video.style.cursor =
+  "pointer";
 
+video.addEventListener(
+  "click",
+  () => {
+
+    openMediaViewer(
+      video.src,
+      "video"
+    );
+
+  }
+);
 
   const removeVideoButton =
     document.createElement("button");
@@ -3342,25 +3446,6 @@ closePostComposer.addEventListener("click", () => {
   postComposer.hidden = true;
 });
 
-
-postPhotos.addEventListener("change", () => {
-  postMediaPreview.innerHTML = "";
-
-  const files = Array.from(postPhotos.files);
-
-  if (files.length === 0) {
-    postMediaPreview.hidden = true;
-    return;
-  }
-
-  files.forEach((file) => {
-    const image = document.createElement("img");
-
-    image.src = URL.createObjectURL(file);
-    image.alt = "Selected post photo";
-
-    postMediaPreview.appendChild(image);
-  });
 
   postMediaPreview.hidden = false;
 });
@@ -5244,6 +5329,79 @@ deletePostModal.addEventListener(
       confirmDeletePost.textContent =
         "Yes, delete!";
 
+    }
+
+  }
+);
+    const mediaViewerModal =
+  document.getElementById("mediaViewerModal");
+
+const closeMediaViewer =
+  document.getElementById("closeMediaViewer");
+
+const mediaViewerContent =
+  document.getElementById("mediaViewerContent");
+
+
+function openMediaViewer(
+  source,
+  type
+) {
+
+  mediaViewerContent.innerHTML = "";
+
+  if (type === "image") {
+
+    const image =
+      document.createElement("img");
+
+    image.src = source;
+    image.alt = "Post photo";
+
+    mediaViewerContent.appendChild(
+      image
+    );
+
+  } else {
+
+    const video =
+      document.createElement("video");
+
+    video.src = source;
+    video.controls = true;
+    video.autoplay = true;
+
+    mediaViewerContent.appendChild(
+      video
+    );
+
+  }
+
+  mediaViewerModal.hidden = false;
+}
+
+
+function closeMediaViewerModal() {
+
+  mediaViewerModal.hidden = true;
+
+  mediaViewerContent.innerHTML = "";
+
+}
+
+
+closeMediaViewer.addEventListener(
+  "click",
+  closeMediaViewerModal
+);
+
+
+mediaViewerModal.addEventListener(
+  "click",
+  (event) => {
+
+    if (event.target === mediaViewerModal) {
+      closeMediaViewerModal();
     }
 
   }
