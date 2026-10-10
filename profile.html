@@ -122,6 +122,451 @@
       position: relative;
       z-index: 2;
     }
+    /* PROFILE ACTIVE STORY RING */
+
+.profile-story-ring {
+  position: relative;
+
+  width: 132px;
+  height: 132px;
+
+  flex: 0 0 132px;
+
+  margin-top: -66px;
+
+  border-radius: 50%;
+
+  z-index: 2;
+
+  isolation: isolate;
+}
+
+.profile-story-ring .profile-picture {
+  width: 132px;
+  height: 132px;
+
+  margin-top: 0;
+
+  box-sizing: border-box;
+}
+
+.profile-story-ring.has-active-story {
+  cursor: pointer;
+}
+
+.profile-story-ring.has-active-story::before {
+  content: "";
+
+  position: absolute;
+
+  inset: -9px;
+
+  border-radius: 50%;
+
+  background:
+    linear-gradient(
+      118deg,
+      transparent 0%,
+      transparent 26%,
+      rgba(255, 255, 255, 0.9) 27%,
+      rgba(255, 255, 255, 0.22) 29%,
+      transparent 31%,
+      transparent 61%,
+      rgba(225, 225, 230, 0.7) 62%,
+      transparent 65%
+    ),
+    linear-gradient(
+      42deg,
+      transparent 0%,
+      transparent 45%,
+      rgba(255, 255, 255, 0.65) 46%,
+      rgba(255, 255, 255, 0.12) 48%,
+      transparent 50%
+    ),
+    linear-gradient(
+      145deg,
+      #030303 0%,
+      #202022 22%,
+      #070708 43%,
+      #323235 64%,
+      #050506 82%,
+      #1c1c1f 100%
+    );
+
+  box-shadow:
+    0 0 0 2px #ffffff,
+    0 0 0 3px rgba(0, 0, 0, 0.55);
+
+  z-index: -1;
+}
+    /* PROFILE STORY VIEWER */
+
+.profile-story-viewer {
+  position: fixed;
+  inset: 0;
+
+  z-index: 10000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+
+  background: rgba(0, 0, 0, 0.9);
+}
+
+.profile-story-viewer[hidden] {
+  display: none;
+}
+
+.profile-story-frame {
+  position: relative;
+
+  width: min(430px, 100%);
+  height: min(760px, 92vh);
+
+  overflow: hidden;
+
+  border-radius: 14px;
+
+  background: #111111;
+
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.profile-story-progress {
+  position: absolute;
+
+  top: 10px;
+  left: 12px;
+  right: 12px;
+
+  z-index: 5;
+
+  height: 3px;
+
+  overflow: hidden;
+
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.profile-story-progress-bar {
+  width: 0%;
+  height: 100%;
+
+  background: #ffffff;
+}
+
+.profile-story-header {
+  position: absolute;
+
+  top: 22px;
+  left: 14px;
+  right: 14px;
+
+  z-index: 5;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  color: #ffffff;
+}
+
+.profile-story-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.profile-story-user img {
+  width: 38px;
+  height: 38px;
+
+  border-radius: 50%;
+
+  object-fit: cover;
+
+  border: 2px solid #ffffff;
+}
+
+.profile-story-viewer-name {
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.profile-story-viewer-time {
+  margin-top: 2px;
+
+  font-size: 11px;
+
+  opacity: 0.8;
+}
+
+.profile-story-close {
+  width: 38px;
+  height: 38px;
+
+  border: 0;
+  border-radius: 50%;
+
+  background: rgba(0, 0, 0, 0.55);
+  color: #ffffff;
+
+  font-size: 24px;
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+.profile-story-viewer-content {
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+
+  background: #111111;
+}
+
+.profile-story-viewer-content img,
+.profile-story-viewer-content video {
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit: contain;
+}
+
+.profile-story-nav {
+  position: absolute;
+
+  top: 50%;
+
+  z-index: 5;
+
+  width: 42px;
+  height: 58px;
+
+  transform: translateY(-50%);
+
+  border: 0;
+  border-radius: 8px;
+
+  background: rgba(0, 0, 0, 0.32);
+  color: #ffffff;
+
+  font-size: 34px;
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+.profile-story-prev {
+  left: 10px;
+}
+
+.profile-story-next {
+  right: 10px;
+}
+
+@media (max-width: 520px) {
+
+  .profile-story-viewer {
+    padding: 0;
+  }
+
+  .profile-story-frame {
+    width: 100%;
+    height: 100%;
+
+    border-radius: 0;
+  }
+
+}
+    /* PROFILE STORY OVERLAYS */
+
+.profile-story-text {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  max-width: 82%;
+  padding: 8px 12px;
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.15;
+  text-align: center;
+  white-space: pre-wrap;
+  word-break: break-word;
+  text-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.7);
+  color: #ffffff;
+  z-index: 3;
+}
+
+.profile-story-mention {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  padding: 9px 14px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #202022;
+  font-size: 24px;
+  font-weight: 700;
+  text-decoration: none;
+  z-index: 4;
+}
+
+.profile-story-book {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: min(340px, 82%);
+  padding: 18px;
+  border-radius: 14px;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.97),
+      rgba(237, 233, 226, 0.97)
+    );
+  color: #202022;
+  text-align: center;
+  box-shadow:
+    0 10px 32px rgba(0, 0, 0, 0.38);
+  z-index: 4;
+}
+
+.profile-story-book-cover {
+  display: block;
+  width: 150px;
+  max-height: 220px;
+  margin: 0 auto 16px;
+  border-radius: 5px;
+  object-fit: cover;
+}
+
+.profile-story-book-title {
+  font-family:
+    "Playfair Display",
+    Georgia,
+    serif;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.profile-story-book-author {
+  margin-top: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  opacity: 0.75;
+}
+
+.profile-story-book-description {
+  margin-top: 12px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.profile-story-book-link {
+  display: inline-block;
+  margin-top: 16px;
+  padding: 10px 18px;
+  border-radius: 6px;
+  background: #202022;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+
+/* PROFILE STORY GRANITE POLL */
+
+.profile-story-poll {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: min(340px, 82%);
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 16px;
+
+  background:
+    linear-gradient(
+      118deg,
+      transparent 0%,
+      transparent 27%,
+      rgba(255, 255, 255, 0.68) 28%,
+      rgba(255, 255, 255, 0.12) 30%,
+      transparent 33%,
+      transparent 62%,
+      rgba(220, 220, 225, 0.5) 63%,
+      transparent 66%
+    ),
+    linear-gradient(
+      43deg,
+      transparent 0%,
+      transparent 43%,
+      rgba(255, 255, 255, 0.42) 44%,
+      rgba(255, 255, 255, 0.08) 47%,
+      transparent 49%
+    ),
+    linear-gradient(
+      145deg,
+      rgba(5, 5, 5, 0.92),
+      rgba(44, 44, 47, 0.88),
+      rgba(8, 8, 9, 0.94)
+    );
+
+  backdrop-filter: blur(8px);
+
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.4);
+
+  color: #ffffff;
+  text-align: center;
+  z-index: 4;
+}
+
+.profile-story-poll .story-poll-question {
+  margin-bottom: 14px;
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1.15;
+  color: #ffffff;
+  text-shadow:
+    0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.profile-story-poll .story-poll-option {
+  width: 100%;
+  margin-top: 8px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.profile-story-poll .story-poll-option.selected {
+  background: rgba(255, 255, 255, 0.28);
+  border-color: #ffffff;
+}
+
+.profile-story-poll .story-poll-option:disabled {
+  cursor: default;
+  opacity: 1;
+}
 .image-viewer[hidden] {
   display: none;
 }
@@ -811,15 +1256,22 @@
 
     <div class="profile-content">
 
-<img
-  class="profile-picture"
-  id="profilePicture"
-  src="default-avatar.svg"
-  alt="Profile picture"
-  role="button"
-  tabindex="0"
-  title="Click to view profile picture"
+<div
+  id="profileStoryRing"
+  class="profile-story-ring"
 >
+
+  <img
+    class="profile-picture"
+    id="profilePicture"
+    src="default-avatar.svg"
+    alt="Profile picture"
+    role="button"
+    tabindex="0"
+    title="Click to view profile picture"
+  >
+
+</div>
 
       <div class="profile-top">
 
@@ -1040,6 +1492,90 @@
     alt="Cover image enlarged"
   >
 </div>
+  <!-- PROFILE STORY VIEWER -->
+
+<div
+  id="profileStoryViewer"
+  class="profile-story-viewer"
+  hidden
+>
+
+  <div class="profile-story-frame">
+
+    <div class="profile-story-progress">
+      <div
+        id="profileStoryProgressBar"
+        class="profile-story-progress-bar"
+      ></div>
+    </div>
+
+
+    <div class="profile-story-header">
+
+      <div class="profile-story-user">
+
+        <img
+          id="profileStoryViewerAvatar"
+          src="default-avatar.svg"
+          alt=""
+        >
+
+        <div>
+
+          <div
+            id="profileStoryViewerName"
+            class="profile-story-viewer-name"
+          ></div>
+
+          <div
+            id="profileStoryViewerTime"
+            class="profile-story-viewer-time"
+          ></div>
+
+        </div>
+
+      </div>
+
+
+      <button
+        id="closeProfileStoryViewer"
+        class="profile-story-close"
+        type="button"
+        aria-label="Close Story"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <div
+      id="profileStoryViewerContent"
+      class="profile-story-viewer-content"
+    ></div>
+
+
+    <button
+      id="previousProfileStory"
+      class="profile-story-nav profile-story-prev"
+      type="button"
+      aria-label="Previous Story"
+    >
+      ‹
+    </button>
+
+    <button
+      id="nextProfileStory"
+      class="profile-story-nav profile-story-next"
+      type="button"
+      aria-label="Next Story"
+    >
+      ›
+    </button>
+
+  </div>
+
+</div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   const SUPABASE_URL = "https://mwwzlbhttgatylmpwzli.supabase.co";
@@ -1057,6 +1593,36 @@ const profilePicture = document.getElementById("profilePicture");
   const profilePictureViewer = document.getElementById("profilePictureViewer");
 const profilePictureViewerImage = document.getElementById("profilePictureViewerImage");
 const closeProfilePictureViewer = document.getElementById("closeProfilePictureViewer");
+  const profileStoryViewer =
+  document.getElementById("profileStoryViewer");
+
+const closeProfileStoryViewer =
+  document.getElementById("closeProfileStoryViewer");
+
+const profileStoryViewerContent =
+  document.getElementById("profileStoryViewerContent");
+
+const profileStoryViewerAvatar =
+  document.getElementById("profileStoryViewerAvatar");
+
+const profileStoryViewerName =
+  document.getElementById("profileStoryViewerName");
+
+const profileStoryViewerTime =
+  document.getElementById("profileStoryViewerTime");
+
+const profileStoryProgressBar =
+  document.getElementById("profileStoryProgressBar");
+
+const previousProfileStory =
+  document.getElementById("previousProfileStory");
+
+const nextProfileStory =
+  document.getElementById("nextProfileStory");
+
+let profileStoryViewerStories = [];
+let profileStoryViewerIndex = 0;
+  let currentProfileStoryUserId = null;
 const headerAvatar = document.getElementById("headerAvatar");
 const profileBackground = document.getElementById("profileBackground");
   const coverImageViewer = document.getElementById("coverImageViewer");
@@ -1346,9 +1912,126 @@ username.addEventListener("keydown", (event) => {
 function closeProfilePicture() {
   profilePictureViewer.hidden = true;
 }
+async function openProfileStoryViewer() {
 
-profilePicture.addEventListener("click", openProfilePictureViewer);
+  if (!currentProfileStoryUserId) {
+    return false;
+  }
 
+
+  const stories =
+    await loadActiveProfileStories(
+      currentProfileStoryUserId
+    );
+
+
+  if (!stories.length) {
+    return false;
+  }
+
+
+  profileStoryViewerStories =
+    stories;
+
+  profileStoryViewerIndex =
+    0;
+
+  profileStoryViewer.hidden =
+    false;
+
+
+  await renderProfileStoryViewer();
+
+
+  return true;
+
+}
+profilePicture.addEventListener(
+  "click",
+  async () => {
+
+    const openedStory =
+      await openProfileStoryViewer();
+
+
+    if (!openedStory) {
+      openProfilePictureViewer();
+    }
+
+  }
+);
+function closeProfileStoryViewerModal() {
+
+  profileStoryViewerContent
+    .querySelectorAll("video")
+    .forEach((video) => {
+      video.pause();
+    });
+
+  profileStoryViewerContent.innerHTML =
+    "";
+
+  profileStoryViewer.hidden =
+    true;
+
+}
+
+
+closeProfileStoryViewer.addEventListener(
+  "click",
+  closeProfileStoryViewerModal
+);
+
+
+previousProfileStory.addEventListener(
+  "click",
+  async () => {
+
+    if (profileStoryViewerIndex > 0) {
+
+      profileStoryViewerIndex -= 1;
+
+      await renderProfileStoryViewer();
+
+    }
+
+  }
+);
+
+
+nextProfileStory.addEventListener(
+  "click",
+  async () => {
+
+    if (
+      profileStoryViewerIndex <
+      profileStoryViewerStories.length - 1
+    ) {
+
+      profileStoryViewerIndex += 1;
+
+      await renderProfileStoryViewer();
+
+    } else {
+
+      closeProfileStoryViewerModal();
+
+    }
+
+  }
+);
+
+
+profileStoryViewer.addEventListener(
+  "click",
+  (event) => {
+
+    if (event.target === profileStoryViewer) {
+      closeProfileStoryViewerModal();
+    }
+
+  }
+);
 profilePicture.addEventListener("keydown", (event) => {
   if (event.key === "Enter" || event.key === " ") {
     event.preventDefault();
@@ -1960,6 +2643,899 @@ async function loadBooks(userId) {
   });
 }
 }
+  function formatProfileStoryTime(
+  dateString
+) {
+
+  const storyDate =
+    new Date(dateString);
+
+  const now =
+    new Date();
+
+  const difference =
+    Math.max(
+      0,
+      now - storyDate
+    );
+
+  const minutes =
+    Math.floor(
+      difference / 60000
+    );
+
+  const hours =
+    Math.floor(
+      difference / 3600000
+    );
+
+
+  if (minutes < 1) {
+    return "Just now";
+  }
+
+  if (minutes < 60) {
+    return `${minutes}m`;
+  }
+
+  if (hours < 24) {
+    return `${hours}h`;
+  }
+
+  return "Yesterday";
+
+}
+
+
+async function getProfileStorySignedUrl(
+  path
+) {
+
+  if (!path) {
+    return null;
+  }
+
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient.storage
+      .from("story-media")
+      .createSignedUrl(
+        path,
+        3600
+      );
+
+
+  if (error) {
+
+    console.error(
+      "Could not load Story media:",
+      error
+    );
+
+    return null;
+  }
+
+
+  return data?.signedUrl || null;
+
+}
+  async function renderProfileStoryViewer() {
+
+  const story =
+    profileStoryViewerStories[
+      profileStoryViewerIndex
+    ];
+
+
+  if (!story) {
+    return;
+  }
+await recordProfileStoryView(
+  story
+);
+
+  profileStoryViewerContent.innerHTML =
+    "";
+const contentData =
+  story.content_data || {};
+(
+  contentData.text || []
+).forEach((item) => {
+
+  const text =
+    document.createElement("div");
+
+  text.className =
+    "profile-story-text";
+
+  text.textContent =
+    item.text;
+
+  text.style.left =
+    `${item.left}%`;
+
+  text.style.top =
+    `${item.top}%`;
+
+  if (item.color) {
+    text.style.color =
+      item.color;
+  }
+
+  if (item.font) {
+    text.style.fontFamily =
+      item.font;
+  }
+
+  profileStoryViewerContent.appendChild(
+    text
+  );
+
+});
+    (
+  contentData.mentions || []
+).forEach((item) => {
+
+  const mention =
+    document.createElement("a");
+
+  mention.className =
+    "profile-story-mention";
+
+  mention.textContent =
+    `@${item.username}`;
+
+  mention.href =
+    `profile.html?user=${
+      encodeURIComponent(
+        item.user_id
+      )
+    }`;
+
+  mention.style.left =
+    `${item.left}%`;
+
+  mention.style.top =
+    `${item.top}%`;
+
+  profileStoryViewerContent.appendChild(
+    mention
+  );
+
+});
+    const profileStoryBookCoverUrl =
+  story.book_cover_path
+    ? await getProfileStorySignedUrl(
+        story.book_cover_path
+      )
+    : null;
+
+
+(
+  contentData.books || []
+).forEach((book, index) => {
+
+  const bookCard =
+    document.createElement("div");
+
+  bookCard.className =
+    "profile-story-book";
+
+  bookCard.style.left =
+    `${book.left}%`;
+
+  bookCard.style.top =
+    `${book.top}%`;
+
+
+  if (
+    index === 0 &&
+    profileStoryBookCoverUrl
+  ) {
+
+    const cover =
+      document.createElement("img");
+
+    cover.className =
+      "profile-story-book-cover";
+
+    cover.src =
+      profileStoryBookCoverUrl;
+
+    cover.alt =
+      `${book.title} cover`;
+
+    bookCard.appendChild(
+      cover
+    );
+
+  }
+
+
+  const title =
+    document.createElement("div");
+
+  title.className =
+    "profile-story-book-title";
+
+  title.textContent =
+    book.title;
+
+  bookCard.appendChild(
+    title
+  );
+
+
+  if (book.author) {
+
+    const author =
+      document.createElement("div");
+
+    author.className =
+      "profile-story-book-author";
+
+    author.textContent =
+      `by ${book.author}`;
+
+    bookCard.appendChild(
+      author
+    );
+
+  }
+
+
+  if (book.description) {
+
+    const description =
+      document.createElement("div");
+
+    description.className =
+      "profile-story-book-description";
+
+    description.textContent =
+      book.description;
+
+    bookCard.appendChild(
+      description
+    );
+
+  }
+
+
+  if (book.link) {
+
+    const link =
+      document.createElement("a");
+
+    link.className =
+      "profile-story-book-link";
+
+    link.href =
+      book.link;
+
+    link.target =
+      "_blank";
+
+    link.rel =
+      "noopener noreferrer";
+
+    link.textContent =
+      "View Book";
+
+    bookCard.appendChild(
+      link
+    );
+
+  }
+
+
+  profileStoryViewerContent.appendChild(
+    bookCard
+  );
+
+});
+  const {
+    data: profile
+  } =
+    await supabaseClient
+      .from("profiles")
+      .select(
+        "display_name, username, profile_image_url"
+      )
+      .eq(
+        "id",
+        story.user_id
+      )
+      .single();
+
+
+  profileStoryViewerAvatar.src =
+    profile?.profile_image_url ||
+    "default-avatar.svg";
+
+  profileStoryViewerName.textContent =
+    profile?.display_name ||
+    profile?.username ||
+    "Written Bond User";
+
+  profileStoryViewerTime.textContent =
+    formatProfileStoryTime(
+      story.created_at
+    );
+
+
+  if (story.media_path) {
+
+    const mediaUrl =
+      await getProfileStorySignedUrl(
+        story.media_path
+      );
+
+
+    if (mediaUrl) {
+
+      if (story.media_type === "video") {
+
+        const video =
+          document.createElement(
+            "video"
+          );
+
+        video.src =
+          mediaUrl;
+
+        video.autoplay =
+          true;
+
+        video.controls =
+          false;
+
+        video.playsInline =
+          true;
+
+        video.loop =
+          true;
+
+        profileStoryViewerContent.appendChild(
+          video
+        );
+
+      } else {
+
+        const image =
+          document.createElement(
+            "img"
+          );
+
+        image.src =
+          mediaUrl;
+
+        image.alt =
+          "Story";
+
+        profileStoryViewerContent.appendChild(
+          image
+        );
+
+      }
+
+    }
+
+  }
+
+
+  if (story.drawing_path) {
+
+    const drawingUrl =
+      await getProfileStorySignedUrl(
+        story.drawing_path
+      );
+
+
+    if (drawingUrl) {
+
+      const drawing =
+        document.createElement(
+          "img"
+        );
+
+      drawing.src =
+        drawingUrl;
+
+      drawing.alt =
+        "";
+
+      drawing.style.position =
+        "absolute";
+
+      drawing.style.inset =
+        "0";
+
+      drawing.style.width =
+        "100%";
+
+      drawing.style.height =
+        "100%";
+
+      drawing.style.objectFit =
+        "contain";
+
+      drawing.style.pointerEvents =
+        "none";
+
+      profileStoryViewerContent.appendChild(
+        drawing
+      );
+
+    }
+
+  }
+
+const storyPolls =
+  contentData.polls || [];
+
+
+for (
+  const poll of storyPolls
+) {
+
+  await renderProfileStoryPoll(
+    story,
+    poll
+  );
+
+}
+  profileStoryProgressBar.style.width =
+    `${
+      (
+        (
+          profileStoryViewerIndex +
+          1
+        ) /
+        profileStoryViewerStories.length
+      ) * 100
+    }%`;
+
+
+  previousProfileStory.hidden =
+    profileStoryViewerIndex === 0;
+
+  nextProfileStory.hidden =
+    profileStoryViewerIndex ===
+    profileStoryViewerStories.length - 1;
+
+}
+  async function loadProfileStoryPollResults(
+  storyId,
+  pollId
+) {
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient.rpc(
+      "get_story_poll_results",
+      {
+        p_story_id: storyId,
+        p_poll_id: pollId
+      }
+    );
+
+
+  if (error) {
+
+    console.error(
+      "Could not load Story poll results:",
+      error
+    );
+
+    return null;
+  }
+async function voteOnProfileStoryPoll(
+  story,
+  poll,
+  optionNumber
+) {
+
+  const {
+    data: { user }
+  } =
+    await supabaseClient.auth.getUser();
+
+
+  if (!user) {
+
+    alert(
+      "You need to be signed in to vote."
+    );
+
+    return false;
+  }
+async function renderProfileStoryPoll(
+  story,
+  poll
+) {
+
+  const pollCard =
+    document.createElement("div");
+
+  pollCard.className =
+    "story-poll-card profile-story-poll";
+
+  pollCard.style.left =
+    `${poll.left}%`;
+
+  pollCard.style.top =
+    `${poll.top}%`;
+
+
+  const question =
+    document.createElement("div");
+
+  question.className =
+    "story-poll-question";
+
+  question.textContent =
+    poll.question;
+
+
+  const optionOne =
+    document.createElement("button");
+
+  optionOne.type =
+    "button";
+
+  optionOne.className =
+    "story-poll-option";
+
+
+  const optionTwo =
+    document.createElement("button");
+
+  optionTwo.type =
+    "button";
+
+  optionTwo.className =
+    "story-poll-option";
+
+
+  pollCard.appendChild(
+    question
+  );
+
+  pollCard.appendChild(
+    optionOne
+  );
+
+  pollCard.appendChild(
+    optionTwo
+  );
+
+
+  profileStoryViewerContent.appendChild(
+    pollCard
+  );
+
+
+  async function refreshResults() {
+
+    const results =
+      await loadProfileStoryPollResults(
+        story.id,
+        poll.poll_id
+      );
+
+
+    const optionOneVotes =
+      Number(
+        results?.option_one_votes || 0
+      );
+
+    const optionTwoVotes =
+      Number(
+        results?.option_two_votes || 0
+      );
+
+    const totalVotes =
+      Number(
+        results?.total_votes || 0
+      );
+
+    const myVote =
+      Number(
+        results?.my_vote || 0
+      );
+
+
+    const optionOnePercent =
+      totalVotes
+        ? Math.round(
+            (
+              optionOneVotes /
+              totalVotes
+            ) * 100
+          )
+        : 0;
+
+
+    const optionTwoPercent =
+      totalVotes
+        ? Math.round(
+            (
+              optionTwoVotes /
+              totalVotes
+            ) * 100
+          )
+        : 0;
+
+
+    optionOne.textContent =
+      myVote
+        ? `${poll.option_one}   ${optionOnePercent}%`
+        : poll.option_one;
+
+
+    optionTwo.textContent =
+      myVote
+        ? `${poll.option_two}   ${optionTwoPercent}%`
+        : poll.option_two;
+
+
+    optionOne.classList.toggle(
+      "selected",
+      myVote === 1
+    );
+
+    optionTwo.classList.toggle(
+      "selected",
+      myVote === 2
+    );
+
+
+    optionOne.disabled =
+      Boolean(myVote);
+
+    optionTwo.disabled =
+      Boolean(myVote);
+
+  }
+
+
+  optionOne.addEventListener(
+    "click",
+    async () => {
+
+      const saved =
+        await voteOnProfileStoryPoll(
+          story,
+          poll,
+          1
+        );
+
+      if (saved) {
+        await refreshResults();
+      }
+
+    }
+  );
+
+
+  optionTwo.addEventListener(
+    "click",
+    async () => {
+
+      const saved =
+        await voteOnProfileStoryPoll(
+          story,
+          poll,
+          2
+        );
+
+      if (saved) {
+        await refreshResults();
+      }
+
+    }
+  );
+
+
+  await refreshResults();
+
+}
+
+  const {
+    error
+  } =
+    await supabaseClient
+      .from("story_poll_votes")
+      .insert({
+        story_id:
+          story.id,
+
+        poll_id:
+          poll.poll_id,
+
+        voter_id:
+          user.id,
+
+        option_number:
+          optionNumber
+      });
+
+
+  if (error) {
+
+    if (error.code === "23505") {
+
+      alert(
+        "You already voted in this poll."
+      );
+
+    } else {
+
+      console.error(
+        "Could not save Story poll vote:",
+        error
+      );
+
+      alert(
+        "Your vote could not be saved."
+      );
+
+    }
+
+    return false;
+  }
+
+
+  return true;
+
+}
+
+  return data?.[0] || null;
+
+}
+  async function recordProfileStoryView(
+  story
+) {
+
+  const {
+    data: { user }
+  } =
+    await supabaseClient.auth.getUser();
+
+
+  if (
+    !user ||
+    user.id === story.user_id
+  ) {
+    return;
+  }
+
+
+  const {
+    error
+  } =
+    await supabaseClient
+      .from("story_views")
+      .insert({
+        story_id:
+          story.id,
+
+        viewer_id:
+          user.id
+      });
+
+
+  if (
+    error &&
+    error.code !== "23505"
+  ) {
+
+    console.error(
+      "Could not record Story view:",
+      error
+    );
+
+  }
+
+}
+  async function loadActiveProfileStories(
+  profileUserId
+) {
+
+  const {
+    data: stories,
+    error
+  } =
+    await supabaseClient
+      .from("stories")
+      .select(
+        "id, user_id, created_at, expires_at, privacy, media_path, media_type, drawing_path, book_cover_path, content_data"
+      )
+      .eq(
+        "user_id",
+        profileUserId
+      )
+      .gt(
+        "expires_at",
+        new Date().toISOString()
+      )
+      .order(
+        "created_at",
+        {
+          ascending: true
+        }
+      );
+
+
+  if (error) {
+
+    console.error(
+      "Could not load profile Stories:",
+      error
+    );
+
+    return [];
+  }
+
+
+  return stories || [];
+
+}
+  async function loadProfileStoryStatus(
+  profileUserId
+) {
+
+  const profileStoryRing =
+    document.getElementById(
+      "profileStoryRing"
+    );
+
+
+  const {
+    data: stories,
+    error
+  } =
+    await supabaseClient
+      .from("stories")
+      .select("id")
+      .eq(
+        "user_id",
+        profileUserId
+      )
+      .gt(
+        "expires_at",
+        new Date().toISOString()
+      )
+      .limit(1);
+
+
+  if (error) {
+
+    console.error(
+      "Could not check profile Story:",
+      error
+    );
+
+    profileStoryRing.classList.remove(
+      "has-active-story"
+    );
+
+    return;
+  }
+
+
+  profileStoryRing.classList.toggle(
+    "has-active-story",
+    stories?.length > 0
+  );
+
+}
 async function loadProfile() {
   followersButton.addEventListener("click", async () => {
   const {
@@ -1999,7 +3575,11 @@ const params = new URLSearchParams(window.location.search);
 const viewedUserId = params.get("user");
 
 const profileUserId = viewedUserId || session.user.id;
-
+  currentProfileStoryUserId =
+  profileUserId;
+await loadProfileStoryStatus(
+  profileUserId
+);
 const { data: profile, error } = await supabaseClient
   .from("profiles")
   .select("*")
