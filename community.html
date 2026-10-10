@@ -2870,33 +2870,41 @@ margin: 0 auto;
 .story-own-avatar.has-active-story {
   padding: 5px;
 
-  border: 2px solid #c79a3b;
+  border: 2px solid #111111;
 
   background:
     linear-gradient(
-      125deg,
+      118deg,
       transparent 0%,
-      transparent 28%,
-      rgba(199, 154, 59, 0.9) 29%,
-      rgba(199, 154, 59, 0.35) 31%,
-      transparent 33%,
+      transparent 27%,
+      rgba(255, 255, 255, 0.75) 28%,
+      rgba(255, 255, 255, 0.18) 30%,
+      transparent 32%,
       transparent 64%,
-      rgba(255, 255, 255, 0.22) 65%,
-      transparent 68%
+      rgba(255, 255, 255, 0.6) 65%,
+      rgba(255, 255, 255, 0.12) 67%,
+      transparent 69%
+    ),
+    linear-gradient(
+      42deg,
+      transparent 0%,
+      transparent 44%,
+      rgba(210, 210, 215, 0.5) 45%,
+      transparent 48%
     ),
     linear-gradient(
       145deg,
-      #111111 0%,
-      #353535 24%,
-      #171717 46%,
-      #484848 63%,
-      #0d0d0d 82%,
-      #292929 100%
+      #050505 0%,
+      #242426 25%,
+      #09090a 47%,
+      #303033 66%,
+      #060607 82%,
+      #1c1c1e 100%
     );
 
   box-shadow:
     0 0 0 2px #ffffff,
-    0 0 0 4px rgba(199, 154, 59, 0.4);
+    0 0 0 4px rgba(0, 0, 0, 0.45);
 }
 #yourStoryAvatar {
   display: block;
@@ -3065,6 +3073,85 @@ margin: 0 auto;
 
 .story-viewer-poll .story-poll-option.selected:disabled {
   background: rgba(255, 255, 255, 0.28);
+}
+    /* COLLAPSED DRAW TAB */
+
+.story-draw-reopen {
+  position: absolute;
+  left: 0;
+  top: 50%;
+
+  z-index: 45;
+
+  width: 26px;
+  height: 58px;
+
+  transform: translateY(-50%);
+
+  padding: 0;
+
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-left: 0;
+  border-radius: 0 10px 10px 0;
+
+  background: rgba(20, 20, 22, 0.88);
+  color: #ffffff;
+
+  font-size: 12px;
+
+  cursor: pointer;
+
+  backdrop-filter: blur(6px);
+}
+
+.story-draw-reopen[hidden] {
+  display: none;
+}
+
+.story-draw-reopen:hover {
+  width: 32px;
+}
+
+@media (max-width: 520px) {
+  .story-draw-reopen {
+    width: 24px;
+    height: 54px;
+  }
+}
+    /* FRIEND STORY AVATARS */
+
+.friend-story-card {
+  flex: 0 0 auto;
+}
+
+.friend-story-avatar {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  border-radius: 50%;
+
+  object-fit: cover;
+
+  background: #ece9e4;
+}
+
+.friend-story-card .story-own-avatar {
+  width: 68px;
+  height: 68px;
+}
+
+.friend-story-card .story-name {
+  display: block;
+
+  max-width: 86px;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  text-align: center;
 }
     /* MESSAGES */
 
@@ -3664,7 +3751,7 @@ margin: 0 auto;
       </div>
 
 
-      <div class="stories-row">
+     <div id="storiesRow" class="stories-row">
 
      <button
   id="openStoryCreator"
@@ -3699,11 +3786,12 @@ margin: 0 auto;
 </button>
 
 
-        <div class="stories-empty">
-
-          Stories from people you follow will appear here.
-
-        </div>
+       <div
+  id="storiesEmpty"
+  class="stories-empty"
+>
+  Stories from your friends will appear here.
+</div>
 
       </div>
 
@@ -4575,7 +4663,15 @@ margin: 0 auto;
 
 
       <!-- DRAW PANEL -->
-
+<button
+  id="storyDrawReopen"
+  class="story-draw-reopen"
+  type="button"
+  aria-label="Open drawing controls"
+  hidden
+>
+  <i class="fa-solid fa-pen"></i>
+</button>
       <div
         id="storyDrawPanel"
         class="story-tool-panel"
@@ -4585,14 +4681,14 @@ margin: 0 auto;
         <div class="story-panel-header">
           <strong>Draw</strong>
 
-          <button
-            class="story-panel-close"
-            type="button"
-            data-close-story-panel
-          >
-            ×
-          </button>
-        </div>
+         <button
+  id="collapseStoryDraw"
+  class="story-panel-close"
+  type="button"
+  aria-label="Collapse drawing controls"
+>
+  ×
+</button>
 
         <div class="story-draw-tools">
 
@@ -8215,7 +8311,11 @@ addStoryText.addEventListener(
 
 const storyDrawPanel =
   document.getElementById("storyDrawPanel");
+const storyDrawReopen =
+  document.getElementById("storyDrawReopen");
 
+const collapseStoryDraw =
+  document.getElementById("collapseStoryDraw");
 const storyDrawingCanvas =
   document.getElementById("storyDrawingCanvas");
 
@@ -8364,7 +8464,8 @@ storyDrawButton.addEventListener(
 
     storyDrawPanel.hidden =
       !wasHidden;
-
+storyDrawReopen.hidden =
+  !storyDrawPanel.hidden;
 
     if (!storyDrawPanel.hidden) {
 
@@ -8377,7 +8478,40 @@ storyDrawButton.addEventListener(
 
   }
 );
+collapseStoryDraw.addEventListener(
+  "click",
+  () => {
 
+    storyDrawPanel.hidden =
+      true;
+
+    storyDrawReopen.hidden =
+      false;
+
+    storyDrawingCanvas.style.pointerEvents =
+      "auto";
+
+  }
+);
+
+
+storyDrawReopen.addEventListener(
+  "click",
+  () => {
+
+    storyDrawReopen.hidden =
+      true;
+
+    storyDrawPanel.hidden =
+      false;
+
+    resizeStoryDrawingCanvas();
+
+    storyDrawingCanvas.style.pointerEvents =
+      "auto";
+
+  }
+);
 
 storyDrawTypeButtons.forEach(
   (button) => {
@@ -11323,6 +11457,323 @@ async function renderStoryPoll(
   await refreshPollResults();
 
 }
+    async function loadFriendStories() {
+
+  const storiesRow =
+    document.getElementById("storiesRow");
+
+  const storiesEmpty =
+    document.getElementById("storiesEmpty");
+
+
+  storiesRow
+    .querySelectorAll(
+      ".friend-story-card"
+    )
+    .forEach((card) => {
+      card.remove();
+    });
+
+
+  const {
+    data: { user }
+  } =
+    await supabaseClient.auth.getUser();
+
+
+  if (!user) {
+    storiesEmpty.hidden = false;
+    return;
+  }
+
+
+  const {
+    data: followingRows,
+    error: followingError
+  } =
+    await supabaseClient
+      .from("follows")
+      .select("following_id")
+      .eq(
+        "follower_id",
+        user.id
+      );
+
+
+  if (followingError) {
+
+    console.error(
+      "Could not load followed users:",
+      followingError
+    );
+
+    storiesEmpty.hidden = false;
+    return;
+  }
+
+
+  const followingIds =
+    (followingRows || [])
+      .map(
+        (row) => row.following_id
+      );
+
+
+  if (!followingIds.length) {
+    storiesEmpty.hidden = false;
+    return;
+  }
+
+
+  const {
+    data: reverseRows,
+    error: reverseError
+  } =
+    await supabaseClient
+      .from("follows")
+      .select("follower_id")
+      .eq(
+        "following_id",
+        user.id
+      )
+      .in(
+        "follower_id",
+        followingIds
+      );
+
+
+  if (reverseError) {
+
+    console.error(
+      "Could not load friends:",
+      reverseError
+    );
+
+    storiesEmpty.hidden = false;
+    return;
+  }
+
+
+  const friendIds =
+    (reverseRows || [])
+      .map(
+        (row) => row.follower_id
+      );
+
+
+  if (!friendIds.length) {
+    storiesEmpty.hidden = false;
+    return;
+  }
+
+
+  const {
+    data: stories,
+    error: storiesError
+  } =
+    await supabaseClient
+      .from("stories")
+      .select(
+        "id, user_id, created_at, expires_at, privacy, media_path, media_type, drawing_path, book_cover_path, content_data"
+      )
+      .in(
+        "user_id",
+        friendIds
+      )
+      .gt(
+        "expires_at",
+        new Date().toISOString()
+      )
+      .order(
+        "created_at",
+        {
+          ascending: true
+        }
+      );
+
+
+  if (storiesError) {
+
+    console.error(
+      "Could not load friend Stories:",
+      storiesError
+    );
+
+    storiesEmpty.hidden = false;
+    return;
+  }
+
+
+  if (!stories?.length) {
+    storiesEmpty.hidden = false;
+    return;
+  }
+
+
+  const activeFriendIds =
+    [
+      ...new Set(
+        stories.map(
+          (story) => story.user_id
+        )
+      )
+    ];
+
+
+  const {
+    data: profiles,
+    error: profileError
+  } =
+    await supabaseClient
+      .from("profiles")
+      .select(
+        "id, username, display_name, profile_image_url"
+      )
+      .in(
+        "id",
+        activeFriendIds
+      );
+
+
+  if (profileError) {
+
+    console.error(
+      "Could not load Story profiles:",
+      profileError
+    );
+
+    storiesEmpty.hidden = false;
+    return;
+  }
+
+
+  storiesEmpty.hidden =
+    true;
+
+
+  activeFriendIds.forEach(
+    (friendId) => {
+
+      const profile =
+        (profiles || []).find(
+          (item) =>
+            item.id === friendId
+        );
+
+
+      const friendStories =
+        stories.filter(
+          (story) =>
+            story.user_id === friendId
+        );
+
+
+      if (!friendStories.length) {
+        return;
+      }
+
+
+      const button =
+        document.createElement(
+          "button"
+        );
+
+      button.type =
+        "button";
+
+      button.className =
+        "story-card friend-story-card";
+
+
+      const avatarWrap =
+        document.createElement(
+          "span"
+        );
+
+      avatarWrap.className =
+        "story-avatar story-own-avatar has-active-story";
+
+
+      const avatar =
+        document.createElement(
+          "img"
+        );
+
+      avatar.className =
+        "friend-story-avatar";
+
+      avatar.src =
+        profile?.profile_image_url ||
+        "default-avatar.svg";
+
+      avatar.alt =
+        "";
+
+
+      const name =
+        document.createElement(
+          "span"
+        );
+
+      name.className =
+        "story-name";
+
+      name.textContent =
+        profile?.display_name ||
+        profile?.username ||
+        "Friend";
+
+
+      avatarWrap.appendChild(
+        avatar
+      );
+
+      button.appendChild(
+        avatarWrap
+      );
+
+      button.appendChild(
+        name
+      );
+
+
+      button.addEventListener(
+        "click",
+        async () => {
+
+          storyViewerStories =
+            friendStories.map(
+              (story) => ({
+                ...story,
+                profile
+              })
+            );
+
+
+          storyViewerIndex = 0;
+
+          storyViewerModal.hidden =
+            false;
+
+
+          await renderStoryViewer();
+
+        }
+      );
+
+
+      storiesRow.insertBefore(
+        button,
+        storiesEmpty
+      );
+
+    }
+  );
+
+}
+
+
+loadFriendStories();
    async function addPostOwnerMenu(
   post,
   postCard
