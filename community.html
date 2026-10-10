@@ -7224,22 +7224,47 @@ openStoryCreator.addEventListener(
     }
 
 
-    const openedStories =
-      await openMyActiveStories();
+alert("Your Story click detected");
 
 
-    if (!openedStories) {
-alert(
-  openedStories
-    ? "Stories found"
-    : "No Stories found"
-);
-      storyCreatorModal.hidden =
-        false;
+let openedStories = false;
 
-      await startStoryCamera();
 
-    }
+try {
+
+  openedStories =
+    await openMyActiveStories();
+
+
+  alert(
+    openedStories
+      ? "Stories found"
+      : "No Stories found"
+  );
+
+} catch (error) {
+
+  alert(
+    "Story error: " +
+    (
+      error?.message ||
+      error
+    )
+  );
+
+  return;
+
+}
+
+
+if (!openedStories) {
+
+  storyCreatorModal.hidden =
+    false;
+
+  await startStoryCamera();
+
+}
 
   }
 );
