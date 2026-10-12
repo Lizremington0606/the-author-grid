@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Account Settings | The Written Bond</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Special+Elite&display=swap" rel="stylesheet">
+
+  <style>
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+
+    body {
+      margin: 0;
+      color: #202022;
+      font-family: Georgia, "Times New Roman", serif;
+      background: linear-gradient(#ffffff66, #ffffff66),
+        url("IMG_2422.jpeg") center / cover fixed;
+    }
+
+    a { color: inherit; }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    button:disabled { cursor: wait; opacity: .65; }
+    :focus-visible { outline: 3px solid #777; outline-offset: 4px; }
+
+    header {
+      min-height: 82px;
+      padding: 20px 5%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      background: #18181a;
+      color: #fffdf7;
+    }
+
+    .brand {
+      font-family: "Special Elite", monospace;
+      font-size: clamp(20px, 3vw, 30px);
+      text-decoration: none;
+    }
+
+    header nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 22px;
+    }
+
+    header nav a { text-decoration: none; }
+    header nav a:hover { text-decoration: underline; }
+
+    main {
+      width: min(680px, calc(100% - 32px));
+      margin: 42px auto;
+    }
+
+    .back {
+      display: inline-block;
+      margin-bottom: 22px;
+      text-decoration: none;
+    }
+
+    .back:hover { text-decoration: underline; }
+
+    .card {
+      padding: clamp(24px, 5vw, 40px);
+      border: 1px solid #d6d1ca;
+      border-radius: 12px;
+      background: #faf9f6f5;
+      box-shadow: 0 12px 35px #00000012;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-family: "Playfair Display", Georgia, serif;
+      font-size: 32px;
+    }
+
+    .intro, .helper {
+      color: #565659;
+      line-height: 1.6;
+    }
+
+    .account {
+      margin: 26px 0;
+      padding: 18px 0;
+      border-top: 1px solid #d6d1ca;
+      border-bottom: 1px solid #d6d1ca;
+      line-height: 1.6;
+      overflow-wrap: anywhere;
+    }
+
+    .account span { display: block; }
+
+    details { border-bottom: 1px solid #d6d1ca; }
+    details:last-child { border-bottom: 0; }
+
+    summary {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 22px 0;
+      list-style: none;
+      font-size: 20px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: "+"; font-size: 26px; font-weight: 400; }
+    details[open] summary::after { content: "−"; }
+
+    form { padding-bottom: 24px; }
+
+    label {
+      display: block;
+      margin: 18px 0 8px;
+      font-weight: 700;
+    }
+
+    input {
+      display: block;
+      width: 100%;
+      min-height: 48px;
+      padding: 12px;
+      border: 1px solid #aaa59e;
+      border-radius: 6px;
+      background: #fff;
+      color: #202022;
+      font-size: 16px;
+    }
+
+    .save {
+      width: 100%;
+      margin-top: 24px;
+      padding: 14px;
+      border: 0;
+      border-radius: 6px;
+      background: #202022;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .message {
+      margin: 16px 0 0;
+      line-height: 1.6;
+      overflow-wrap: anywhere;
+    }
+
+    .message:empty { display: none; }
+    .message.error { color: #8b2525; }
+    .message.success { color: #285039; }
+
+    @media (max-width: 600px) {
+      header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      header nav { gap: 20px; font-size: 15px; }
+      main { margin: 26px auto; }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <a class="brand" href="index.html">THE WRITTEN BOND</a>
+
+    <nav aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="community.html">Community</a>
+      <a href="profile.html">Profile</a>
+    </nav>
+  </header>
+
+  <main>
+    <a class="back" href="community.html">← Back to Community</a>
+
+    <section class="card" aria-labelledby="settingsTitle">
+      <h1 id="settingsTitle">Account Settings</h1>
+      <p class="intro">A little housekeeping between chapters.</p>
+
+      <p id="pageMessage" class="message" role="status">
+        Loading your account…
+      </p>
+
+      <p id="signInPrompt" hidden>
+        <a href="signin.html">Sign in to manage your account</a>
+      </p>
+
+      <div id="settingsContent" hidden>
+        <div class="account">
+          <strong>Signed in as</strong>
+          <span id="currentEmail"></span>
+          <span id="pendingEmail" class="helper" hidden></span>
+        </div>
+
+        <details>
+          <summary>Change email</summary>
+
+          <form id="emailForm">
+            <p class="helper">
+              A new address for your next chapter.
+              Confirm your password before making the change.
+            </p>
+
+            <label for="newEmail">New email address</label>
+            <input
+              id="newEmail"
+              type="email"
+              autocomplete="email"
+              required
+            >
+
+            <label for="emailPassword">Current password</label>
+            <input
+              id="emailPassword"
+              type="password"
+              autocomplete="current-password"
+              required
+            >
+
+            <button class="save" type="submit">Update Email</button>
+            <p id="emailMessage" class="message" role="status"></p>
+          </form>
+        </details>
+
+        <details>
+          <summary>Change password</summary>
+
+          <form id="passwordForm">
+            <p class="helper">
+              Before you turn the page, a quick check that it’s you.
+            </p>
+
+            <label for="currentPassword">Current password</label>
+            <input
+              id="currentPassword"
+              type="password"
+              autocomplete="current-password"
+              required
+            >
+
+            <label for="newPassword">New password</label>
+            <input
+              id="newPassword"
+              type="password"
+              autocomplete="new-password"
+              minlength="8"
+              required
+            >
+
+            <p class="helper">
+              Use at least 8 characters.
+              Your account’s password rules also apply.
+            </p>
+
+            <label for="confirmPassword">Confirm new password</label>
+            <input
+              id="confirmPassword"
+              type="password"
+              autocomplete="new-password"
+              minlength="8"
+              required
+            >
+
+            <button class="save" type="submit">Update Password</button>
+            <p id="passwordMessage" class="message" role="status"></p>
+          </form>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    const byId = (id) => document.getElementById(id);
+
+    let client;
+    let accountId = null;
+    let busy = false;
+
+    function showMessage(id, text, kind = "") {
+      byId(id).textContent = text;
+      byId(id).className = "message " + kind;
+    }
+
+    function showAccount(user) {
+      byId("currentEmail").textContent = user.email || "";
+
+      const pending =
+        user.new_email && user.new_email !== user.email;
+
+      byId("pendingEmail").hidden = !pending;
+
+      byId("pendingEmail").textContent = pending
+        ? "Awaiting confirmation: " + user.new_email
+        : "";
+    }
+
+    function lockForms(locked) {
+      busy = locked;
+
+      document.querySelectorAll(
+        "form input, form button"
+      ).forEach((item) => {
+        item.disabled = locked;
+      });
+    }
+
+    async function verifyCurrentPassword(password) {
+      const { data, error } =
+        await client.auth.getUser();
+
+      if (
+        error ||
+        !data.user ||
+        data.user.id !== accountId
+      ) {
+        throw new Error(
+          "Your sign-in has changed or expired. Refresh this page and sign in again."
+        );
+      }
+
+      const result =
+        await client.auth.signInWithPassword({
+          email: data.user.email,
+          password: password
+        });
+
+      if (result.error) {
+        throw new Error(
+          result.error.code === "invalid_credentials"
+            ? "That current password wasn’t accepted. Please try again."
+            : result.error.message
+        );
+      }
+
+      if (
+        !result.data.user ||
+        result.data.user.id !== accountId
+      ) {
+        throw new Error(
+          "We couldn’t verify this account. Refresh the page and try again."
+        );
+      }
+
+      return result.data.user;
+    }
+
+    byId("emailForm").addEventListener(
+      "submit",
+      async (event) => {
+        event.preventDefault();
+
+        if (
+          busy ||
+          !accountId ||
+          !event.target.reportValidity()
+        ) return;
+
+        const email = byId("newEmail").value.trim();
+        const password = byId("emailPassword").value;
+
+        lockForms(true);
+        showMessage("emailMessage", "Checking your account…");
+
+        try {
+          const user =
+            await verifyCurrentPassword(password);
+
+          if (
+            email.toLowerCase() ===
+            user.email.toLowerCase()
+          ) {
+            throw new Error(
+              "That’s already your current email address."
+            );
+          }
+
+          const { data, error } =
+            await client.auth.updateUser(
+              { email: email },
+              {
+                emailRedirectTo:
+                  new URL(
+                    "settings.html",
+                    window.location.href
+                  ).href
+              }
+            );
+
+          if (error) throw error;
+
+          showAccount(data.user || user);
+
+          const changed =
+            data.user?.email?.toLowerCase() ===
+            email.toLowerCase();
+
+          showMessage(
+            "emailMessage",
+            changed
+              ? "Your email has been updated. Use the new address next time you sign in."
+              : "Your change is awaiting confirmation. Check your current and new inboxes and follow any confirmation links. Keep using your current email until the change is confirmed.",
+            "success"
+          );
+
+          byId("newEmail").value = "";
+        } catch (error) {
+          showMessage(
+            "emailMessage",
+            error.message ||
+              "We couldn’t update your email. Please try again.",
+            "error"
+          );
+        } finally {
+          byId("emailPassword").value = "";
+          lockForms(false);
+        }
+      }
+    );
+
+    byId("passwordForm").addEventListener(
+      "submit",
+      async (event) => {
+        event.preventDefault();
+
+        if (
+          busy ||
+          !accountId ||
+          !event.target.reportValidity()
+        ) return;
+
+        const current = byId("currentPassword").value;
+        const password = byId("newPassword").value;
+
+        if (
+          password !== byId("confirmPassword").value
+        ) {
+          showMessage(
+            "passwordMessage",
+            "Your new passwords don’t match.",
+            "error"
+          );
+          return;
+        }
+
+        if (password === current) {
+          showMessage(
+            "passwordMessage",
+            "Choose a password different from your current one.",
+            "error"
+          );
+          return;
+        }
+
+        lockForms(true);
+
+        showMessage(
+          "passwordMessage",
+          "Updating your password…"
+        );
+
+        try {
+          await verifyCurrentPassword(current);
+
+          const { error } =
+            await client.auth.updateUser({
+              password: password,
+              current_password: current
+            });
+
+          if (error) throw error;
+
+          byId("passwordForm").reset();
+
+          showMessage(
+            "passwordMessage",
+            "Your password has been updated. Use the new password next time you sign in.",
+            "success"
+          );
+        } catch (error) {
+          showMessage(
+            "passwordMessage",
+            error.message ||
+              "We couldn’t update your password. Please try again.",
+            "error"
+          );
+        } finally {
+          byId("currentPassword").value = "";
+          lockForms(false);
+        }
+      }
+    );
+
+    async function loadAccountSettings() {
+      try {
+        if (!window.supabase) {
+          throw new Error(
+            "Account settings couldn’t load. Please refresh the page."
+          );
+        }
+
+        client = window.supabase.createClient(
+          "https://mwwzlbhttgatylmpwzli.supabase.co",
+          "sb_publishable_UFkxAcITFXu6OtYRTcUKKg_Fw9UcTqR"
+        );
+
+        const { data, error } =
+          await client.auth.getUser();
+
+        if (error || !data.user) {
+          showMessage(
+            "pageMessage",
+            "Please sign in to manage your account."
+          );
+
+          byId("signInPrompt").hidden = false;
+          return;
+        }
+
+        accountId = data.user.id;
+        showAccount(data.user);
+
+        byId("settingsContent").hidden = false;
+        showMessage("pageMessage", "");
+
+        client.auth.onAuthStateChange((event) => {
+          if (event === "SIGNED_OUT") {
+            accountId = null;
+            byId("settingsContent").hidden = true;
+
+            document.querySelectorAll(
+              "form"
+            ).forEach((form) => form.reset());
+
+            showMessage(
+              "pageMessage",
+              "Please sign in to manage your account."
+            );
+
+            byId("signInPrompt").hidden = false;
+          }
+        });
+      } catch (error) {
+        showMessage(
+          "pageMessage",
+          error.message ||
+            "Account settings couldn’t load. Please refresh the page.",
+          "error"
+        );
+      }
+    }
+
+    loadAccountSettings();
+  </script>
+</body>
+</html>
