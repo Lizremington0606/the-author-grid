@@ -156,47 +156,13 @@
 
 .profile-story-ring.has-active-story::before {
   content: "";
-
   position: absolute;
-
-  inset: -9px;
-
+  inset: -5px;
   border-radius: 50%;
-
-  background:
-    linear-gradient(
-      118deg,
-      transparent 0%,
-      transparent 26%,
-      rgba(255, 255, 255, 0.9) 27%,
-      rgba(255, 255, 255, 0.22) 29%,
-      transparent 31%,
-      transparent 61%,
-      rgba(225, 225, 230, 0.7) 62%,
-      transparent 65%
-    ),
-    linear-gradient(
-      42deg,
-      transparent 0%,
-      transparent 45%,
-      rgba(255, 255, 255, 0.65) 46%,
-      rgba(255, 255, 255, 0.12) 48%,
-      transparent 50%
-    ),
-    linear-gradient(
-      145deg,
-      #030303 0%,
-      #202022 22%,
-      #070708 43%,
-      #323235 64%,
-      #050506 82%,
-      #1c1c1f 100%
-    );
-
-  box-shadow:
-    0 0 0 2px #ffffff,
-    0 0 0 3px rgba(0, 0, 0, 0.55);
-
+  background: #ffffff;
+  border: 1px solid #000000;
+  box-sizing: border-box;
+  pointer-events: none;
   z-index: -1;
 }
     /* PROFILE STORY VIEWER */
