@@ -144,15 +144,6 @@
   border: none;
   border-radius: 3px;
 }
-  width: auto;
-  background: transparent;
-  color: #6b625c;
-  padding: 0;
-  margin: -10px 0 20px 0;
-  font-size: 12px;
-  text-decoration: underline;
-  border: none;
-}
 
 .password-toggle:hover {
   background: #373330;
@@ -221,7 +212,13 @@
     <p class="subtitle" id="formSubtitle">
       Welcome back to your author space.
     </p>
-
+    <p
+      id="authStatus"
+      class="subtitle"
+      role="status"
+      aria-live="polite"
+      hidden
+    ></p>
     <form id="signinForm">
       <label for="email">Email</label>
       <input
@@ -258,119 +255,549 @@
   </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    const SUPABASE_URL = "https://mwwzlbhttgatylmpwzli.supabase.co";
+  const SUPABASE_URL = "https://mwwzlbhttgatylmpwzli.supabase.co";
 const SUPABASE_KEY = "sb_publishable_UFkxAcITFXu6OtYRTcUKKg_Fw9UcTqR";
+const PROFILE_SETUP_URL =
+  "https://lizremington0606.github.io/the-author-grid/profile-setup.html";
 
 const supabaseClient = window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_KEY
 );
-    const welcome = document.getElementById("welcome");
-  
-    const signinCard = document.getElementById("signinCard");
-    const signinForm = document.getElementById("signinForm");
+
+const welcome = document.getElementById("welcome");
+const signinCard = document.getElementById("signinCard");
+const signinForm = document.getElementById("signinForm");
 const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
-    const togglePassword = document.getElementById("togglePassword");
-    const formTitle = document.getElementById("formTitle");
+const togglePassword = document.getElementById("togglePassword");
+const formTitle = document.getElementById("formTitle");
 const formSubtitle = document.getElementById("formSubtitle");
 const submitButton = document.getElementById("submitButton");
 const createAccountLink = document.getElementById("createAccountLink");
-    const resendConfirmationLink = document.getElementById("resendConfirmationLink");
-    const accountPrompt = document.getElementById("accountPrompt");
-    let isCreatingAccount = false;
-    togglePassword.addEventListener("click", () => {
+const resendConfirmationLink =
+  document.getElementById("resendConfirmationLink");
+const accountPrompt = document.getElementById("accountPrompt");
+const authStatus = document.getElementById("authStatus");
+
+let isCreatingAccount = false;
+let authBusy = false;
+let pollBusy = false;
+let resendBusy = false;
+let pendingSignup = null;
+let confirmationTimer = null;
+let expiryTimer = null;
+let nextConfirmationCheck = 0;
+let resendAvailableAt = 0;
+
+function showAuthStatus(message, isError = false) {
+  authStatus.textContent = message;
+  authStatus.hidden = !message;
+  authStatus.style.color = isError ? "#9b1c1c" : "#68615b";
+}
+
+function updateAuthForm() {
+  const locked = authBusy || pollBusy;
+
+  emailInput.disabled = locked || Boolean(pendingSignup);
+  passwordInput.disabled = locked || Boolean(pendingSignup);
+  togglePassword.disabled = locked || Boolean(pendingSignup);
+  submitButton.disabled = locked || Boolean(pendingSignup);
+
+  submitButton.textContent = pendingSignup
+    ? "Waiting for confirmation..."
+    : locked
+      ? "Please wait..."
+      : isCreatingAccount
+        ? "Create Account"
+        : "Sign In";
+
+  formTitle.textContent = isCreatingAccount
+    ? "Create account"
+    : "Sign in";
+
+  formSubtitle.textContent = isCreatingAccount
+    ? "Your next chapter starts here."
+    : "Welcome back to your author space.";
+
+  accountPrompt.textContent = pendingSignup
+    ? "Want to sign in instead?"
+    : isCreatingAccount
+      ? "Already have an account?"
+      : "New here?";
+
+  createAccountLink.textContent = pendingSignup
+    ? "Cancel and sign in"
+    : isCreatingAccount
+      ? "Sign in"
+      : "Create an account";
+
+  createAccountLink.setAttribute(
+    "aria-disabled",
+    String(locked)
+  );
+
+  resendConfirmationLink.setAttribute(
+    "aria-disabled",
+    String(authBusy || resendBusy)
+  );
+
+  passwordInput.autocomplete = isCreatingAccount
+    ? "new-password"
+    : "current-password";
+
+  passwordInput.minLength = isCreatingAccount ? 8 : 0;
+}
+
+function clearPendingSignup() {
+  clearTimeout(confirmationTimer);
+  clearTimeout(expiryTimer);
+
+  confirmationTimer = null;
+  expiryTimer = null;
+
+  if (pendingSignup) {
+    pendingSignup.password = "";
+  }
+
+  pendingSignup = null;
+  passwordInput.value = "";
+}
+
+function endConfirmationWait(message, isError = false) {
+  clearPendingSignup();
+  isCreatingAccount = false;
+  showAuthStatus(message, isError);
+  updateAuthForm();
+}
+
+function scheduleConfirmationCheck(delay = 15000) {
+  clearTimeout(confirmationTimer);
+
+  if (!pendingSignup) return;
+
+  nextConfirmationCheck = Date.now() + delay;
+  confirmationTimer = setTimeout(
+    checkEmailConfirmation,
+    delay
+  );
+}
+
+async function finishSignIn(
+  expectedUserId,
+  showConfirmation = false
+) {
+  const { data: userData, error: userError } =
+    await supabaseClient.auth.getUser();
+
+  const user = userData?.user;
+
+  if (userError || !user || user.id !== expectedUserId) {
+    throw new Error(
+      "Your sign-in could not be verified. Please sign in again."
+    );
+  }
+
+  if (!user.email_confirmed_at) {
+    throw new Error(
+      "Confirm your email before signing in."
+    );
+  }
+
+  const { data: profile, error: profileError } =
+    await supabaseClient
+      .from("profiles")
+      .select("profile_completed")
+      .eq("id", user.id)
+      .maybeSingle();
+
+  if (profileError) {
+    throw new Error(
+      "You are signed in, but your profile could not be loaded. Please try signing in again."
+    );
+  }
+
+  if (showConfirmation) {
+    showAuthStatus("Email confirmed! Signing you in...");
+
+    await new Promise(resolve => {
+      setTimeout(resolve, 1200);
+    });
+  }
+
+  window.location.href = profile?.profile_completed
+    ? "index.html"
+    : "profile-setup.html";
+}
+
+async function checkEmailConfirmation() {
+  const signup = pendingSignup;
+
+  if (!signup || authBusy || pollBusy) return;
+
+  if (Date.now() >= signup.expiresAt) {
+    endConfirmationWait(
+      "The automatic sign-in window has ended. Confirm your email, then sign in here."
+    );
+    return;
+  }
+
+  if (document.hidden) {
+    scheduleConfirmationCheck();
+    return;
+  }
+
+  clearTimeout(confirmationTimer);
+  pollBusy = true;
+  updateAuthForm();
+
+  let delay = 15000;
+
+  try {
+    const { data: sessionData, error: sessionError } =
+      await supabaseClient.auth.getSession();
+
+    if (sessionError) throw sessionError;
+    if (pendingSignup !== signup) return;
+
+    const existingSession = sessionData?.session;
+
+    if (existingSession) {
+      if (existingSession.user.id !== signup.userId) {
+        endConfirmationWait(
+          "A different account is signed in on this browser. Reload this page to continue.",
+          true
+        );
+        return;
+      }
+
+      clearPendingSignup();
+      isCreatingAccount = false;
+
+      await finishSignIn(signup.userId, true);
+      return;
+    }
+
+    if (Date.now() >= signup.expiresAt) {
+      endConfirmationWait(
+        "The automatic sign-in window has ended. Confirm your email, then sign in here."
+      );
+      return;
+    }
+
+    const { data, error } =
+      await supabaseClient.auth.signInWithPassword({
+        email: signup.email,
+        password: signup.password
+      });
+
+    if (pendingSignup !== signup) return;
+
+    if (error) {
+      if (error.code === "email_not_confirmed") {
+        return;
+      }
+
+      if (
+        error.code === "over_request_rate_limit" ||
+        error.status === 429
+      ) {
+        delay = 60000;
+
+        showAuthStatus(
+          "Still waiting for confirmation. We will check again in a minute."
+        );
+        return;
+      }
+
+      if (
+        error.name === "AuthRetryableFetchError" ||
+        error.status >= 500
+      ) {
+        delay = 30000;
+
+        showAuthStatus(
+          "The connection was interrupted. We will check again shortly."
+        );
+        return;
+      }
+
+      endConfirmationWait(
+        "Automatic sign-in stopped. Please confirm your email and sign in here.",
+        true
+      );
+      return;
+    }
+
+    if (
+      !data?.session ||
+      data.user?.id !== signup.userId
+    ) {
+      endConfirmationWait(
+        "Please sign in here to continue with your account.",
+        true
+      );
+      return;
+    }
+
+    clearPendingSignup();
+    isCreatingAccount = false;
+
+    await finishSignIn(signup.userId, true);
+  } catch (error) {
+    if (pendingSignup === signup) {
+      delay = 30000;
+
+      showAuthStatus(
+        "The connection was interrupted. We will check again shortly."
+      );
+    } else {
+      showAuthStatus(
+        error.message ||
+          "Please sign in again to continue.",
+        true
+      );
+    }
+  } finally {
+    pollBusy = false;
+    updateAuthForm();
+
+    if (pendingSignup === signup) {
+      scheduleConfirmationCheck(delay);
+    }
+  }
+}
+
+togglePassword.addEventListener("click", () => {
   const isHidden = passwordInput.type === "password";
 
   passwordInput.type = isHidden ? "text" : "password";
-  togglePassword.textContent = isHidden ? "Hide password" : "Show password";
+
+  togglePassword.textContent = isHidden
+    ? "Hide password"
+    : "Show password";
 });
-    createAccountLink.addEventListener("click", (event) => {
+
+createAccountLink.addEventListener("click", event => {
   event.preventDefault();
 
-  isCreatingAccount = !isCreatingAccount;
+  if (authBusy || pollBusy) return;
 
-  if (isCreatingAccount) {
-    formTitle.textContent = "Create account";
-    formSubtitle.textContent = "Your next chapter starts here.";
-    submitButton.textContent = "Create Account";
-    accountPrompt.textContent = "Already have an account?";
-    createAccountLink.textContent = "Sign in";
+  if (pendingSignup) {
+    clearPendingSignup();
+    isCreatingAccount = false;
   } else {
-    formTitle.textContent = "Sign in";
-    formSubtitle.textContent = "Welcome back to your author space.";
-    submitButton.textContent = "Sign In";
-    accountPrompt.textContent = "New here?";
-    createAccountLink.textContent = "Create an account";
+    isCreatingAccount = !isCreatingAccount;
   }
+
+  passwordInput.value = "";
+  passwordInput.type = "password";
+  togglePassword.textContent = "Show password";
+
+  showAuthStatus("");
+  updateAuthForm();
 });
 
-    setTimeout(() => {
-      welcome.classList.add("hide");
+setTimeout(() => {
+  welcome.classList.add("hide");
 
-      setTimeout(() => {
-        signinCard.classList.add("show");
-      }, 500);
-    }, 1800);
-    resendConfirmationLink.addEventListener("click", async (event) => {
-  event.preventDefault();
+  setTimeout(() => {
+    signinCard.classList.add("show");
+  }, 500);
+}, 1800);
 
-  const email = emailInput.value.trim();
+resendConfirmationLink.addEventListener(
+  "click",
+  async event => {
+    event.preventDefault();
 
-  if (!email) {
-    alert("Enter your email address first.");
-    return;
-  }
+    if (authBusy || resendBusy) return;
 
-  const { error } = await supabaseClient.auth.resend({
-    type: "signup",
-    email: email,
-    options: {
-     emailRedirectTo: "https://lizremington0606.github.io/the-author-grid/profile-setup.html"
+    const email =
+      pendingSignup?.email || emailInput.value.trim();
+
+    if (!email || !emailInput.checkValidity()) {
+      showAuthStatus(
+        "Enter a valid email address first.",
+        true
+      );
+      return;
     }
-  });
 
-  if (error) {
-    alert(error.message);
-    return;
+    if (Date.now() < resendAvailableAt) {
+      showAuthStatus(
+        "Please wait a minute before requesting another confirmation email."
+      );
+      return;
+    }
+
+    resendBusy = true;
+    updateAuthForm();
+
+    try {
+      const { error } =
+        await supabaseClient.auth.resend({
+          type: "signup",
+          email,
+          options: {
+            emailRedirectTo: PROFILE_SETUP_URL
+          }
+        });
+
+      if (error) throw error;
+
+      resendAvailableAt = Date.now() + 60000;
+
+      showAuthStatus(
+        "A new confirmation email has been sent. Check your inbox and spam folder."
+      );
+    } catch (error) {
+      showAuthStatus(
+        error.message ||
+          "The confirmation email could not be sent.",
+        true
+      );
+    } finally {
+      resendBusy = false;
+      updateAuthForm();
+    }
   }
+);
 
-  alert("A new confirmation email has been sent!");
-});
-  signinForm.addEventListener("submit", async (event) => {
+signinForm.addEventListener("submit", async event => {
   event.preventDefault();
+
+  if (authBusy || pollBusy || pendingSignup) return;
+  if (!signinForm.reportValidity()) return;
 
   const email = emailInput.value.trim();
   const password = passwordInput.value;
 
-  if (isCreatingAccount) {
-    const { data, error } = await supabaseClient.auth.signUp({
-  email: email,
-  password: password,
-  options: {
-    emailRedirectTo: "https://lizremington0606.github.io/the-author-grid/profile-setup.html"
+  authBusy = true;
+  showAuthStatus("");
+  updateAuthForm();
+
+  try {
+    if (isCreatingAccount) {
+      const { data: sessionData, error: sessionError } =
+        await supabaseClient.auth.getSession();
+
+      if (sessionError) throw sessionError;
+
+      if (sessionData?.session) {
+        throw new Error(
+          "An account is already signed in on this browser. Use a private window to create another account."
+        );
+      }
+
+      const { data, error } =
+        await supabaseClient.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: PROFILE_SETUP_URL
+          }
+        });
+
+      if (error) throw error;
+
+      if (!data?.user?.id) {
+        throw new Error(
+          "Account creation could not be completed. Please try again."
+        );
+      }
+
+      if (data.session) {
+        passwordInput.value = "";
+        await finishSignIn(data.user.id, true);
+        return;
+      }
+
+      if (
+        Array.isArray(data.user.identities) &&
+        data.user.identities.length === 0
+      ) {
+        isCreatingAccount = false;
+        passwordInput.value = "";
+
+        showAuthStatus(
+          "Check your inbox. If you already have an account, confirm your email if needed and sign in here."
+        );
+        return;
+      }
+
+      pendingSignup = {
+        email,
+        password,
+        userId: data.user.id,
+        expiresAt: Date.now() + 15 * 60 * 1000
+      };
+
+      passwordInput.value = "";
+      passwordInput.type = "password";
+      togglePassword.textContent = "Show password";
+      resendAvailableAt = Date.now() + 60000;
+
+      showAuthStatus(
+        "Check your email on any device. Keep this page open: once you confirm, we will sign you in here automatically. This page will wait for up to 15 minutes."
+      );
+
+      expiryTimer = setTimeout(() => {
+        endConfirmationWait(
+          "The automatic sign-in window has ended. Confirm your email, then sign in here."
+        );
+      }, 15 * 60 * 1000);
+
+      scheduleConfirmationCheck();
+    } else {
+      const { data, error } =
+        await supabaseClient.auth.signInWithPassword({
+          email,
+          password
+        });
+
+      if (error) throw error;
+
+      if (!data?.session || !data.user) {
+        throw new Error(
+          "Please try signing in again."
+        );
+      }
+
+      passwordInput.value = "";
+      await finishSignIn(data.user.id);
+    }
+  } catch (error) {
+    passwordInput.value = "";
+
+    showAuthStatus(
+      error.message ||
+        "We could not complete your request. Please try again.",
+      true
+    );
+  } finally {
+    authBusy = false;
+    updateAuthForm();
   }
 });
-    if (error) {
-      alert(error.message);
-      return;
-    }
 
-    alert("Check your email to confirm your account!");
-  } else {
-    const { data, error } = await supabaseClient.auth.signInWithPassword({
-      email: email,
-      password: password
-    });
-
-    if (error) {
-      alert(error.message);
-      return;
-    }
-
-    window.location.href = "index.html";
+document.addEventListener("visibilitychange", () => {
+  if (
+    !document.hidden &&
+    pendingSignup &&
+    Date.now() >= nextConfirmationCheck
+  ) {
+    checkEmailConfirmation();
   }
 });
+
+window.addEventListener("pagehide", () => {
+  clearPendingSignup();
+  isCreatingAccount = false;
+  updateAuthForm();
+});
+
+updateAuthForm();
   </script>
 
 </body>
