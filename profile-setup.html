@@ -118,13 +118,32 @@
       font-weight: 700;
     }
 
-    input,
-    textarea {
+      input,
+    textarea,
+    select {
       width: 100%;
       padding: 13px;
       border: 1px solid #aaa29b;
       background: white;
+      color: #252321;
       font: inherit;
+    }
+
+    .security-setup {
+      min-width: 0;
+      margin: 36px 0 0;
+      padding: 20px;
+      border: 1px solid #d7d1ca;
+    }
+
+    .security-setup[hidden] {
+      display: none;
+    }
+
+    .security-setup legend {
+      padding: 0 8px;
+      font-family: 'Special Elite', monospace;
+      font-size: 22px;
     }
 
     textarea {
@@ -324,7 +343,83 @@
         id="facebook"
         placeholder="https://facebook.com/..."
       >
+      <fieldset
+        id="securitySetup"
+        class="security-setup"
+        hidden
+        disabled
+      >
+        <legend>Account security</legend>
 
+        <p class="hint">
+          Choose two different questions and save answers you will remember.
+          You will answer these before changing your email or password.
+          Answers are not displayed on your profile.
+        </p>
+
+        <label for="emailSecurityQuestion">
+          Question for email changes *
+        </label>
+        <select id="emailSecurityQuestion" required>
+          <option value="">Choose a question</option>
+          <option value="1">What was the name of your first pet?</option>
+          <option value="2">What nickname were you called as a child?</option>
+          <option value="3">What was the name of your favorite childhood stuffed animal?</option>
+          <option value="4">What was the name of your childhood best friend?</option>
+          <option value="5">What book first made you fall in love with reading?</option>
+          <option value="6">What street did you live on as a child?</option>
+        </select>
+
+        <label for="emailSecurityAnswer">Your answer *</label>
+        <input
+          type="password"
+          id="emailSecurityAnswer"
+          maxlength="256"
+          autocomplete="off"
+          spellcheck="false"
+          autocapitalize="none"
+          required
+        >
+
+        <label for="passwordSecurityQuestion">
+          Question for password changes *
+        </label>
+        <select id="passwordSecurityQuestion" required>
+          <option value="">Choose a question</option>
+          <option value="1">What was the name of your first pet?</option>
+          <option value="2">What nickname were you called as a child?</option>
+          <option value="3">What was the name of your favorite childhood stuffed animal?</option>
+          <option value="4">What was the name of your childhood best friend?</option>
+          <option value="5">What book first made you fall in love with reading?</option>
+          <option value="6">What street did you live on as a child?</option>
+        </select>
+
+        <label for="passwordSecurityAnswer">Your answer *</label>
+        <input
+          type="password"
+          id="passwordSecurityAnswer"
+          maxlength="256"
+          autocomplete="off"
+          spellcheck="false"
+          autocapitalize="none"
+          required
+        >
+
+        <label for="securityCurrentPassword">
+          Confirm your account password *
+        </label>
+        <input
+          type="password"
+          id="securityCurrentPassword"
+          maxlength="1024"
+          autocomplete="current-password"
+          required
+        >
+
+        <p class="hint">
+          Enter the password you created for The Written Bond.
+        </p>
+      </fieldset>
       <button type="submit">Create My Profile</button>
 
       <p id="statusMessage"></p>
@@ -375,46 +470,169 @@ if (confirmationParams.get("type") === "signup") {
 const urlParams = new URLSearchParams(window.location.search);
 const isEditMode = urlParams.get("mode") === "edit";
 let existingProfile = null;
+const securitySetup = document.getElementById("securitySetup");
+const emailSecurityQuestion = document.getElementById("emailSecurityQuestion");
+const emailSecurityAnswer = document.getElementById("emailSecurityAnswer");
+const passwordSecurityQuestion = document.getElementById("passwordSecurityQuestion");
+const passwordSecurityAnswer = document.getElementById("passwordSecurityAnswer");
+const securityCurrentPassword = document.getElementById("securityCurrentPassword");
+const profileSubmitButton = profileForm.querySelector('button[type="submit"]');
 
+let securityNeedsSetup = false;
+let profileReady = false;
+let profileSaving = false;
+
+profileSubmitButton.disabled = true;
+
+async function accountSecurityRequest(body) {
+  const { data: sessionData, error: sessionError } =
+    await supabaseClient.auth.getSession();
+
+  const session = sessionData?.session;
+
+  if (
+    sessionError || !session?.access_token ||
+    !currentUser || session.user.id !== currentUser.id
+  ) {
+    throw new Error("Please sign in again before continuing.");
+  }
+
+  const { data, error } = await supabaseClient.functions.invoke(
+    "account-security",
+    {
+      body,
+      headers: {
+        Authorization: "Bearer " + session.access_token
+      }
+    }
+  );
+
+  if (error) {
+    let message = "Account security could not be reached. Please try again.";
+
+    try {
+      const problem = await error.context?.json();
+
+      if (typeof problem?.error === "string") {
+        message = problem.error;
+      }
+    } catch {
+      // Keep the message above if no readable response was returned.
+    }
+
+    throw new Error(message);
+  }
+
+  if (!data || typeof data !== "object" || Array.isArray(data)) {
+    throw new Error("Account security returned an unexpected response.");
+  }
+
+  if (typeof data.error === "string") {
+    throw new Error(data.error);
+  }
+
+  return data;
+}
+
+async function loadSignupSecurity() {
+  const result = await accountSecurityRequest({
+    action: "status"
+  });
+
+  if (typeof result.configured !== "boolean") {
+    throw new Error("Your security question status could not be checked.");
+  }
+
+  securityNeedsSetup = !result.configured;
+  securitySetup.hidden = !securityNeedsSetup;
+  securitySetup.disabled = !securityNeedsSetup;
+}
 async function checkUser() {
-  const { data: { session } } = await supabaseClient.auth.getSession();
+  profileReady = false;
+  profileSubmitButton.disabled = true;
 
-  if (!session) {
-    window.location.href = "signin.html";
-    return;
-  }
+  try {
+    const { data: sessionData, error: sessionError } =
+      await supabaseClient.auth.getSession();
 
-  currentUser = session.user;
+    if (sessionError) throw sessionError;
 
-  if (window.location.hash) {
-    history.replaceState(null, "", window.location.pathname + window.location.search);
-  }
+    const session = sessionData?.session;
 
-  if (isEditMode) {
-    const { data: profile, error } = await supabaseClient
-      .from("profiles")
-      .select("*")
-      .eq("id", currentUser.id)
-      .single();
-
-    if (error && error.code !== "PGRST116") {
-      alert(error.message);
+    if (!session) {
+      window.location.href = "signin.html";
       return;
     }
 
-    if (profile) {
-      existingProfile = profile;
+    const { data: userData, error: userError } =
+      await supabaseClient.auth.getUser(session.access_token);
 
-      document.getElementById("displayName").value = profile.display_name || "";
-      document.getElementById("username").value = profile.username || "";
-      document.getElementById("bio").value = profile.bio || "";
-      document.getElementById("website").value = profile.website_url || "";
+    if (
+      userError ||
+      !userData?.user ||
+      userData.user.id !== session.user.id
+    ) {
+      throw new Error("Please sign in again to finish your profile.");
+    }
+
+    currentUser = userData.user;
+
+    if (window.location.hash) {
+      history.replaceState(
+        null,
+        "",
+        window.location.pathname + window.location.search
+      );
+    }
+
+    const { data: profile, error: profileError } =
+      await supabaseClient
+        .from("profiles")
+        .select("*")
+        .eq("id", currentUser.id)
+        .maybeSingle();
+
+    if (profileError) throw profileError;
+
+    existingProfile = profile || null;
+
+    if (!isEditMode && profile?.profile_completed) {
+      window.location.href = "profile.html";
+      return;
+    }
+
+    if (isEditMode && !profile) {
+      throw new Error(
+        "Your profile could not be found. Please open profile setup again without edit mode."
+      );
+    }
+
+    if (profile) {
+      document.getElementById("displayName").value =
+        profile.display_name || "";
+
+      document.getElementById("username").value =
+        profile.username || "";
+
+      document.getElementById("bio").value =
+        profile.bio || "";
+
+      document.getElementById("website").value =
+        profile.website_url || "";
 
       const socials = profile.social_links || {};
-      document.getElementById("instagram").value = socials.instagram || "";
-      document.getElementById("tiktok").value = socials.tiktok || "";
-      document.getElementById("goodreads").value = socials.goodreads || "";
-      document.getElementById("facebook").value = socials.facebook || "";
+
+      document.getElementById("instagram").value =
+        socials.instagram || "";
+
+      document.getElementById("tiktok").value =
+        socials.tiktok || "";
+
+      document.getElementById("goodreads").value =
+        socials.goodreads || "";
+
+      document.getElementById("facebook").value =
+        socials.facebook || "";
 
       if (profile.profile_image_url) {
         profilePreviewImage.src = profile.profile_image_url;
@@ -427,10 +645,35 @@ async function checkUser() {
         coverPreviewImage.style.display = "block";
         coverPlaceholder.style.display = "none";
       }
-
-      document.querySelector(".intro h1").textContent = "Edit your profile.";
-      profileForm.querySelector('button[type="submit"]').textContent = "Save Changes";
     }
+
+    if (isEditMode) {
+      securitySetup.hidden = true;
+      securitySetup.disabled = true;
+      securityNeedsSetup = false;
+
+      document.querySelector(".intro h1").textContent =
+        "Edit your profile.";
+
+      profileSubmitButton.textContent = "Save Changes";
+    } else {
+      await loadSignupSecurity();
+    }
+
+    profileReady = true;
+    profileSubmitButton.disabled = false;
+    statusMessage.textContent = "";
+    statusMessage.style.color = "";
+  } catch (error) {
+    profileReady = false;
+    currentUser = null;
+    profileSubmitButton.disabled = true;
+
+    statusMessage.textContent =
+      (error.message || "Profile setup could not be loaded.") +
+      " Reload this page to try again.";
+
+    statusMessage.style.color = "#9b1c1c";
   }
 }
 checkUser();
@@ -476,76 +719,180 @@ backgroundImageInput.addEventListener("change", () => {
 
   return data.publicUrl;
 }
-    profileForm.addEventListener("submit", async (event) => {
+profileForm.addEventListener("submit", async (event) => {
   event.preventDefault();
 
-  if (!currentUser) {
-    alert("Your session could not be found. Please sign in again.");
+  if (profileSaving) return;
+
+  if (!profileReady || !currentUser) {
+    alert("Profile setup is not ready. Please sign in again or reload this page.");
     return;
   }
+
+  if (!profileForm.reportValidity()) return;
 
   const displayName = document.getElementById("displayName").value.trim();
+  const username = document.getElementById("username").value.trim().toLowerCase();
 
-  const username = document.getElementById("username").value
-    .trim()
-    .toLowerCase();
-
-  if (!/^[a-z0-9._-]{3,30}$/.test(username)) {
-    alert(
-      "Your username must be 3–30 characters and can use letters, numbers, periods, underscores and hyphens."
-    );
+  if (!displayName) {
+    alert("Enter your name or pen name.");
     return;
   }
 
-  const button = profileForm.querySelector('button[type="submit"]');
+  if (!/^[a-z0-9._-]{3,30}$/.test(username)) {
+    alert("Your username must be 3–30 characters and can use letters, numbers, periods, underscores and hyphens.");
+    return;
+  }
 
-  button.disabled = true;
-  button.textContent = isEditMode
+  let securityDetails = null;
+
+  if (!isEditMode && securityNeedsSetup) {
+    const emailQuestion = Number(emailSecurityQuestion.value);
+    const passwordQuestion = Number(passwordSecurityQuestion.value);
+
+    if (
+      ![1, 2, 3, 4, 5, 6].includes(emailQuestion) ||
+      ![1, 2, 3, 4, 5, 6].includes(passwordQuestion)
+    ) {
+      alert("Choose both security questions.");
+      return;
+    }
+
+    if (emailQuestion === passwordQuestion) {
+      alert("Choose two different security questions.");
+      return;
+    }
+
+    if (
+      !emailSecurityAnswer.value.trim() ||
+      !passwordSecurityAnswer.value.trim()
+    ) {
+      alert("Enter an answer for each security question.");
+      return;
+    }
+
+    if (!securityCurrentPassword.value) {
+      alert("Confirm the password you created for The Written Bond.");
+      return;
+    }
+
+    securityDetails = {
+      action: "setup",
+      email_question: emailQuestion,
+      password_question: passwordQuestion,
+      email_answer: emailSecurityAnswer.value,
+      password_answer: passwordSecurityAnswer.value,
+      current_password: securityCurrentPassword.value
+    };
+  }
+
+  const profile = {
+    id: currentUser.id,
+    display_name: displayName,
+    username,
+    bio: document.getElementById("bio").value.trim(),
+    profile_image_url: existingProfile?.profile_image_url || null,
+    background_image_url: existingProfile?.background_image_url || null,
+    website_url: document.getElementById("website").value.trim(),
+
+    social_links: {
+      instagram: document.getElementById("instagram").value.trim(),
+      tiktok: document.getElementById("tiktok").value.trim(),
+      goodreads: document.getElementById("goodreads").value.trim(),
+      facebook: document.getElementById("facebook").value.trim()
+    },
+
+    profile_completed: true,
+    updated_at: new Date().toISOString()
+  };
+
+  const profileFile = profileImageInput.files[0];
+  const backgroundFile = backgroundImageInput.files[0];
+
+  const controls = Array.from(
+    profileForm.querySelectorAll("input, select, textarea, button")
+  );
+
+  const previousDisabled = controls.map(control => control.disabled);
+  const previousProfileImageDisabled = profileImageInput.disabled;
+  const previousBackgroundImageDisabled = backgroundImageInput.disabled;
+
+  profileSaving = true;
+
+  controls.forEach(control => {
+    control.disabled = true;
+  });
+
+  profileImageInput.disabled = true;
+  backgroundImageInput.disabled = true;
+
+  profileSubmitButton.textContent = isEditMode
     ? "Saving changes..."
     : "Creating your profile...";
 
   statusMessage.textContent = "";
+  statusMessage.style.color = "";
 
   try {
-    let profileImageUrl =
-      existingProfile?.profile_image_url || null;
+    const { data: userData, error: userError } =
+      await supabaseClient.auth.getUser();
 
-    let backgroundImageUrl =
-      existingProfile?.background_image_url || null;
+    if (userError || userData?.user?.id !== currentUser.id) {
+      throw new Error("Please sign in again before saving your profile.");
+    }
 
-    if (profileImageInput.files[0]) {
-      profileImageUrl = await uploadImage(
-        profileImageInput.files[0],
+    if (!isEditMode) {
+      const securityStatus = await accountSecurityRequest({
+        action: "status"
+      });
+
+      if (typeof securityStatus.configured !== "boolean") {
+        throw new Error("Your security question status could not be checked.");
+      }
+
+      if (!securityStatus.configured) {
+        if (!securityDetails) {
+          securityNeedsSetup = true;
+          securitySetup.hidden = false;
+          securitySetup.disabled = false;
+
+          throw new Error(
+            "Complete your security questions before creating your profile."
+          );
+        }
+
+        const saved = await accountSecurityRequest(securityDetails);
+
+        if (saved.ok !== true) {
+          throw new Error(
+            "Your security answers could not be saved. Please try again."
+          );
+        }
+      }
+
+      securityNeedsSetup = false;
+      securitySetup.hidden = true;
+      securitySetup.disabled = true;
+
+      emailSecurityAnswer.value = "";
+      passwordSecurityAnswer.value = "";
+      securityCurrentPassword.value = "";
+      securityDetails = null;
+    }
+
+    if (profileFile) {
+      profile.profile_image_url = await uploadImage(
+        profileFile,
         "profile-picture"
       );
     }
 
-    if (backgroundImageInput.files[0]) {
-      backgroundImageUrl = await uploadImage(
-        backgroundImageInput.files[0],
+    if (backgroundFile) {
+      profile.background_image_url = await uploadImage(
+        backgroundFile,
         "background-picture"
       );
     }
-
-    const profile = {
-      id: currentUser.id,
-      display_name: displayName,
-      username: username,
-      bio: document.getElementById("bio").value.trim(),
-      profile_image_url: profileImageUrl,
-      background_image_url: backgroundImageUrl,
-      website_url: document.getElementById("website").value.trim(),
-
-      social_links: {
-        instagram: document.getElementById("instagram").value.trim(),
-        tiktok: document.getElementById("tiktok").value.trim(),
-        goodreads: document.getElementById("goodreads").value.trim(),
-        facebook: document.getElementById("facebook").value.trim()
-      },
-
-      profile_completed: true,
-      updated_at: new Date().toISOString()
-    };
 
     const { error } = await supabaseClient
       .from("profiles")
@@ -553,28 +900,41 @@ backgroundImageInput.addEventListener("change", () => {
         onConflict: "id"
       });
 
-    if (error) {
-      throw error;
-    }
+    if (error) throw error;
+
+    existingProfile = profile;
+    profileReady = false;
 
     statusMessage.textContent = isEditMode
       ? "Changes saved!"
       : "Profile created!";
 
     window.location.href = "profile.html";
-
   } catch (error) {
-    if (error.code === "23505") {
-      alert("That username is already taken. Try another one.");
-    } else {
-      alert(error.message);
-    }
+    const message = error.code === "23505"
+      ? "That username is already taken. Try another one."
+      : error.message || "Your profile could not be saved. Please try again.";
 
-    button.disabled = false;
+    statusMessage.textContent = message;
+    statusMessage.style.color = "#9b1c1c";
+    alert(message);
+  } finally {
+    securityCurrentPassword.value = "";
+    securityDetails = null;
 
-    button.textContent = isEditMode
+    controls.forEach((control, index) => {
+      control.disabled = previousDisabled[index];
+    });
+
+    profileImageInput.disabled = previousProfileImageDisabled;
+    backgroundImageInput.disabled = previousBackgroundImageDisabled;
+    profileSubmitButton.disabled = !profileReady;
+
+    profileSubmitButton.textContent = isEditMode
       ? "Save Changes"
       : "Create My Profile";
+
+    profileSaving = false;
   }
 });
     </script>
