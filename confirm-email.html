@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="no-referrer">
+  <title>Email Confirmation | The Written Bond</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: #f7f2e8;
+      color: #252321;
+      font-family: Georgia, serif;
+    }
+
+    main {
+      width: min(100%, 520px);
+      padding: 36px 28px;
+      border: 1px solid #d7d1ca;
+      background: #fffdf7;
+      text-align: center;
+    }
+
+    .brand {
+      font-size: 18px;
+      margin-bottom: 28px;
+    }
+
+    h1 {
+      font-size: 28px;
+    }
+
+    p {
+      line-height: 1.7;
+    }
+
+    .hint {
+      color: #68615b;
+      font-size: 14px;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <div class="brand">The Written Bond</div>
+
+    <h1 id="confirmationTitle">Confirming your email...</h1>
+
+    <p id="confirmationMessage" role="status" aria-live="polite">
+      Please wait while we check your confirmation link.
+    </p>
+
+    <p id="returnMessage" class="hint" hidden>
+      You can close this confirmation page.
+    </p>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    async function confirmEmail() {
+      const title = document.getElementById("confirmationTitle");
+      const message = document.getElementById("confirmationMessage");
+      const returnMessage = document.getElementById("returnMessage");
+
+      let confirmationClient;
+      let hasTemporarySession = false;
+
+      try {
+        confirmationClient = window.supabase.createClient(
+          "https://mwwzlbhttgatylmpwzli.supabase.co",
+          "sb_publishable_UFkxAcITFXu6OtYRTcUKKg_Fw9UcTqR",
+          {
+            auth: {
+              persistSession: false,
+              autoRefreshToken: false,
+              detectSessionInUrl: true
+            }
+          }
+        );
+
+        const { data: sessionData, error: sessionError } =
+          await confirmationClient.auth.getSession();
+
+        const session = sessionData?.session;
+        hasTemporarySession = Boolean(session);
+
+        history.replaceState(null, "", window.location.pathname);
+
+        if (sessionError || !session) {
+          throw new Error("Confirmation session unavailable");
+        }
+
+        const { data, error } =
+          await confirmationClient.auth.getUser(session.access_token);
+
+        if (
+          error ||
+          !data?.user?.email_confirmed_at ||
+          data.user.id !== session.user.id
+        ) {
+          throw new Error("Confirmation could not be verified");
+        }
+
+        title.textContent = "Email confirmed.";
+
+        message.textContent =
+          "Return to the signup tab on the device where you created your account. Keep that tab open so it can finish signing you in.";
+
+        returnMessage.hidden = false;
+      } catch {
+        title.textContent = "We could not verify this link.";
+
+        message.textContent =
+          "The link may have expired or already been used. Return to your original signup tab. If you already confirmed your email, try signing in there.";
+      } finally {
+        history.replaceState(null, "", window.location.pathname);
+
+        if (hasTemporarySession && confirmationClient) {
+          try {
+            await confirmationClient.auth.signOut({
+              scope: "local"
+            });
+          } catch {
+            // This temporary session is never saved in browser storage.
+          }
+        }
+      }
+    }
+
+    confirmEmail();
+  </script>
+</body>
+</html>
