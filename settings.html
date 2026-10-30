@@ -225,7 +225,22 @@
               autocomplete="current-password"
               required
             >
+            <label
+              id="emailSecurityQuestionLabel"
+              for="emailSecurityAnswer"
+            >
+              Your saved security question
+            </label>
 
+            <input
+              id="emailSecurityAnswer"
+              type="password"
+              maxlength="256"
+              autocomplete="off"
+              spellcheck="false"
+              autocapitalize="none"
+              required
+            >
             <button class="save" type="submit">Update Email</button>
             <p id="emailMessage" class="message" role="status"></p>
           </form>
@@ -269,7 +284,22 @@
               minlength="8"
               required
             >
+            <label
+              id="passwordSecurityQuestionLabel"
+              for="passwordSecurityAnswer"
+            >
+              Your saved security question
+            </label>
 
+            <input
+              id="passwordSecurityAnswer"
+              type="password"
+              maxlength="256"
+              autocomplete="off"
+              spellcheck="false"
+              autocapitalize="none"
+              required
+            >
             <button class="save" type="submit">Update Password</button>
             <p id="passwordMessage" class="message" role="status"></p>
           </form>
@@ -281,286 +311,461 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
-    const byId = (id) => document.getElementById(id);
+ const byId = id => document.getElementById(id);
 
-    let client;
-    let accountId = null;
-    let busy = false;
+const SECURITY_QUESTIONS = {
+  1: "What was the name of your first pet?",
+  2: "What nickname were you called as a child?",
+  3: "What was the name of your favorite childhood stuffed animal?",
+  4: "What was the name of your childhood best friend?",
+  5: "What book first made you fall in love with reading?",
+  6: "What street did you live on as a child?"
+};
 
-    function showMessage(id, text, kind = "") {
-      byId(id).textContent = text;
-      byId(id).className = "message " + kind;
+let client;
+let accountId = null;
+let busy = false;
+let questionsReady = false;
+
+function showMessage(id, text, kind = "") {
+  byId(id).textContent = text;
+  byId(id).className = "message " + kind;
+}
+
+function showAccount(user) {
+  byId("currentEmail").textContent = user.email || "";
+
+  const pending =
+    user.new_email && user.new_email !== user.email;
+
+  byId("pendingEmail").hidden = !pending;
+
+  byId("pendingEmail").textContent = pending
+    ? "Awaiting confirmation: " + user.new_email
+    : "";
+}
+
+function lockForms(locked) {
+  busy = locked;
+
+  document.querySelectorAll(
+    "form input, form button"
+  ).forEach(item => {
+    item.disabled = locked || !questionsReady;
+  });
+}
+
+function resetAccountView(message, kind = "") {
+  accountId = null;
+  questionsReady = false;
+
+  byId("settingsContent").hidden = true;
+  byId("signInPrompt").hidden = false;
+  byId("currentEmail").textContent = "";
+  byId("pendingEmail").textContent = "";
+  byId("pendingEmail").hidden = true;
+
+  document.querySelectorAll("form").forEach(form => {
+    form.reset();
+  });
+
+  lockForms(false);
+  showMessage("pageMessage", message, kind);
+}
+
+async function securityRequest(body) {
+  const expectedId = accountId;
+
+  const { data: sessionData, error: sessionError } =
+    await client.auth.getSession();
+
+  const session = sessionData?.session;
+
+  if (
+    sessionError ||
+    !expectedId ||
+    !session?.access_token ||
+    session.user.id !== expectedId ||
+    accountId !== expectedId
+  ) {
+    resetAccountView(
+      "Your sign-in changed or expired. Please sign in again.",
+      "error"
+    );
+
+    throw new Error(
+      "Please sign in again before continuing."
+    );
+  }
+
+  const { data, error } = await client.functions.invoke(
+    "account-security",
+    {
+      body,
+      headers: {
+        Authorization: "Bearer " + session.access_token
+      }
+    }
+  );
+
+  if (accountId !== expectedId) {
+    throw new Error(
+      "Your account changed. Reload Settings before continuing."
+    );
+  }
+
+  if (error) {
+    let message =
+      "Account security could not be reached. Please try again.";
+
+    try {
+      const response = await error.context?.json();
+
+      if (typeof response?.error === "string") {
+        message = response.error;
+      }
+    } catch {
+      // Keep the message above if the response could not be read.
     }
 
-    function showAccount(user) {
-      byId("currentEmail").textContent = user.email || "";
-
-      const pending =
-        user.new_email && user.new_email !== user.email;
-
-      byId("pendingEmail").hidden = !pending;
-
-      byId("pendingEmail").textContent = pending
-        ? "Awaiting confirmation: " + user.new_email
-        : "";
+    if (error.context?.status === 401) {
+      resetAccountView(message, "error");
     }
 
-    function lockForms(locked) {
-      busy = locked;
+    throw new Error(message);
+  }
 
-      document.querySelectorAll(
-        "form input, form button"
-      ).forEach((item) => {
-        item.disabled = locked;
+  if (
+    !data ||
+    typeof data !== "object" ||
+    Array.isArray(data)
+  ) {
+    throw new Error(
+      "Account security returned an unexpected response."
+    );
+  }
+
+  if (typeof data.error === "string") {
+    throw new Error(data.error);
+  }
+
+  return data;
+}
+
+byId("emailForm").addEventListener(
+  "submit",
+  async event => {
+    event.preventDefault();
+
+    if (
+      busy ||
+      !questionsReady ||
+      !accountId ||
+      !event.target.reportValidity()
+    ) return;
+
+    const email = byId("newEmail").value.trim();
+    const password = byId("emailPassword").value;
+    const answer = byId("emailSecurityAnswer").value;
+
+    if (!answer.trim()) {
+      showMessage(
+        "emailMessage",
+        "Answer your saved security question.",
+        "error"
+      );
+      return;
+    }
+
+    if (
+      email.toLowerCase() ===
+      byId("currentEmail").textContent.toLowerCase()
+    ) {
+      showMessage(
+        "emailMessage",
+        "That is already your current email address.",
+        "error"
+      );
+      return;
+    }
+
+    lockForms(true);
+
+    showMessage(
+      "emailMessage",
+      "Checking your password and security answer..."
+    );
+
+    try {
+      const result = await securityRequest({
+        action: "email",
+        new_email: email,
+        current_password: password,
+        answer
       });
-    }
-
-    async function verifyCurrentPassword(password) {
-      const { data, error } =
-        await client.auth.getUser();
 
       if (
-        error ||
-        !data.user ||
-        data.user.id !== accountId
+        result.ok !== true ||
+        typeof result.pending_email !== "boolean"
       ) {
         throw new Error(
-          "Your sign-in has changed or expired. Refresh this page and sign in again."
+          "The email change could not be confirmed. Please check your account before trying again."
         );
       }
 
-      const result =
-        await client.auth.signInWithPassword({
-          email: data.user.email,
-          password: password
-        });
-
-      if (result.error) {
-        throw new Error(
-          result.error.code === "invalid_credentials"
-            ? "That current password wasn’t accepted. Please try again."
-            : result.error.message
-        );
+      if (typeof result.email === "string") {
+        byId("currentEmail").textContent = result.email;
       }
 
-      if (
-        !result.data.user ||
-        result.data.user.id !== accountId
-      ) {
-        throw new Error(
-          "We couldn’t verify this account. Refresh the page and try again."
-        );
-      }
+      byId("pendingEmail").hidden = !result.pending_email;
 
-      return result.data.user;
+      byId("pendingEmail").textContent =
+        result.pending_email
+          ? "Awaiting confirmation: " + email
+          : "";
+
+      showMessage(
+        "emailMessage",
+        result.pending_email
+          ? "Your change is awaiting confirmation. Check your current and new inboxes and follow the confirmation instructions. Keep using your current email until the change is confirmed."
+          : "Your email has been updated. Use the new address next time you sign in.",
+        "success"
+      );
+
+      byId("newEmail").value = "";
+    } catch (error) {
+      showMessage(
+        "emailMessage",
+        error.message ||
+          "Your email could not be updated. Please try again.",
+        "error"
+      );
+    } finally {
+      byId("emailPassword").value = "";
+      byId("emailSecurityAnswer").value = "";
+      lockForms(false);
+    }
+  }
+);
+
+byId("passwordForm").addEventListener(
+  "submit",
+  async event => {
+    event.preventDefault();
+
+    if (
+      busy ||
+      !questionsReady ||
+      !accountId ||
+      !event.target.reportValidity()
+    ) return;
+
+    const current = byId("currentPassword").value;
+    const password = byId("newPassword").value;
+    const answer = byId("passwordSecurityAnswer").value;
+
+    if (password !== byId("confirmPassword").value) {
+      showMessage(
+        "passwordMessage",
+        "Your new passwords do not match.",
+        "error"
+      );
+      return;
     }
 
-    byId("emailForm").addEventListener(
-      "submit",
-      async (event) => {
-        event.preventDefault();
+    if (password === current) {
+      showMessage(
+        "passwordMessage",
+        "Choose a password different from your current one.",
+        "error"
+      );
+      return;
+    }
 
-        if (
-          busy ||
-          !accountId ||
-          !event.target.reportValidity()
-        ) return;
+    if (!answer.trim()) {
+      showMessage(
+        "passwordMessage",
+        "Answer your saved security question.",
+        "error"
+      );
+      return;
+    }
 
-        const email = byId("newEmail").value.trim();
-        const password = byId("emailPassword").value;
+    const expectedId = accountId;
 
-        lockForms(true);
-        showMessage("emailMessage", "Checking your account…");
+    lockForms(true);
 
-        try {
-          const user =
-            await verifyCurrentPassword(password);
-
-          if (
-            email.toLowerCase() ===
-            user.email.toLowerCase()
-          ) {
-            throw new Error(
-              "That’s already your current email address."
-            );
-          }
-
-          const { data, error } =
-            await client.auth.updateUser(
-              { email: email },
-              {
-                emailRedirectTo:
-                  new URL(
-                    "settings.html",
-                    window.location.href
-                  ).href
-              }
-            );
-
-          if (error) throw error;
-
-          showAccount(data.user || user);
-
-          const changed =
-            data.user?.email?.toLowerCase() ===
-            email.toLowerCase();
-
-          showMessage(
-            "emailMessage",
-            changed
-              ? "Your email has been updated. Use the new address next time you sign in."
-              : "Your change is awaiting confirmation. Check your current and new inboxes and follow any confirmation links. Keep using your current email until the change is confirmed.",
-            "success"
-          );
-
-          byId("newEmail").value = "";
-        } catch (error) {
-          showMessage(
-            "emailMessage",
-            error.message ||
-              "We couldn’t update your email. Please try again.",
-            "error"
-          );
-        } finally {
-          byId("emailPassword").value = "";
-          lockForms(false);
-        }
-      }
+    showMessage(
+      "passwordMessage",
+      "Checking your password and security answer..."
     );
 
-    byId("passwordForm").addEventListener(
-      "submit",
-      async (event) => {
-        event.preventDefault();
+    try {
+      const result = await securityRequest({
+        action: "password",
+        new_password: password,
+        current_password: current,
+        answer
+      });
 
-        if (
-          busy ||
-          !accountId ||
-          !event.target.reportValidity()
-        ) return;
-
-        const current = byId("currentPassword").value;
-        const password = byId("newPassword").value;
-
-        if (
-          password !== byId("confirmPassword").value
-        ) {
-          showMessage(
-            "passwordMessage",
-            "Your new passwords don’t match.",
-            "error"
-          );
-          return;
-        }
-
-        if (password === current) {
-          showMessage(
-            "passwordMessage",
-            "Choose a password different from your current one.",
-            "error"
-          );
-          return;
-        }
-
-        lockForms(true);
-
-        showMessage(
-          "passwordMessage",
-          "Updating your password…"
+      if (result.ok !== true) {
+        throw new Error(
+          "The password change could not be confirmed."
         );
-
-        try {
-          await verifyCurrentPassword(current);
-
-          const { error } =
-            await client.auth.updateUser({
-              password: password,
-              current_password: current
-            });
-
-          if (error) throw error;
-
-          byId("passwordForm").reset();
-
-          showMessage(
-            "passwordMessage",
-            "Your password has been updated. Use the new password next time you sign in.",
-            "success"
-          );
-        } catch (error) {
-          showMessage(
-            "passwordMessage",
-            error.message ||
-              "We couldn’t update your password. Please try again.",
-            "error"
-          );
-        } finally {
-          byId("currentPassword").value = "";
-          lockForms(false);
-        }
       }
-    );
 
-    async function loadAccountSettings() {
+      questionsReady = false;
+      lockForms(true);
+
       try {
-        if (!window.supabase) {
-          throw new Error(
-            "Account settings couldn’t load. Please refresh the page."
-          );
-        }
+        const { data: sessionData } =
+          await client.auth.getSession();
 
-        client = window.supabase.createClient(
-          "https://mwwzlbhttgatylmpwzli.supabase.co",
-          "sb_publishable_UFkxAcITFXu6OtYRTcUKKg_Fw9UcTqR"
+        if (
+          accountId === expectedId &&
+          sessionData?.session?.user?.id === expectedId
+        ) {
+          await client.auth.signOut({
+            scope: "local"
+          });
+        }
+      } catch {
+        // The password change succeeded.
+        // Show the sign-in link below.
+      }
+
+      if (accountId && accountId !== expectedId) return;
+
+      resetAccountView(
+        "Your password has been updated. Sign in again using your new password.",
+        "success"
+      );
+    } catch (error) {
+      showMessage(
+        "passwordMessage",
+        error.message ||
+          "Your password could not be updated. Please try again.",
+        "error"
+      );
+    } finally {
+      byId("currentPassword").value = "";
+      byId("passwordSecurityAnswer").value = "";
+      lockForms(false);
+    }
+  }
+);
+
+async function loadAccountSettings() {
+  lockForms(true);
+
+  try {
+    if (!window.supabase) {
+      throw new Error(
+        "Account settings could not load. Please reload this page."
+      );
+    }
+
+    client = window.supabase.createClient(
+      "https://mwwzlbhttgatylmpwzli.supabase.co",
+      "sb_publishable_UFkxAcITFXu6OtYRTcUKKg_Fw9UcTqR"
+    );
+
+    client.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_OUT") {
+        resetAccountView(
+          "Please sign in to manage your account."
         );
-
-        const { data, error } =
-          await client.auth.getUser();
-
-        if (error || !data.user) {
-          showMessage(
-            "pageMessage",
-            "Please sign in to manage your account."
-          );
-
-          byId("signInPrompt").hidden = false;
-          return;
-        }
-
-        accountId = data.user.id;
-        showAccount(data.user);
-
-        byId("settingsContent").hidden = false;
-        showMessage("pageMessage", "");
-
-        client.auth.onAuthStateChange((event) => {
-          if (event === "SIGNED_OUT") {
-            accountId = null;
-            byId("settingsContent").hidden = true;
-
-            document.querySelectorAll(
-              "form"
-            ).forEach((form) => form.reset());
-
-            showMessage(
-              "pageMessage",
-              "Please sign in to manage your account."
-            );
-
-            byId("signInPrompt").hidden = false;
-          }
-        });
-      } catch (error) {
-        showMessage(
-          "pageMessage",
-          error.message ||
-            "Account settings couldn’t load. Please refresh the page.",
+      } else if (
+        accountId &&
+        session?.user?.id &&
+        session.user.id !== accountId
+      ) {
+        resetAccountView(
+          "Your account changed. Reload Settings to continue.",
           "error"
         );
       }
+    });
+
+    const { data, error } = await client.auth.getUser();
+
+    if (
+      error ||
+      !data?.user ||
+      data.user.is_anonymous
+    ) {
+      resetAccountView(
+        "Please sign in to manage your account."
+      );
+      return;
     }
 
-    loadAccountSettings();
+    accountId = data.user.id;
+    showAccount(data.user);
+    byId("signInPrompt").hidden = true;
+
+    const result = await securityRequest({
+      action: "status"
+    });
+
+    if (typeof result.configured !== "boolean") {
+      throw new Error(
+        "Your security questions could not be checked."
+      );
+    }
+
+    if (!result.configured) {
+      showMessage(
+        "pageMessage",
+        "This account does not have saved security questions yet. Verified setup is needed before these settings can be used."
+      );
+      return;
+    }
+
+    const emailQuestion =
+      result.questions?.email_question;
+
+    const passwordQuestion =
+      result.questions?.password_question;
+
+    if (
+      !Number.isInteger(emailQuestion) ||
+      !Number.isInteger(passwordQuestion) ||
+      !SECURITY_QUESTIONS[emailQuestion] ||
+      !SECURITY_QUESTIONS[passwordQuestion] ||
+      emailQuestion === passwordQuestion
+    ) {
+      throw new Error(
+        "Your saved security questions could not be loaded."
+      );
+    }
+
+    byId("emailSecurityQuestionLabel").textContent =
+      SECURITY_QUESTIONS[emailQuestion];
+
+    byId("passwordSecurityQuestionLabel").textContent =
+      SECURITY_QUESTIONS[passwordQuestion];
+
+    questionsReady = true;
+    byId("settingsContent").hidden = false;
+
+    showMessage("pageMessage", "");
+  } catch (error) {
+    questionsReady = false;
+    byId("settingsContent").hidden = true;
+
+    showMessage(
+      "pageMessage",
+      error.message ||
+        "Account settings could not load. Please reload this page.",
+      "error"
+    );
+  } finally {
+    lockForms(false);
+  }
+}
+
+loadAccountSettings();
   </script>
 </body>
 </html>
