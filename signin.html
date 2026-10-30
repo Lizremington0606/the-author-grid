@@ -775,6 +775,33 @@ signinForm.addEventListener("submit", async event => {
     updateAuthForm();
   }
 });
+async function restoreSavedSignIn() {
+  authBusy = true;
+  updateAuthForm();
+
+  try {
+    const { data, error } =
+      await supabaseClient.auth.getSession();
+
+    if (error) throw error;
+
+    if (!data?.session) return;
+
+    showAuthStatus("Welcome back! Opening your account...");
+
+    await finishSignIn(data.session.user.id);
+  } catch (error) {
+    showAuthStatus(
+      "We couldn't restore your sign-in. Please sign in below.",
+      true
+    );
+  } finally {
+    authBusy = false;
+    updateAuthForm();
+  }
+}
+
+restoreSavedSignIn();
 
 document.addEventListener("visibilitychange", () => {
   if (
